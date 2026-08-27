@@ -3,18 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Money Things</title>
-<meta name="description" content="Money Things — a private, on-device tracker for income, expenses, wallets, loans, and savings goals.">
+<title>Kwentado</title>
+<meta name="description" content="Kwentado — a private, on-device tracker for income, expenses, wallets, loans, and savings goals.">
 <meta name="theme-color" content="#060608">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Money Things">
-<meta property="og:title" content="Money Things">
+<meta name="apple-mobile-web-app-title" content="Kwentado">
+<meta property="og:title" content="Kwentado">
 <meta property="og:description" content="A private, on-device tracker for income, expenses, wallets, loans, and savings goals.">
 <meta property="og:type" content="website">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23060608'/%3E%3Ctext x='50' y='68' font-size='58' font-family='Arial,sans-serif' font-weight='700' text-anchor='middle' fill='%23a8e038'%3E%E2%82%B1%3C/text%3E%3C/svg%3E">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23060608'/%3E%3Ctext x='50' y='68' font-size='58' font-family='Arial,sans-serif' font-weight='700' text-anchor='middle' fill='%23a8e038'%3E%E2%82%B1%3C/text%3E%3C/svg%3E">
-<link rel="manifest" href='data:application/manifest+json,{"name":"Money Things","short_name":"Money Things","start_url":".","display":"standalone","background_color":"%23060608","theme_color":"%23060608"}'>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23060608'/%3E%3Crect x='27' y='16' width='46' height='68' rx='6' fill='none' stroke='%23a8e038' stroke-width='4.5'/%3E%3Ccircle cx='27' cy='30' r='3.4' fill='%23a8e038'/%3E%3Ccircle cx='27' cy='50' r='3.4' fill='%23a8e038'/%3E%3Ccircle cx='27' cy='70' r='3.4' fill='%23a8e038'/%3E%3Cpath d='M39 52 L48 62 L64 40' fill='none' stroke='%23a8e038' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23060608'/%3E%3Crect x='27' y='16' width='46' height='68' rx='6' fill='none' stroke='%23a8e038' stroke-width='4.5'/%3E%3Ccircle cx='27' cy='30' r='3.4' fill='%23a8e038'/%3E%3Ccircle cx='27' cy='50' r='3.4' fill='%23a8e038'/%3E%3Ccircle cx='27' cy='70' r='3.4' fill='%23a8e038'/%3E%3Cpath d='M39 52 L48 62 L64 40' fill='none' stroke='%23a8e038' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="manifest" href='data:application/manifest+json,{"name":"Kwentado","short_name":"Kwentado","start_url":".","display":"standalone","background_color":"%23060608","theme_color":"%23060608"}'>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -122,7 +122,7 @@ body.light .topbar{background:rgba(255,255,255,.92)}
 }
 .hero-card::after{
   content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(168,224,56,.2),transparent);
+  background:linear-gradienst(90deg,transparent,rgba(168,224,56,.2),transparent);
   pointer-events:none
 }
 .hero-label{font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:var(--accent);font-weight:700;margin-bottom:10px;opacity:.8}
@@ -133,6 +133,13 @@ body.light .topbar{background:rgba(255,255,255,.92)}
 .hw{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
 .hw-name{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:5px;font-weight:600}
 .hw-val{font-family:var(--font-d);font-size:16px;font-weight:700;color:var(--accent)}
+.eye-btn{background:transparent;border:1px solid var(--border2);color:var(--muted);width:30px;height:30px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:all var(--tr);flex-shrink:0}
+.eye-btn:hover{color:var(--text);border-color:var(--accent);background:var(--accent-bg)}
+.eye-btn.on{color:var(--accent);border-color:var(--accent);background:var(--accent-bg)}
+.eye-btn svg{width:15px;height:15px;stroke-width:2}
+.hero-topline{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.hero-topline .hero-label{margin-bottom:0}
+.bal-hd{display:flex;align-items:center;justify-content:space-between}
 
 /* STAT GRID */
 .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px;margin-bottom:16px}
@@ -330,6 +337,9 @@ body.light input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0
 .pin-key.del{font-size:16px;color:var(--muted)}
 .pin-key.empty{background:transparent;border:none;cursor:default}
 .pin-error{font-size:12px;color:var(--red);margin-top:12px;min-height:18px}
+#terms-continue-btn:disabled{opacity:.4;cursor:not-allowed}
+#terms-scroll::-webkit-scrollbar{width:6px}
+#terms-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
 
 /* VERSE PROGRESS */
 .verse-progress-track{background:var(--border2);border-radius:99px;height:2px;overflow:hidden;margin-top:14px}
@@ -784,6 +794,15 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
   .snapshot-label{font-size:9px !important}
 }
 
+/* Custom checkbox with a checkmark icon (replaces plain native checkbox fill) */
+.cbox-wrap{position:relative;display:inline-flex;flex-shrink:0;width:16px;height:16px;margin-top:2px}
+.cbox-wrap input[type="checkbox"]{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer;z-index:1}
+.cbox-wrap input[type="checkbox"]:disabled{cursor:not-allowed}
+.cbox-box{position:absolute;inset:0;border-radius:5px;border:1.6px solid var(--border2);background:var(--surface2);display:flex;align-items:center;justify-content:center;transition:background .15s,border-color .15s}
+.cbox-box svg{width:11px;height:11px;stroke:#0a0a0a;stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:16;stroke-dashoffset:16;transition:stroke-dashoffset .18s ease}
+.cbox-wrap input[type="checkbox"]:checked ~ .cbox-box{background:var(--accent);border-color:var(--accent)}
+.cbox-wrap input[type="checkbox"]:checked ~ .cbox-box svg{stroke-dashoffset:0}
+
 </style>
 </head>
 <body>
@@ -792,10 +811,69 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
 <!-- AUTH OVERLAY (login / register / PIN) -->
 <div id="auth-overlay" class="pin-overlay" style="display:none">
 
+  <!-- STEP: TERMS OF USE & PRIVACY NOTICE (first-time consent) -->
+  <div id="auth-terms" class="pin-box" style="display:none;max-width:560px;text-align:left">
+    <div style="text-align:center;margin-bottom:18px">
+      <div style="width:48px;height:48px;margin:0 auto 12px;background:linear-gradient(135deg,rgba(168,224,56,.18),rgba(168,224,56,.07));border:1px solid rgba(168,224,56,.3);border-radius:13px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="3" width="12" height="18" rx="2.2" stroke="var(--accent)" stroke-width="1.7"/><circle cx="6" cy="7.2" r="0.9" fill="var(--accent)"/><circle cx="6" cy="12" r="0.9" fill="var(--accent)"/><circle cx="6" cy="16.8" r="0.9" fill="var(--accent)"/><path d="M9.3 12.6L11.3 14.9L15.2 10" stroke="var(--accent)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="pin-title" style="margin-bottom:4px">Terms of Use &amp; Privacy Notice</div>
+      <div class="pin-sub">Please read before you start tracking your money</div>
+    </div>
+
+    <div id="terms-scroll" style="max-height:280px;overflow-y:auto;background:var(--surface2);border:1px solid var(--border2);border-radius:12px;padding:18px 20px;font-size:12.5px;line-height:1.75;color:var(--text);margin-bottom:14px">
+      <p style="color:var(--muted);margin-bottom:12px"><b>Effective as of your first use.</b> By checking the box below and continuing, you agree to the following terms governing your use of Kwentado ("the App"). Please read this in full.</p>
+
+      <p style="font-weight:700;margin-bottom:4px">1. What Kwentado Is</p>
+      <p style="margin-bottom:12px">Kwentado is a personal, self-managed finance tracker for recording income, expenses, wallet balances (e.g. GCash, Maya, Cash on Hand), loans, and savings goals that you enter yourself. It is a personal/academic project, currently under active development.</p>
+
+      <p style="font-weight:700;margin-bottom:4px">2. What Kwentado Is Not</p>
+      <p style="margin-bottom:12px">Kwentado is <b>not</b> a bank, e-wallet, remittance provider, lending company, payment processor, or financial institution. It does not move, hold, transmit, or have any connection to your actual money, bank accounts, or e-wallet accounts. All wallet balances and loan records are figures you type in for your own reference only. Nothing in the App constitutes financial, investment, tax, or legal advice, and any devotional or scripture content included is for personal encouragement only, not professional or pastoral counsel.</p>
+
+      <p style="font-weight:700;margin-bottom:4px">3. Your Data Stays on Your Device</p>
+      <p style="margin-bottom:12px">All information you enter is stored locally in your browser's storage (localStorage) on the device you're using. Kwentado has no server or backend — the developer does not collect, transmit, receive, view, or have any ability to access, recover, or restore your data. No account information is sent anywhere outside your browser.</p>
+
+      <p style="font-weight:700;margin-bottom:4px">4. You Are Responsible for Backups</p>
+      <p style="margin-bottom:12px">Because your data lives only in this browser, it can be permanently lost if you clear your browsing data/cache, use private/incognito mode, switch browsers or devices, uninstall or reset the browser, or if local storage becomes corrupted. Kwentado provides a manual Backup/Export feature (Settings). You are solely responsible for creating and safekeeping your own backups; the developer is not responsible for any data loss.</p>
+
+      <p style="font-weight:700;margin-bottom:4px">5. PIN Lock Is a Convenience Feature Only</p>
+      <p style="margin-bottom:12px">The 4-digit PIN restricts casual access to the App on your device. It is <b>not</b> encryption and is not equivalent to bank-grade security. Anyone with sufficient technical access to your device or browser storage may be able to view or alter the underlying data. Do not treat the PIN as a guarantee of security.</p>
+
+      <p style="font-weight:700;margin-bottom:4px">6. No Warranty</p>
+      <p style="margin-bottom:12px">Kwentado is provided "as is" and "as available," without warranties of any kind, express or implied, including accuracy, reliability, or fitness for a particular purpose. As an evolving student/personal project, it may contain bugs, incomplete features, or occasional errors in calculations, and features or branding may change over time.</p>
+
+      <p style="font-weight:700;margin-bottom:4px">7. Limitation of Liability</p>
+      <p style="margin-bottom:12px">To the fullest extent permitted by law, the developer shall not be liable for any financial decisions you make based on information in the App, nor for any direct, indirect, incidental, or consequential loss — including loss of data or loss arising from reliance on figures recorded in the App.</p>
+
+      <p style="font-weight:700;margin-bottom:4px">8. Eligibility</p>
+      <p style="margin-bottom:12px">Kwentado is intended for your own personal, individual use. If you are a minor, please use the App only with the awareness and consent of a parent or guardian.</p>
+
+      <p style="font-weight:700;margin-bottom:4px">9. Changes to These Terms</p>
+      <p style="margin-bottom:12px">These terms may be updated as the App develops. Continued use of the App after an update constitutes acceptance of the revised terms.</p>
+
+      <p style="font-weight:700;margin-bottom:4px">10. Ending Your Use</p>
+      <p style="margin-bottom:0">You may stop using the App at any time and permanently delete all locally stored data via Settings → Clear All Data. This action cannot be undone.</p>
+      <p style="margin:16px 0 0;padding-top:12px;border-top:1px dashed var(--border2);color:var(--muted);font-size:11.5px;text-align:center">— End of document —</p>
+    </div>
+
+    <div id="terms-scroll-hint" style="display:flex;align-items:center;gap:6px;justify-content:center;font-size:11.5px;color:var(--amber);margin-bottom:12px;font-weight:500">
+      <span>↓</span><span>Scroll to the end to unlock the checkbox</span>
+    </div>
+
+    <label id="terms-agree-label" style="display:flex;align-items:flex-start;gap:9px;cursor:not-allowed;margin-bottom:16px;text-align:left;opacity:.45;transition:opacity .2s">
+      <span class="cbox-wrap">
+        <input type="checkbox" id="terms-agree-check" disabled onchange="document.getElementById('terms-continue-btn').disabled=!this.checked">
+        <span class="cbox-box"><svg viewBox="0 0 16 16"><path d="M3.5 8.3L6.3 11.2L12.5 4.5"/></svg></span>
+      </span>
+      <span style="font-size:12.5px;color:var(--text);line-height:1.5">I have read and agree to the <b>Terms of Use &amp; Privacy Notice</b> above, and I understand my data is stored only on this device.</span>
+    </label>
+
+    <button id="terms-continue-btn" onclick="acceptTermsAndContinue()" disabled style="width:100%;background:var(--accent);color:#080808;border:none;padding:12px;border-radius:10px;font-family:var(--font-d);font-size:14px;font-weight:700;cursor:pointer;opacity:1">Agree &amp; Continue</button>
+    <div id="terms-error" class="pin-error" style="text-align:center"></div>
+  </div>
+
   <!-- STEP: REGISTER (new user) -->
   <div id="auth-register" class="pin-box" style="display:none">
     <div style="font-size:32px;margin-bottom:14px">👋</div>
-    <div class="pin-title">Welcome to <span style="color:var(--accent)">Money Things</span></div>
+    <div class="pin-title">Welcome to <span style="color:var(--accent)">Kwentado</span></div>
     <div class="pin-sub" style="margin-bottom:22px">Create your account to get started</div>
     <div style="text-align:left;width:100%;margin-bottom:14px">
       <label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:500;display:block;margin-bottom:6px">Your Name</label>
@@ -817,7 +895,7 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
     <div class="pin-error" id="reg-pin-error"></div>
     <div id="reg-confirm-wrap" style="display:none;margin-top:14px;text-align:left;width:100%">
       <label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:500;display:block;margin-bottom:6px">Confirm PIN</label>
-      <div class="pin-dots" style="justify-content:flex-start;gap:10px;margin-bottom:12px">
+      <div class="pin-dots" id="reg-confirm-dots" style="justify-content:flex-start;gap:10px;margin-bottom:12px">
         <div class="pin-dot" id="rpd2-0"></div><div class="pin-dot" id="rpd2-1"></div>
         <div class="pin-dot" id="rpd2-2"></div><div class="pin-dot" id="rpd2-3"></div>
       </div>
@@ -831,10 +909,64 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
     <div class="pin-error" id="reg-confirm-error"></div>
   </div>
 
+  <!-- STEP: SECURITY QUESTION SETUP (part of registration) -->
+  <div id="auth-secsetup" class="pin-box" style="display:none;max-width:380px">
+    <div style="font-size:32px;margin-bottom:14px">🛟</div>
+    <div class="pin-title">Set a Recovery Question</div>
+    <div class="pin-sub" style="margin-bottom:18px">Kwentado has no email or server, so this is the only way back in if you forget your PIN.</div>
+    <div style="text-align:left;width:100%;margin-bottom:14px">
+      <label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:500;display:block;margin-bottom:6px">Choose a Question</label>
+      <select id="secsetup-question" onchange="document.getElementById('secsetup-custom-wrap').style.display=this.value==='__custom__'?'block':'none'" style="width:100%;padding:11px 14px;font-size:13.5px;border-radius:10px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);outline:none;font-family:var(--font-b)">
+        <option value="What was the name of your first pet?">What was the name of your first pet?</option>
+        <option value="What elementary school did you attend?">What elementary school did you attend?</option>
+        <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+        <option value="What city were you born in?">What city were you born in?</option>
+        <option value="What was your childhood nickname?">What was your childhood nickname?</option>
+        <option value="What is your favorite food?">What is your favorite food?</option>
+        <option value="__custom__">Write my own question…</option>
+      </select>
+    </div>
+    <div id="secsetup-custom-wrap" style="display:none;text-align:left;width:100%;margin-bottom:14px">
+      <label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:500;display:block;margin-bottom:6px">Your Question</label>
+      <input type="text" id="secsetup-custom-q" placeholder="e.g. What was my first laptop brand?" style="width:100%;padding:11px 14px;font-size:13.5px;border-radius:10px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);outline:none;font-family:var(--font-b)" maxlength="80">
+    </div>
+    <div style="text-align:left;width:100%;margin-bottom:8px">
+      <label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:500;display:block;margin-bottom:6px">Your Answer</label>
+      <input type="text" id="secsetup-answer" placeholder="Something only you'd know" style="width:100%;padding:11px 14px;font-size:13.5px;border-radius:10px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);outline:none;font-family:var(--font-b)" maxlength="60">
+    </div>
+    <div style="font-size:11px;color:var(--muted2);text-align:left;width:100%;margin-bottom:16px">Answers aren't case-sensitive. Pick something memorable, since this is stored only on this device, not encrypted.</div>
+    <div class="pin-error" id="secsetup-error"></div>
+    <button class="btn btn-primary" style="width:100%;margin-top:4px" onclick="finishRegistrationWithSecurity()">Save &amp; Finish Setup</button>
+    <button class="btn btn-ghost btn-sm" style="margin-top:10px" onclick="skipSecuritySetup()">Skip for now</button>
+  </div>
+
+  <!-- STEP: FORGOT PIN (recovery) -->
+  <div id="auth-forgot" class="pin-box" style="display:none;max-width:380px">
+    <div style="font-size:32px;margin-bottom:14px">🔓</div>
+    <div id="forgot-has-q-view">
+      <div class="pin-title">Recover Access</div>
+      <div class="pin-sub" id="forgot-question-text" style="margin-bottom:18px">—</div>
+      <div style="text-align:left;width:100%;margin-bottom:8px">
+        <label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:500;display:block;margin-bottom:6px">Your Answer</label>
+        <input type="text" id="forgot-answer-input" placeholder="Type your answer" style="width:100%;padding:11px 14px;font-size:13.5px;border-radius:10px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);outline:none;font-family:var(--font-b)" maxlength="60" onkeydown="if(event.key==='Enter')verifySecurityAnswer()">
+      </div>
+      <div class="pin-error" id="forgot-error"></div>
+      <button class="btn btn-primary" style="width:100%;margin-top:6px" onclick="verifySecurityAnswer()">Verify &amp; Reset PIN</button>
+    </div>
+    <div id="forgot-no-q-view" style="display:none">
+      <div class="pin-title" style="color:var(--amber)">No Recovery Question Set</div>
+      <div class="pin-sub" style="margin-bottom:16px">This account didn't set up a recovery question, so there's no way to verify it's you and reset just the PIN. Your only option is to clear all data and start over.</div>
+      <div style="font-size:11px;color:var(--amber);text-align:left;width:100%;margin-bottom:12px">⚠ This permanently deletes your income, expenses, loans, goals, and wallet balances, and resets the account so you can register again.</div>
+      <div class="pin-error" id="forgot-noq-error"></div>
+      <button class="btn btn-primary" style="width:100%;margin-top:4px;background:var(--red)" onclick="clearAndResetAccount()">Clear All Data &amp; Start Over</button>
+    </div>
+    <button class="btn btn-ghost btn-sm" style="margin-top:14px" onclick="showPinScreen()">← Back to PIN</button>
+  </div>
+
   <!-- STEP: PIN LOCK (returning user) -->
   <div id="auth-pin" class="pin-box" style="display:none">
-    <div style="font-size:32px;margin-bottom:14px">🔐</div>
-    <div class="pin-title">Money <span style="color:var(--accent)">Things</span></div>
+    <div style="width:56px;height:56px;margin:0 auto 14px;background:linear-gradient(135deg,rgba(168,224,56,.18),rgba(168,224,56,.07));border:1px solid rgba(168,224,56,.3);border-radius:14px;display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="3" width="12" height="18" rx="2.2" stroke="var(--accent)" stroke-width="1.7"/><circle cx="6" cy="7.2" r="0.9" fill="var(--accent)"/><circle cx="6" cy="12" r="0.9" fill="var(--accent)"/><circle cx="6" cy="16.8" r="0.9" fill="var(--accent)"/><path d="M9.3 12.6L11.3 14.9L15.2 10" stroke="var(--accent)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="pin-title">Kwen<span style="color:var(--accent)">tado</span></div>
     <div class="pin-sub" id="pin-sub" style="margin-bottom:6px">Enter your PIN to continue</div>
     <div id="pin-welcome-name" style="font-family:var(--font-d);font-size:18px;font-weight:700;margin-bottom:22px;color:var(--text)"></div>
     <div class="pin-dots" id="pin-dots">
@@ -848,6 +980,7 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
       <div class="pin-key empty"></div><div class="pin-key" onclick="pinKey('0')">0</div><div class="pin-key del" onclick="pinBackspace()">⌫</div>
     </div>
     <div class="pin-error" id="pin-error"></div>
+    <button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="showForgotPin()">Forgot PIN?</button>
   </div>
 
   <!-- STEP: PIN SETUP (changing/setting PIN from settings) -->
@@ -893,9 +1026,9 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
 <!-- WELCOME SPLASH -->
 <div id="welcome-splash" style="position:fixed;inset:0;background:var(--bg);z-index:1000;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:30px">
   <div style="max-width:480px;width:100%;text-align:center">
-    <div style="width:56px;height:56px;background:linear-gradient(135deg,rgba(180,242,101,.18),rgba(180,242,101,.06));border:1px solid rgba(180,242,101,.3);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 20px;box-shadow:0 0 40px rgba(180,242,101,.12)">💵</div>
-    <div style="font-family:var(--font-d);font-size:26px;font-weight:700;margin-bottom:4px">Money <span style="color:var(--accent)">Things</span></div>
-    <div style="font-size:12px;color:var(--muted);margin-bottom:36px">Personal Finance Tracker · v1.27</div>
+    <div style="width:56px;height:56px;background:linear-gradient(135deg,rgba(180,242,101,.18),rgba(180,242,101,.06));border:1px solid rgba(180,242,101,.3);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;box-shadow:0 0 40px rgba(180,242,101,.12)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="3" width="12" height="18" rx="2.2" stroke="var(--accent)" stroke-width="1.7"/><circle cx="6" cy="7.2" r="0.9" fill="var(--accent)"/><circle cx="6" cy="12" r="0.9" fill="var(--accent)"/><circle cx="6" cy="16.8" r="0.9" fill="var(--accent)"/><path d="M9.3 12.6L11.3 14.9L15.2 10" stroke="var(--accent)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div style="font-family:var(--font-d);font-size:26px;font-weight:700;margin-bottom:4px">Kwen<span style="color:var(--accent)">tado</span></div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:36px">Personal Finance Tracker · v1.45</div>
     <div style="background:linear-gradient(135deg,var(--surface) 0%,var(--surface2) 100%);border:1px solid rgba(180,242,101,.18);border-radius:16px;padding:26px 28px;margin-bottom:28px;position:relative;overflow:hidden">
       <div style="position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:radial-gradient(circle,rgba(180,242,101,.1) 0%,transparent 70%);pointer-events:none"></div>
       <div style="font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:rgba(180,242,101,.5);font-weight:600;margin-bottom:14px">✝ Word for Today</div>
@@ -934,8 +1067,8 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
 <nav class="sidebar">
   <div class="sb-top">
     <div class="logo">
-      <div class="logo-mark">💵</div>
-      <div class="logo-text">Money <span>Things</span></div>
+      <div class="logo-mark"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="3" width="12" height="18" rx="2.2" stroke="var(--accent)" stroke-width="1.7"/><circle cx="6" cy="7.2" r="0.9" fill="var(--accent)"/><circle cx="6" cy="12" r="0.9" fill="var(--accent)"/><circle cx="6" cy="16.8" r="0.9" fill="var(--accent)"/><path d="M9.3 12.6L11.3 14.9L15.2 10" stroke="var(--accent)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="logo-text">Kwen<span>tado</span></div>
     </div>
   </div>
   <div class="sb-nav">
@@ -1023,7 +1156,10 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
 
     <!-- HERO -->
     <div class="hero-card">
-      <div class="hero-label">Total Balance</div>
+      <div class="hero-topline">
+        <div class="hero-label">Total Balance</div>
+        <button type="button" class="eye-btn" id="eye-hero" onclick="toggleHideBalances()" title="Show/hide balances" aria-label="Show or hide balances"></button>
+      </div>
       <div class="hero-amount"><span class="hero-peso">₱</span><span id="hero-bal">0.00</span></div>
       <div class="hero-sub">Across all wallets · updated today</div>
       <div class="hero-wallets" id="hero-wallets-inner"></div>
@@ -1083,7 +1219,7 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
       </div>
       <div class="form-row">
         <div class="form-group"><label>Type</label>
-          <select id="inc-type"><option>Salary</option><option>Bonus</option><option>Other</option></select>
+          <select id="inc-type"><option>Salary</option><option>Bonus</option><option>Loan Repayment</option><option>Other</option></select>
         </div>
         <div class="form-group"><label>Amount (₱)</label><input type="number" id="inc-amount" placeholder="0.00" min="0" step="0.01"></div>
       </div>
@@ -1112,7 +1248,10 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
   <!-- ══ BALANCES ══ -->
   <div id="balances" class="section">
     <div class="page-hd">
-      <div class="page-title">Balances</div>
+      <div class="bal-hd">
+        <div class="page-title">Balances</div>
+        <button type="button" class="eye-btn" id="eye-balpage" onclick="toggleHideBalances()" title="Show/hide balances" aria-label="Show or hide balances"></button>
+      </div>
       <div class="page-sub">Manage your wallets and update balances anytime</div>
     </div>
     <div class="bal-cards" id="balance-cards"></div>
@@ -1239,9 +1378,13 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
       </div>
       <div class="form-row">
         <div class="form-group"><label>Type</label>
-          <select id="loan-type"><option value="payable">I owe them</option><option value="receivable">They owe me</option></select>
+          <select id="loan-type" onchange="onLoanTypeChange()"><option value="payable">I owe them</option><option value="receivable">They owe me</option></select>
         </div>
         <div class="form-group"><label>Due Date (optional)</label><input type="date" id="loan-due"></div>
+      </div>
+      <div class="form-group" id="loan-wallet-group" style="display:none">
+        <label>Where's the money coming from?</label>
+        <select id="loan-wallet"><option value="">— Not tracked in a wallet —</option></select>
       </div>
       <div class="form-group"><label>Note (optional)</label><input type="text" id="loan-note" placeholder="What's it for?"></div>
       <button class="btn btn-primary" onclick="addLoan()">
@@ -1317,9 +1460,47 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
     <div class="card" style="margin-bottom:14px">
       <div class="card-hd"><div class="card-title">🔐 PIN Lock</div></div>
       <div style="font-size:13px;color:var(--muted);margin-bottom:16px" id="pin-status-text">Add a 4-digit lock screen so a casual glance doesn't reveal your numbers. This isn't encryption — anyone with access to this device's browser storage can still read the underlying data.</div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px">
         <button class="btn btn-primary" onclick="showPinSetup()" id="pin-set-btn">Set / Change PIN</button>
         <button class="btn btn-danger" onclick="removePin()" id="pin-remove-btn" style="display:none">Remove PIN</button>
+      </div>
+      <div style="border-top:1px solid var(--border);padding-top:16px">
+        <div style="font-size:12px;color:var(--text);font-weight:600;margin-bottom:4px">🛟 Recovery Question</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:10px" id="secq-status-text">Not set — if you forget your PIN, you won't be able to recover this account.</div>
+        <button class="btn btn-ghost btn-sm" onclick="showSettingsSecUpdate()" id="secq-set-btn">Set Recovery Question</button>
+      </div>
+    </div>
+
+    <!-- RECOVERY QUESTION UPDATE MODAL -->
+    <div id="secq-update-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;padding:20px">
+      <div style="background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:24px 22px;max-width:380px;width:100%;box-shadow:var(--shadow-lg)">
+        <div class="card-title" style="margin-bottom:14px">Recovery Question</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:16px">Used only if you forget your PIN. Stored on this device, not encrypted.</div>
+        <div style="text-align:left;width:100%;margin-bottom:14px">
+          <label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:500;display:block;margin-bottom:6px">Choose a Question</label>
+          <select id="secq-modal-question" onchange="document.getElementById('secq-modal-custom-wrap').style.display=this.value==='__custom__'?'block':'none'" style="width:100%;padding:11px 14px;font-size:13.5px;border-radius:10px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);outline:none;font-family:var(--font-b)">
+            <option value="What was the name of your first pet?">What was the name of your first pet?</option>
+            <option value="What elementary school did you attend?">What elementary school did you attend?</option>
+            <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+            <option value="What city were you born in?">What city were you born in?</option>
+            <option value="What was your childhood nickname?">What was your childhood nickname?</option>
+            <option value="What is your favorite food?">What is your favorite food?</option>
+            <option value="__custom__">Write my own question…</option>
+          </select>
+        </div>
+        <div id="secq-modal-custom-wrap" style="display:none;text-align:left;width:100%;margin-bottom:14px">
+          <label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:500;display:block;margin-bottom:6px">Your Question</label>
+          <input type="text" id="secq-modal-custom-q" placeholder="e.g. What was my first laptop brand?" style="width:100%;padding:11px 14px;font-size:13.5px;border-radius:10px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);outline:none;font-family:var(--font-b)" maxlength="80">
+        </div>
+        <div style="text-align:left;width:100%;margin-bottom:8px">
+          <label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:500;display:block;margin-bottom:6px">Your Answer</label>
+          <input type="text" id="secq-modal-answer" placeholder="Something only you'd know" style="width:100%;padding:11px 14px;font-size:13.5px;border-radius:10px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);outline:none;font-family:var(--font-b)" maxlength="60">
+        </div>
+        <div class="pin-error" id="secq-modal-error" style="margin-bottom:6px"></div>
+        <div style="display:flex;gap:10px;margin-top:6px">
+          <button class="btn btn-ghost" style="flex:1" onclick="document.getElementById('secq-update-modal').style.display='none'">Cancel</button>
+          <button class="btn btn-primary" style="flex:1" onclick="saveSettingsSecQuestion()">Save</button>
+        </div>
       </div>
     </div>
 
@@ -1333,6 +1514,13 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
     <!-- DATA & PRIVACY -->
     <div class="card" style="margin-bottom:14px">
       <div class="card-hd"><div class="card-title">Data & Privacy</div></div>
+      <div style="display:flex;gap:10px;align-items:flex-start;background:var(--amber-bg);border:1px solid rgba(232,160,32,.35);border-radius:10px;padding:12px 14px;margin-bottom:16px">
+        <div style="font-size:17px;line-height:1;flex-shrink:0">⚠️</div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--amber);margin-bottom:3px">Everything is stored only on this device</div>
+          <div style="font-size:12px;color:var(--text);line-height:1.55">Nothing is synced to a server. If you clear your browser's site data or cache, uninstall the app, or switch devices/browsers, <strong>all your data will be lost — permanently.</strong> Download a backup regularly so you always have a copy you can restore from.</div>
+        </div>
+      </div>
       <div class="row">
         <div>
           <div style="font-size:13px;font-weight:500">Export Backup</div>
@@ -1375,8 +1563,8 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
     <!-- ABOUT -->
     <div class="card">
       <div class="card-hd"><div class="card-title">About</div></div>
-      <div class="row"><span class="lbl">App</span><span style="font-size:13px;font-weight:500">Money Things</span></div>
-      <div class="row"><span class="lbl">Version</span><span style="font-size:13px;color:var(--muted)">1.27</span></div>
+      <div class="row"><span class="lbl">App</span><span style="font-size:13px;font-weight:500">Kwentado</span></div>
+      <div class="row"><span class="lbl">Version</span><span style="font-size:13px;color:var(--muted)">1.45</span></div>
       <div class="row" style="border-bottom:none"><span class="lbl">Storage</span><span style="font-size:13px;color:var(--muted)">Local (your device only)</span></div>
     </div>
   </div>
@@ -1403,10 +1591,16 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
             <option>January</option><option>February</option><option>March</option><option>April</option><option>May</option><option>June</option><option>July</option><option>August</option><option>September</option><option>October</option><option>November</option><option>December</option>
           </select>
         </div>
-        <button class="btn btn-primary" style="width:100%" onclick="exportMonthlyReport()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-          Download Report
-        </button>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-primary" style="flex:1" onclick="exportMonthlyReport()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            Download Report
+          </button>
+          <button class="btn btn-ghost" style="flex:1" onclick="printReport()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6,9 6,2 18,2 18,9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Print Report
+          </button>
+        </div>
       </div>
       <div class="card">
         <div class="exp-card-hd">
@@ -1576,10 +1770,22 @@ function loadState(){
     goals:[],
     budgetLimit:0,
     pin:'',
-    nextId:0
+    nextId:0,
+    hideBalances:false,
+    termsAccepted:null,
+    securityQuestion:'',
+    securityAnswer:''
   };
   try{
-    const s=localStorage.getItem('moneyThingsV3');
+    let s=localStorage.getItem('kwentadoV1');
+    if(!s){
+      // one-time migration from the old "Money Things" storage key
+      const legacy=localStorage.getItem('moneyThingsV3');
+      if(legacy){
+        s=legacy;
+        localStorage.setItem('kwentadoV1',legacy);
+      }
+    }
     if(!s)return def;
     const parsed=JSON.parse(s);
     // Migrate old balances format to wallets array
@@ -1599,9 +1805,22 @@ function loadState(){
   }
   catch(e){return def;}
 }
-function save(){localStorage.setItem('moneyThingsV3',JSON.stringify(state));}
+function save(){localStorage.setItem('kwentadoV1',JSON.stringify(state));}
 const state=loadState();
 function fmt(n){return '₱'+Number(n).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});}
+const EYE_ON_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+const EYE_OFF_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0112 20c-7 0-11-8-11-8a21.8 21.8 0 015.06-6.06M9.9 4.24A10.94 10.94 0 0112 4c7 0 11 8 11 8a21.77 21.77 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+function fmtBal(n){return state.hideBalances?'₱ ••••••':fmt(n);}
+function toggleHideBalances(){state.hideBalances=!state.hideBalances;save();render();}
+function syncEyeButtons(){
+  const hidden=!!state.hideBalances;
+  ['eye-hero','eye-balpage'].forEach(id=>{
+    const b=document.getElementById(id);
+    if(!b)return;
+    b.innerHTML=hidden?EYE_OFF_ICON:EYE_ON_ICON;
+    b.classList.toggle('on',hidden);
+  });
+}
 function fmtDate(d){if(!d)return'';const p=d.split('-');if(p.length===3)return p[1]+'/'+p[2]+'/'+p[0].slice(2);return d;}
 function uid(){return ++state.nextId;}
 function clamp(v,lo,hi){return Math.min(hi,Math.max(lo,v));}
@@ -1640,7 +1859,7 @@ document.addEventListener('keydown',e=>{
 function closeShortcuts(e){if(e.target===document.getElementById('shortcuts-overlay'))document.getElementById('shortcuts-overlay').classList.remove('show');}
 function setExpFilter(val,el){expFilter=val;document.querySelectorAll('#exp-filter-bar .pill').forEach(p=>p.classList.remove('active'));el.classList.add('active');renderExpenses();}
 
-function render(){renderBalances();renderDash();renderIncome();renderExpenses();renderLoans();renderGoals();renderSettings();updateBadges();}
+function render(){renderBalances();renderDash();renderIncome();renderExpenses();renderLoans();renderGoals();renderSettings();updateBadges();syncEyeButtons();}
 function updateBadges(){
   document.getElementById('nav-badge-income').textContent=state.income.length;
   document.getElementById('nav-badge-expenses').textContent=state.expenses.length;
@@ -1692,11 +1911,11 @@ function renderDash(){
 
   // Hero
   const balStr=Number(totalBal).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});
-  document.getElementById('hero-bal').textContent=balStr;
+  document.getElementById('hero-bal').textContent=state.hideBalances?'••••••':balStr;
   // hero wallets - dynamic
   const hwContainer=document.getElementById('hero-wallets-inner');
   if(hwContainer){
-    hwContainer.innerHTML=(state.wallets||[]).map(w=>`<div class="hw"><div class="hw-name">${w.label}</div><div class="hw-val">${fmt(w.balance)}</div></div>`).join('');
+    hwContainer.innerHTML=(state.wallets||[]).map(w=>`<div class="hw"><div class="hw-name">${w.label}</div><div class="hw-val">${fmtBal(w.balance)}</div></div>`).join('');
   }
 
   // Stats
@@ -2079,7 +2298,7 @@ function renderBalances(){
         <div class="acct">${w.label}</div>
         ${wallets.length>1?`<button class="btn btn-ghost btn-sm" style="padding:3px 9px;font-size:11px;color:var(--muted);border-color:transparent" onclick="confirmRemoveWallet('${w.id}')" title="Remove wallet">✕ Remove</button>`:''}
       </div>
-      <div class="amount">${fmt(w.balance)}</div>
+      <div class="amount">${fmtBal(w.balance)}</div>
       <div class="upd">Updated ${fmtDate(w.updated)||'—'}</div>
       <div class="upd-form">
         <input type="number" id="bal-input-${w.id}" placeholder="New balance" min="0">
@@ -2089,9 +2308,9 @@ function renderBalances(){
   // Net worth rows
   const nwRows=document.getElementById('nw-rows');
   if(nwRows){
-    nwRows.innerHTML=wallets.map(w=>`<div class="row"><span class="lbl">${w.label}</span><span class="val ap">${fmt(w.balance)}</span></div>`).join('');
+    nwRows.innerHTML=wallets.map(w=>`<div class="row"><span class="lbl">${w.label}</span><span class="val ap">${fmtBal(w.balance)}</span></div>`).join('');
   }
-  document.getElementById('nw-total').textContent=fmt(total);
+  document.getElementById('nw-total').textContent=state.hideBalances?'₱ ••••••':fmt(total);
   // update expense source dropdown
   const expSrc=document.getElementById('exp-source');
   if(expSrc){
@@ -2105,6 +2324,13 @@ function renderBalances(){
     const cur=incWal.value;
     incWal.innerHTML=wallets.map(w=>`<option value="${w.id}">${w.label}</option>`).join('');
     if(wallets.find(w=>w.id===cur))incWal.value=cur;
+  }
+  // update loan wallet dropdown (Add Loan form)
+  const loanWal=document.getElementById('loan-wallet');
+  if(loanWal){
+    const cur=loanWal.value;
+    loanWal.innerHTML='<option value="">— Not tracked in a wallet —</option>'+wallets.map(w=>`<option value="${w.id}">${w.label}</option>`).join('');
+    if(cur==='' || wallets.find(w=>w.id===cur))loanWal.value=cur;
   }
 }
 
@@ -2209,10 +2435,12 @@ function renderLoans(){
           dueLine=`<span style="font-size:11px;color:var(--muted)">Due ${dueDisplay}</span>`;
         }
       }
+      const srcWallet=l.sourceWallet?(state.wallets||[]).find(w=>w.id===l.sourceWallet):null;
+      const walletLine=srcWallet?`<span style="font-size:11px;color:var(--muted)">${l.type==='payable'?'→ ':'from '}${esc(srcWallet.label)}</span>`:'';
       return `<div class="entry" style="flex-direction:column;align-items:stretch;gap:8px" id="loan-entry-${l.id}">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
         <div class="info"><div class="name" style="${l.settled?'opacity:.4':''}">${esc(l.name)}${l.note?' · '+esc(l.note):''}</div>
-        <div class="meta"><span class="badge ${l.settled?'badge-settled':l.type==='payable'?'badge-payable':'badge-receivable'}">${l.settled?'Settled':l.type==='payable'?'I owe':'Owes me'}</span>${statusBadge}${dueLine}</div></div>
+        <div class="meta"><span class="badge ${l.settled?'badge-settled':l.type==='payable'?'badge-payable':'badge-receivable'}">${l.settled?'Settled':l.type==='payable'?'I owe':'Owes me'}</span>${statusBadge}${dueLine}${walletLine}</div></div>
         <div class="right">
           <span class="amt ${l.settled?'aw':l.type==='payable'?'an':'ap'}" style="${l.settled?'opacity:.4':''}">${fmt(l.amount)}</span>
           <button class="btn btn-ghost btn-sm" onclick="openEditLoan(${l.id})">Edit</button>
@@ -2312,6 +2540,11 @@ function onExpCatChange(){
   }
 }
 
+function onLoanTypeChange(){
+  const type=document.getElementById('loan-type').value;
+  const grp=document.getElementById('loan-wallet-group');
+  if(grp)grp.style.display=type==='receivable'?'block':'none';
+}
 function deductWalletBalance(walletId,amount){
   const wallet=(state.wallets||[]).find(w=>w.id===walletId);
   if(wallet){
@@ -2399,17 +2632,34 @@ async function addExpense(){
   document.getElementById('exp-recurring').checked=false;
   save();render();toast('Expense logged'+(wallet?' — '+wallet.label+' updated':'')+' ✓');
 }
-function addLoan(){
+async function addLoan(){
   const name=document.getElementById('loan-name').value.trim();
   const amount=parseFloat(document.getElementById('loan-amount').value)||0;
   const type=document.getElementById('loan-type').value;
   const note=document.getElementById('loan-note').value.trim();
   const due=document.getElementById('loan-due').value||'';
+  const walletId=type==='receivable'?document.getElementById('loan-wallet').value:'';
   if(!name){toast('Enter a name','error');return;}
   if(!amount||amount<=0){toast('Enter a valid amount','error');return;}
-  state.loans.push({id:uid(),name,amount,type,note,due,settled:false});
-  document.getElementById('loan-name').value='';document.getElementById('loan-amount').value='';document.getElementById('loan-note').value='';document.getElementById('loan-due').value='';
-  save();render();toast('Loan added ✓');
+
+  const loan={id:uid(),name,amount,type,note,due,settled:false};
+  let walletMsg='';
+  if(walletId){
+    const wallet=(state.wallets||[]).find(w=>w.id===walletId);
+    if(wallet){
+      if(wallet.balance<amount){
+        const goNeg=await mtConfirm('This will put your '+wallet.label+' balance below zero. Continue?','⚠️','Continue','var(--amber)');
+        if(!goNeg)return;
+      }
+      wallet.balance=Math.round((wallet.balance-amount)*100)/100;
+      wallet.updated=today();
+      loan.sourceWallet=walletId;
+      walletMsg=' — '+wallet.label+' updated';
+    }
+  }
+  state.loans.push(loan);
+  document.getElementById('loan-name').value='';document.getElementById('loan-amount').value='';document.getElementById('loan-note').value='';document.getElementById('loan-due').value='';document.getElementById('loan-wallet').value='';
+  save();render();toast('Loan added'+walletMsg+' ✓');
 }
 function openEditLoan(id){
   const l=state.loans.find(x=>x.id===id);
@@ -2420,12 +2670,19 @@ function openEditLoan(id){
   document.getElementById('edit-loan-type').value=l.type;
   document.getElementById('edit-loan-due').value=l.due||'';
   document.getElementById('edit-loan-note').value=l.note||'';
+  document.getElementById('edit-loan-wallet').innerHTML='<option value="">— Not tracked in a wallet —</option>'+walletOptionsHTML(l.sourceWallet||'');
+  onEditLoanTypeChange();
   document.getElementById('edit-loan-modal').style.display='flex';
+}
+function onEditLoanTypeChange(){
+  const type=document.getElementById('edit-loan-type').value;
+  const grp=document.getElementById('edit-loan-wallet-group');
+  if(grp)grp.style.display=type==='receivable'?'block':'none';
 }
 function closeEditLoan(){
   document.getElementById('edit-loan-modal').style.display='none';
 }
-function saveEditLoan(){
+async function saveEditLoan(){
   const id=parseInt(document.getElementById('edit-loan-id').value);
   const l=state.loans.find(x=>x.id===id);
   if(!l)return;
@@ -2434,11 +2691,44 @@ function saveEditLoan(){
   const type=document.getElementById('edit-loan-type').value;
   const due=document.getElementById('edit-loan-due').value||'';
   const note=document.getElementById('edit-loan-note').value.trim();
+  const newWalletId=type==='receivable'?document.getElementById('edit-loan-wallet').value:'';
   if(!name){toast('Enter a name','error');return;}
   if(!amount||amount<=0){toast('Enter a valid amount','error');return;}
+
+  // Revert the wallet deduction this loan originally had (if any — only ever set for "they owe me" loans)
+  const oldWalletId=l.sourceWallet;
+  const oldAmount=l.amount;
+  if(oldWalletId){
+    const oldWallet=(state.wallets||[]).find(w=>w.id===oldWalletId);
+    if(oldWallet){
+      oldWallet.balance=Math.round((oldWallet.balance+oldAmount)*100)/100;
+      oldWallet.updated=today();
+    }
+  }
+  let walletMsg='';
+  if(newWalletId){
+    const newWallet=(state.wallets||[]).find(w=>w.id===newWalletId);
+    if(newWallet){
+      if(newWallet.balance<amount){
+        const goNeg=await mtConfirm('This will put your '+newWallet.label+' balance below zero. Continue?','⚠️','Continue','var(--amber)');
+        if(!goNeg){
+          // Undo the revert we just did, since we're bailing out
+          if(oldWalletId){
+            const oldWallet=(state.wallets||[]).find(w=>w.id===oldWalletId);
+            if(oldWallet){oldWallet.balance=Math.round((oldWallet.balance-oldAmount)*100)/100;oldWallet.updated=today();}
+          }
+          return;
+        }
+      }
+      newWallet.balance=Math.round((newWallet.balance-amount)*100)/100;
+      newWallet.updated=today();
+      walletMsg=' — '+newWallet.label+' updated';
+    }
+  }
   l.name=name;l.amount=amount;l.type=type;l.due=due;l.note=note;
+  if(newWalletId)l.sourceWallet=newWalletId;else delete l.sourceWallet;
   closeEditLoan();
-  save();render();toast('Loan updated ✓');
+  save();render();toast('Loan updated'+walletMsg+' ✓');
 }
 function updateBalance(walletId){
   const val=parseFloat(document.getElementById('bal-input-'+walletId).value);
@@ -2479,7 +2769,88 @@ function addWallet(){
 }
 function settle(id){
   const l=state.loans.find(x=>x.id===id);
-  if(l){l.settled=!l.settled;save();render();toast(l.settled?'Marked as settled ✓':'Marked as outstanding');}
+  if(!l)return;
+  if(l.settled){undoSettle(id);}
+  else{openSettleLoan(id);}
+}
+function openSettleLoan(id){
+  const l=state.loans.find(x=>x.id===id);
+  if(!l)return;
+  if(!(state.wallets||[]).length){toast('Add a wallet first','error');return;}
+  document.getElementById('settle-loan-id').value=l.id;
+  document.getElementById('settle-loan-label').textContent=(l.type==='payable'?'Paying off ':'Receiving payment from ')+l.name+' — '+fmt(l.amount);
+  document.getElementById('settle-loan-wallet').innerHTML=walletOptionsHTML(state.wallets[0].id);
+  document.getElementById('settle-loan-date').value=today();
+  document.getElementById('settle-loan-note').value='';
+  document.getElementById('settle-loan-modal').style.display='flex';
+}
+function closeSettleLoan(){
+  document.getElementById('settle-loan-modal').style.display='none';
+}
+async function confirmSettleLoan(){
+  const id=parseInt(document.getElementById('settle-loan-id').value);
+  const l=state.loans.find(x=>x.id===id);
+  if(!l){closeSettleLoan();return;}
+  if(l.settled){closeSettleLoan();return;} // already settled elsewhere (e.g. two tabs) — avoid double-applying
+  const walletId=document.getElementById('settle-loan-wallet').value;
+  const date=document.getElementById('settle-loan-date').value||today();
+  const note=document.getElementById('settle-loan-note').value.trim();
+  const wallet=(state.wallets||[]).find(w=>w.id===walletId);
+  if(!wallet){toast('Pick a wallet','error');return;}
+  if(!l.amount||l.amount<=0){toast('This loan has no outstanding amount','error');closeSettleLoan();return;}
+
+  if(l.type==='payable'){
+    if(wallet.balance<l.amount){
+      const goNeg=await mtConfirm('This will put your '+wallet.label+' balance below zero. Continue?','⚠️','Continue','var(--amber)');
+      if(!goNeg)return;
+    }
+    deductWalletBalance(walletId,l.amount);
+    const entry=pushExpense({desc:'Loan settled → '+l.name,amount:l.amount,cat:'loan-payment',source:walletId,date,note});
+    l.settledTxn={kind:'expense',id:entry.id};
+  } else {
+    wallet.balance=Math.round((wallet.balance+l.amount)*100)/100;
+    wallet.updated=today();
+    const entryId=uid();
+    const [dy,dm,dd]=date.split('-').map(Number);
+    const dObj=new Date(dy,(dm||1)-1,dd||1);
+    state.income.push({id:entryId,month:dObj.toLocaleString('en-US',{month:'long'}),year:dy,type:'Loan Repayment',amount:l.amount,note:('From '+l.name+(note?' · '+note:'')),wallet:walletId,dateAdded:date});
+    l.settledTxn={kind:'income',id:entryId};
+  }
+  l.settledWallet=walletId;
+  l.settledDate=date;
+  l.settled=true;
+  closeSettleLoan();
+  save();render();
+  toast('Loan settled — '+wallet.label+' updated ✓');
+}
+async function undoSettle(id){
+  const l=state.loans.find(x=>x.id===id);
+  if(!l)return;
+  if(l.settledTxn){
+    const ok=await mtConfirm('This will reverse the linked '+(l.settledTxn.kind==='expense'?'expense':'income')+' entry and restore the wallet balance. Continue?','↩️','Undo Settle','var(--amber)');
+    if(!ok)return;
+    if(l.settledTxn.kind==='expense'){
+      const txn=state.expenses.find(e=>e.id===l.settledTxn.id);
+      const txnAmt=txn?txn.amount:l.amount; // use the entry's live amount/wallet in case it was edited since settling
+      const wallet=(state.wallets||[]).find(w=>w.id===(txn?txn.source:l.settledWallet));
+      state.expenses=state.expenses.filter(e=>e.id!==l.settledTxn.id);
+      if(wallet){wallet.balance=Math.round((wallet.balance+txnAmt)*100)/100;wallet.updated=today();}
+    } else {
+      const txn=state.income.find(e=>e.id===l.settledTxn.id);
+      const txnAmt=txn?txn.amount:l.amount;
+      const wallet=(state.wallets||[]).find(w=>w.id===(txn?txn.wallet:l.settledWallet));
+      state.income=state.income.filter(e=>e.id!==l.settledTxn.id);
+      if(wallet){wallet.balance=Math.round((wallet.balance-txnAmt)*100)/100;wallet.updated=today();}
+    }
+    delete l.settledTxn;delete l.settledWallet;delete l.settledDate;
+    l.settled=false;
+    save();render();
+    toast('Marked as outstanding — balance reverted');
+    return;
+  }
+  l.settled=false;
+  save();render();
+  toast('Marked as outstanding');
 }
 function adjustLoan(id,mode){
   const inp=document.getElementById('adj-'+id);
@@ -2499,7 +2870,9 @@ function adjustLoan(id,mode){
   save();render();
 }
 async function del(type,id){
-  const ok=await mtConfirm('Remove this entry?','🗑️','Remove','var(--red)');
+  const targetLoan=type==='loans'?state.loans.find(x=>x.id===id):null;
+  const willUnwind=type==='loans'&&targetLoan&&(targetLoan.settledTxn||targetLoan.sourceWallet);
+  const ok=await mtConfirm(willUnwind?'This loan is linked to a wallet. Removing it will also reverse that balance change. Continue?':'Remove this entry?','🗑️','Remove','var(--red)');
   if(!ok)return;
   // If removing income, reverse the wallet balance
   if(type==='income'){
@@ -2515,6 +2888,37 @@ async function del(type,id){
     if(entry&&entry.source){
       const w=(state.wallets||[]).find(w=>w.id===entry.source);
       if(w){w.balance=Math.round((w.balance+entry.amount)*100)/100;w.updated=today();}
+    }
+  }
+  // If this entry is the linked transaction for a settled loan, unlink it so a later
+  // "Undo" on that loan doesn't try to reverse a balance change that's already been undone here.
+  if(type==='income'||type==='expenses'){
+    const kind=type==='income'?'income':'expense';
+    const linkedLoan=state.loans.find(l=>l.settledTxn&&l.settledTxn.kind===kind&&l.settledTxn.id===id);
+    if(linkedLoan){delete linkedLoan.settledTxn;delete linkedLoan.settledWallet;delete linkedLoan.settledDate;}
+  }
+  // If removing a loan, unwind BOTH its original lend/borrow wallet effect AND any settle-flow repayment
+  if(type==='loans'&&targetLoan){
+    // Reverse the original wallet deduction/addition made when the loan was created (or last edited)
+    if(targetLoan.sourceWallet){
+      const w=(state.wallets||[]).find(w=>w.id===targetLoan.sourceWallet);
+      if(w){w.balance=Math.round((w.balance+(targetLoan.type==='receivable'?targetLoan.amount:-targetLoan.amount))*100)/100;w.updated=today();}
+    }
+    // Reverse the settle-flow repayment, if this loan was settled that way
+    if(targetLoan.settledTxn){
+      if(targetLoan.settledTxn.kind==='expense'){
+        const txn=state.expenses.find(e=>e.id===targetLoan.settledTxn.id);
+        const txnAmt=txn?txn.amount:targetLoan.amount;
+        const w=(state.wallets||[]).find(w=>w.id===(txn?txn.source:targetLoan.settledWallet));
+        state.expenses=state.expenses.filter(e=>e.id!==targetLoan.settledTxn.id);
+        if(w){w.balance=Math.round((w.balance+txnAmt)*100)/100;w.updated=today();}
+      } else {
+        const txn=state.income.find(e=>e.id===targetLoan.settledTxn.id);
+        const txnAmt=txn?txn.amount:targetLoan.amount;
+        const w=(state.wallets||[]).find(w=>w.id===(txn?txn.wallet:targetLoan.settledWallet));
+        state.income=state.income.filter(e=>e.id!==targetLoan.settledTxn.id);
+        if(w){w.balance=Math.round((w.balance-txnAmt)*100)/100;w.updated=today();}
+      }
     }
   }
   state[type]=state[type].filter(x=>x.id!==id);
@@ -2538,7 +2942,7 @@ function exportCSV(type){
 function backupData(){
   const backup=JSON.stringify(state,null,2);
   const d=new Date().toISOString().split('T')[0];
-  dlFile(backup,`money-things-backup-${d}.json`,'application/json');toast('Backup saved ✓');
+  dlFile(backup,`kwentado-backup-${d}.json`,'application/json');toast('Backup saved ✓');
 }
 function migrateBackup(parsed){
   // Convert old balances/balanceDates format to wallets array
@@ -2575,7 +2979,7 @@ function restoreData(){
 }
 
 /* FORMAL REPORT */
-function exportMonthlyReport(){
+function buildReportHTML(){
   const sel=document.getElementById('report-month').value;
   const isAll=sel==='all';
   const isYear=sel.startsWith('year-');
@@ -2692,7 +3096,7 @@ function exportMonthlyReport(){
 <body>
   <div class="report-header">
     <div>
-      <div class="report-brand">Money <span>Things</span></div>
+      <div class="report-brand">Kwen<span>tado</span></div>
       <div style="font-size:11px;color:#999;margin-top:3px">Personal Financial Report</div>
     </div>
     <div class="report-meta">
@@ -2728,16 +3132,30 @@ function exportMonthlyReport(){
   ${payTotal>0?`<div style="text-align:right;margin-top:6px;font-size:11px;color:#999">Total outstanding payable: <strong style="color:#dc2626">${fp(payTotal)}</strong></div>`:''}
 
   <div class="report-footer">
-    <span>Money Things v1.27 — Personal Finance Tracker</span>
+    <span>Kwentado v1.45 — Personal Finance Tracker</span>
     <span>Confidential · For personal use only</span>
   </div>
 
 </body>
 </html>`;
 
+  return {reportHTML,reportLabel};
+}
+function exportMonthlyReport(){
+  const {reportHTML,reportLabel}=buildReportHTML();
   const d=new Date().toISOString().split('T')[0];
   dlFile(reportHTML,`financial-report-${reportLabel.toLowerCase().replace(/\s+/g,'-')}-${d}.html`,'text/html');
   toast('Report downloaded ✓');
+}
+function printReport(){
+  const {reportHTML}=buildReportHTML();
+  const win=window.open('','_blank');
+  if(!win){toast('Please allow pop-ups to print the report','error');return;}
+  win.document.open();
+  win.document.write(reportHTML);
+  win.document.close();
+  setTimeout(()=>{try{win.focus();win.print();}catch(e){}},350);
+  toast('Opening print preview…');
 }
 
 /* ── GOALS ── */
@@ -2847,15 +3265,21 @@ function saveEditGoal(){
    AUTH & ACCOUNT SYSTEM
 ═══════════════════════════════════════ */
 
+/* ── AUTH SCREEN SWITCHER ── */
+function hideAllAuthScreens(){
+  ['auth-terms','auth-register','auth-secsetup','auth-forgot','auth-pin','auth-pinsetup','auth-clearconfirm'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.style.display='none';
+  });
+}
+
 /* ── REGISTRATION (new user) ── */
 let regPinBuf='', regPinFirst='', regPinPhase='set'; // 'set' or 'confirm'
 
 function showRegisterScreen(){
   document.getElementById('auth-overlay').style.display='flex';
+  hideAllAuthScreens();
   document.getElementById('auth-register').style.display='block';
-  document.getElementById('auth-pin').style.display='none';
-  document.getElementById('auth-pinsetup').style.display='none';
-  document.getElementById('auth-clearconfirm').style.display='none';
   regPinBuf=''; regPinPhase='set';
   updateRegDots();
 }
@@ -2896,19 +3320,14 @@ function regConfirmKey(k){
   if(regConfirmBuf.length===4){
     setTimeout(()=>{
       if(regConfirmBuf===regPinFirst){
-        // success — save user
-        const nm=document.getElementById('reg-username').value.trim();
-        state.username=nm;
-        state.pin=regPinFirst;
-        save();
-        document.getElementById('auth-overlay').style.display='none';
+        // PIN confirmed — hold username/pin, move to security question setup before finishing
+        pendingRegUsername=document.getElementById('reg-username').value.trim();
+        pendingRegPin=regPinFirst;
         regPinBuf=''; regConfirmBuf=''; regPinFirst=''; regPinPhase='set';
-        updateSidebarUsername();
-        if(!localStorage.getItem('mtTutDone')){showTutorial();}else{showSplash();}
-        toast('Welcome, '+nm+'! 🎉');
+        showSecSetupScreen();
       } else {
         // shake and reset confirm
-        shakeDotsEl('reg-pin-dots');
+        shakeDotsEl('reg-confirm-dots');
         document.getElementById('reg-confirm-error').textContent="PINs don't match. Start over.";
         regConfirmBuf=''; regPinBuf=''; regPinFirst=''; regPinPhase='set';
         updateRegConfirmDots();
@@ -2930,15 +3349,61 @@ function updateRegConfirmDots(){
   for(let i=0;i<4;i++){const d=document.getElementById('rpd2-'+i);if(d)d.className='pin-dot'+(i<regConfirmBuf.length?' filled':'');}
 }
 
+/* ── SECURITY QUESTION SETUP (registration step 2) ── */
+let pendingRegUsername='', pendingRegPin='';
+
+function showSecSetupScreen(){
+  document.getElementById('auth-overlay').style.display='flex';
+  hideAllAuthScreens();
+  document.getElementById('auth-secsetup').style.display='block';
+  document.getElementById('secsetup-question').value='What was the name of your first pet?';
+  document.getElementById('secsetup-custom-wrap').style.display='none';
+  document.getElementById('secsetup-custom-q').value='';
+  document.getElementById('secsetup-answer').value='';
+  document.getElementById('secsetup-error').textContent='';
+}
+
+function finalizeRegistration(question,answer){
+  state.username=pendingRegUsername;
+  state.pin=pendingRegPin;
+  state.securityQuestion=question||'';
+  state.securityAnswer=answer||'';
+  save();
+  document.getElementById('auth-overlay').style.display='none';
+  pendingRegUsername=''; pendingRegPin='';
+  updateSidebarUsername();
+  if(!localStorage.getItem('mtTutDone')){showTutorial();}else{showSplash();}
+  toast('Welcome, '+state.username+'! 🎉');
+}
+
+function finishRegistrationWithSecurity(){
+  const sel=document.getElementById('secsetup-question').value;
+  const question=sel==='__custom__'?document.getElementById('secsetup-custom-q').value.trim():sel;
+  const answer=document.getElementById('secsetup-answer').value.trim();
+  if(sel==='__custom__'&&!question){
+    document.getElementById('secsetup-error').textContent='Please write your custom question.';
+    return;
+  }
+  if(!answer){
+    document.getElementById('secsetup-error').textContent='Please enter an answer so you can recover your PIN later.';
+    return;
+  }
+  finalizeRegistration(question,answer.toLowerCase());
+}
+
+function skipSecuritySetup(){
+  const ok=window.confirm('Without a recovery question, you will NOT be able to recover your PIN if you forget it — your only option would be Clear All Data, which erases everything. Skip anyway?');
+  if(!ok)return;
+  finalizeRegistration('','');
+}
+
 /* ── PIN CHECK (returning user unlock) ── */
 let pinBuffer='';
 function showPinScreen(){
   pinBuffer='';
   document.getElementById('auth-overlay').style.display='flex';
-  document.getElementById('auth-register').style.display='none';
+  hideAllAuthScreens();
   document.getElementById('auth-pin').style.display='block';
-  document.getElementById('auth-pinsetup').style.display='none';
-  document.getElementById('auth-clearconfirm').style.display='none';
   document.getElementById('pin-welcome-name').textContent=state.username?'Hi, '+state.username+' 👋':'';
   document.getElementById('pin-error').textContent='';
   updatePinDots();
@@ -2964,16 +3429,61 @@ function pinKey(k){
 function pinBackspace(){pinBuffer=pinBuffer.slice(0,-1); updatePinDots();}
 function updatePinDots(){for(let i=0;i<4;i++){const d=document.getElementById('pd'+i);if(d)d.className='pin-dot'+(i<pinBuffer.length?' filled':'');}}
 
-/* ── PIN SETUP (change PIN from settings) ── */
+/* ── FORGOT PIN (recovery) ── */
+function showForgotPin(){
+  document.getElementById('auth-overlay').style.display='flex';
+  hideAllAuthScreens();
+  document.getElementById('auth-forgot').style.display='block';
+  const hasQ=!!state.securityQuestion;
+  document.getElementById('forgot-has-q-view').style.display=hasQ?'block':'none';
+  document.getElementById('forgot-no-q-view').style.display=hasQ?'none':'block';
+  if(hasQ){
+    document.getElementById('forgot-question-text').textContent=state.securityQuestion;
+    document.getElementById('forgot-answer-input').value='';
+    document.getElementById('forgot-error').textContent='';
+  } else {
+    document.getElementById('forgot-noq-error').textContent='';
+  }
+}
+
+function verifySecurityAnswer(){
+  const input=document.getElementById('forgot-answer-input').value.trim().toLowerCase();
+  const errEl=document.getElementById('forgot-error');
+  if(!input){errEl.textContent='Please type your answer.';return;}
+  if(input===String(state.securityAnswer||'').toLowerCase()){
+    pinRecoveryActive=true;
+    showPinSetup();
+  } else {
+    errEl.textContent="That doesn't match our records. Try again.";
+    document.getElementById('forgot-answer-input').value='';
+  }
+}
+
+function clearAndResetAccount(){
+  const errEl=document.getElementById('forgot-noq-error');
+  if(errEl)errEl.textContent='';
+  mtConfirm('This account has no recovery question, so there\'s no way to verify your PIN. This will permanently delete ALL your data (income, expenses, loans, goals, wallet balances) and reset the account so you can start fresh. This cannot be undone.','⚠️','Yes, Clear Everything','var(--red)').then(ok=>{
+    if(!ok)return;
+    state.income=[];state.expenses=[];state.loans=[];state.goals=[];state.budgetLimit=0;
+    state.wallets.forEach(w=>{w.balance=0;w.updated=today();});
+    state.username='';state.pin='';state.securityQuestion='';state.securityAnswer='';
+    save();
+    sessionStorage.removeItem('mtUnlocked');
+    document.getElementById('auth-overlay').style.display='none';
+    toast('Account reset. Please register again.');
+    initAuth();
+  });
+}
+
+/* ── PIN SETUP (change PIN from settings, or after recovery) ── */
 let setupPinBuf='', setupPinFirst='', setupPinPhase='set1';
+let pinRecoveryActive=false;
 function showPinSetup(){
   setupPinBuf=''; setupPinFirst=''; setupPinPhase='set1';
   document.getElementById('auth-overlay').style.display='flex';
-  document.getElementById('auth-register').style.display='none';
-  document.getElementById('auth-pin').style.display='none';
+  hideAllAuthScreens();
   document.getElementById('auth-pinsetup').style.display='block';
-  document.getElementById('auth-clearconfirm').style.display='none';
-  document.getElementById('pinsetup-sub').textContent=state.pin?'Enter a new 4-digit PIN':'Set a 4-digit PIN to protect your app';
+  document.getElementById('pinsetup-sub').textContent=pinRecoveryActive?'Create a new 4-digit PIN':(state.pin?'Enter a new 4-digit PIN':'Set a 4-digit PIN to protect your app');
   document.getElementById('pinsetup-error').textContent='';
   updateSetupDots();
 }
@@ -2989,14 +3499,23 @@ function setupPinKey(k){
         updateSetupDots();
       } else {
         if(setupPinBuf===setupPinFirst){
-          state.pin=setupPinBuf; save(); render();
-          document.getElementById('auth-overlay').style.display='none';
-          toast('PIN updated ✓');
+          state.pin=setupPinBuf; save();
+          if(pinRecoveryActive){
+            pinRecoveryActive=false;
+            document.getElementById('auth-overlay').style.display='none';
+            sessionStorage.setItem('mtUnlocked','1');
+            toast('PIN reset — welcome back! ✓');
+            showSplash();
+          } else {
+            render();
+            document.getElementById('auth-overlay').style.display='none';
+            toast('PIN updated ✓');
+          }
         } else {
           shakeDotsEl('pinsetup-dots');
           document.getElementById('pinsetup-error').textContent="PINs don't match. Try again.";
           setupPinBuf=''; setupPinPhase='set1'; setupPinFirst='';
-          document.getElementById('pinsetup-sub').textContent=state.pin?'Enter a new 4-digit PIN':'Set a 4-digit PIN';
+          document.getElementById('pinsetup-sub').textContent=pinRecoveryActive?'Create a new 4-digit PIN':(state.pin?'Enter a new 4-digit PIN':'Set a 4-digit PIN');
           updateSetupDots();
         }
       }
@@ -3005,7 +3524,17 @@ function setupPinKey(k){
 }
 function setupPinBackspace(){setupPinBuf=setupPinBuf.slice(0,-1); updateSetupDots();}
 function updateSetupDots(){for(let i=0;i<4;i++){const d=document.getElementById('spd'+i);if(d)d.className='pin-dot'+(i<setupPinBuf.length?' filled':'');}}
-function cancelPinSetup(){document.getElementById('auth-overlay').style.display='none'; setupPinBuf=''; setupPinPhase='set1'; setupPinFirst='';}
+function cancelPinSetup(){
+  const wasRecovery=pinRecoveryActive;
+  pinRecoveryActive=false; setupPinBuf=''; setupPinPhase='set1'; setupPinFirst='';
+  if(wasRecovery){
+    // Cancelling out of a PIN reset (recovery flow) must NOT grant access —
+    // send the user back to the locked PIN screen instead of hiding the overlay.
+    showPinScreen();
+    return;
+  }
+  document.getElementById('auth-overlay').style.display='none';
+}
 
 /* ── CLEAR ALL DATA PIN CONFIRM ── */
 let clearPinBuf='';
@@ -3017,9 +3546,7 @@ function showClearConfirm(){
   }
   clearPinBuf='';
   document.getElementById('auth-overlay').style.display='flex';
-  document.getElementById('auth-register').style.display='none';
-  document.getElementById('auth-pin').style.display='none';
-  document.getElementById('auth-pinsetup').style.display='none';
+  hideAllAuthScreens();
   document.getElementById('auth-clearconfirm').style.display='block';
   document.getElementById('clear-pin-error').textContent='';
   updateClearDots();
@@ -3062,8 +3589,12 @@ function shakeDots(){shakeDotsEl('pin-dots');}
 
 /* ── INIT AUTH ── */
 function initAuth(){
-  // New user: no username set
+  // New user: no username set — must accept Terms & Privacy Notice first
   if(!state.username){
+    if(!state.termsAccepted){
+      showTermsScreen();
+      return;
+    }
     showRegisterScreen();
     return;
   }
@@ -3075,6 +3606,53 @@ function initAuth(){
   // Returning user, no PIN or already unlocked: show splash
   sessionStorage.setItem('mtUnlocked','1');
   showSplash();
+}
+
+function showTermsScreen(){
+  document.getElementById('auth-overlay').style.display='flex';
+  hideAllAuthScreens();
+  document.getElementById('auth-terms').style.display='block';
+  const chk=document.getElementById('terms-agree-check');
+  const btn=document.getElementById('terms-continue-btn');
+  const lbl=document.getElementById('terms-agree-label');
+  const hint=document.getElementById('terms-scroll-hint');
+  const box=document.getElementById('terms-scroll');
+  if(chk){chk.checked=false;chk.disabled=true;chk.style.cursor='not-allowed';}
+  if(btn)btn.disabled=true;
+  if(lbl){lbl.style.opacity='.45';lbl.style.cursor='not-allowed';}
+  if(hint)hint.style.display='flex';
+  const err=document.getElementById('terms-error');
+  if(err)err.textContent='';
+  if(box){
+    box.scrollTop=0;
+    box.onscroll=function(){
+      const reachedEnd=box.scrollTop+box.clientHeight>=box.scrollHeight-8;
+      if(reachedEnd&&chk&&chk.disabled){
+        chk.disabled=false;chk.style.cursor='pointer';
+        if(lbl){lbl.style.opacity='1';lbl.style.cursor='pointer';}
+        if(hint)hint.style.display='none';
+      }
+    };
+    // if the terms fit on-screen with no scrolling needed, unlock immediately
+    setTimeout(()=>{ if(box.scrollHeight<=box.clientHeight+8) box.onscroll(); },0);
+  }
+}
+
+function acceptTermsAndContinue(){
+  const chk=document.getElementById('terms-agree-check');
+  if(!chk||chk.disabled){
+    const err=document.getElementById('terms-error');
+    if(err)err.textContent='Please scroll through and read the full terms first.';
+    return;
+  }
+  if(!chk.checked){
+    const err=document.getElementById('terms-error');
+    if(err)err.textContent='Please check the box to confirm you agree before continuing.';
+    return;
+  }
+  state.termsAccepted={accepted:true,version:'1.0',date:new Date().toISOString()};
+  save();
+  showRegisterScreen();
 }
 
 function updateSidebarUsername(){
@@ -3100,6 +3678,18 @@ function renderSettings(){
       pinStatusEl.textContent='No PIN set. Tap below to protect your app with a 4-digit PIN.';
       if(pinRemoveBtn)pinRemoveBtn.style.display='none';
       if(pinSetBtn)pinSetBtn.textContent='Set PIN';
+    }
+  }
+  // Recovery question status
+  const secqStatusEl=document.getElementById('secq-status-text');
+  const secqSetBtn=document.getElementById('secq-set-btn');
+  if(secqStatusEl){
+    if(state.securityQuestion){
+      secqStatusEl.innerHTML='<span style="color:var(--accent);font-weight:600">✓ Recovery question set.</span> You can reset your PIN if you forget it.';
+      if(secqSetBtn)secqSetBtn.textContent='Update Recovery Question';
+    } else {
+      secqStatusEl.textContent='Not set — if you forget your PIN, you won\'t be able to recover this account.';
+      if(secqSetBtn)secqSetBtn.textContent='Set Recovery Question';
     }
   }
   // Account
@@ -3143,6 +3733,44 @@ async function removePin(){
   const ok=await mtConfirm('Remove PIN lock? Your app will no longer be protected.','🔓','Remove PIN','var(--amber)');
   if(!ok)return;
   state.pin='';save();render();toast('PIN removed');
+}
+function showSettingsSecUpdate(){
+  document.getElementById('secq-update-modal').style.display='flex';
+  const sel=document.getElementById('secq-modal-question');
+  const presets=[...sel.options].map(o=>o.value);
+  if(state.securityQuestion && presets.includes(state.securityQuestion)){
+    sel.value=state.securityQuestion;
+    document.getElementById('secq-modal-custom-wrap').style.display='none';
+  } else if(state.securityQuestion){
+    sel.value='__custom__';
+    document.getElementById('secq-modal-custom-wrap').style.display='block';
+    document.getElementById('secq-modal-custom-q').value=state.securityQuestion;
+  } else {
+    sel.value=presets[0];
+    document.getElementById('secq-modal-custom-wrap').style.display='none';
+    document.getElementById('secq-modal-custom-q').value='';
+  }
+  document.getElementById('secq-modal-answer').value='';
+  document.getElementById('secq-modal-error').textContent='';
+}
+function saveSettingsSecQuestion(){
+  const sel=document.getElementById('secq-modal-question').value;
+  const question=sel==='__custom__'?document.getElementById('secq-modal-custom-q').value.trim():sel;
+  const answer=document.getElementById('secq-modal-answer').value.trim();
+  if(sel==='__custom__'&&!question){
+    document.getElementById('secq-modal-error').textContent='Please write your custom question.';
+    return;
+  }
+  if(!answer){
+    document.getElementById('secq-modal-error').textContent='Please enter an answer.';
+    return;
+  }
+  state.securityQuestion=question;
+  state.securityAnswer=answer.toLowerCase();
+  save();
+  document.getElementById('secq-update-modal').style.display='none';
+  render();
+  toast('Recovery question saved ✓');
 }
 function restoreFromSettings(input){
   const file=input.files[0];if(!file)return;
@@ -3253,14 +3881,14 @@ document.addEventListener('touchend',e=>{
 const TUTORIAL_SLIDES=[
   {
     icon:'💵',
-    title:'Welcome to <span style="color:var(--accent)">Money Things</span>',
+    title:'Welcome to <span style="color:var(--accent)">Kwentado</span>',
     desc:'Your personal finance tracker — track income, expenses, wallets, loans, and savings goals all in one place.',
     tip:null
   },
   {
     icon:'👛',
     title:'Your <span style="color:var(--accent)">Wallets</span>',
-    desc:'Money Things tracks your balances across wallets like GCash, Maya, and Cash on Hand. Update them anytime from the <b>Balances</b> page.',
+    desc:'Kwentado tracks your balances across wallets like GCash, Maya, and Cash on Hand. Update them anytime from the <b>Balances</b> page.',
     tip:'💡 You can add or remove wallets in the Balances section.'
   },
   {
@@ -3361,6 +3989,7 @@ document.getElementById('exp-date').value=today();
 document.getElementById('topbar-date').textContent=new Date().toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'});
 populateYearDropdown();
 initTheme();
+onLoanTypeChange();
 // Hide splash initially — auth flow controls when to show it
 document.getElementById('welcome-splash').style.display='none';
 render();
@@ -3428,14 +4057,36 @@ window.logRecurring = function(templateId){
     </div>
     <div class="form-row">
       <div class="form-group"><label>Type</label>
-        <select id="edit-loan-type"><option value="payable">I owe them</option><option value="receivable">They owe me</option></select>
+        <select id="edit-loan-type" onchange="onEditLoanTypeChange()"><option value="payable">I owe them</option><option value="receivable">They owe me</option></select>
       </div>
       <div class="form-group"><label>Due Date (optional)</label><input type="date" id="edit-loan-due"></div>
+    </div>
+    <div class="form-group" id="edit-loan-wallet-group" style="display:none">
+      <label>Where's the money coming from?</label>
+      <select id="edit-loan-wallet"><option value="">— Not tracked in a wallet —</option></select>
     </div>
     <div class="form-group"><label>Note (optional)</label><input type="text" id="edit-loan-note" placeholder="What's it for?"></div>
     <div style="display:flex;gap:10px;margin-top:6px">
       <button class="btn btn-ghost" style="flex:1" onclick="closeEditLoan()">Cancel</button>
       <button class="btn btn-primary" style="flex:1" onclick="saveEditLoan()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETTLE LOAN MODAL -->
+<div id="settle-loan-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;padding:20px">
+  <div style="background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:24px 22px;max-width:360px;width:100%;box-shadow:var(--shadow-lg)">
+    <div class="card-title" style="margin-bottom:6px">Settle Loan</div>
+    <div id="settle-loan-label" style="font-size:13px;color:var(--muted);margin-bottom:16px"></div>
+    <input type="hidden" id="settle-loan-id">
+    <div class="form-group"><label>Wallet</label><select id="settle-loan-wallet"></select></div>
+    <div class="form-row">
+      <div class="form-group"><label>Date</label><input type="date" id="settle-loan-date"></div>
+      <div class="form-group"><label>Note (optional)</label><input type="text" id="settle-loan-note" placeholder="e.g. Paid via GCash"></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:6px">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeSettleLoan()">Cancel</button>
+      <button class="btn btn-primary" style="flex:1" onclick="confirmSettleLoan()">Confirm & Settle</button>
     </div>
   </div>
 </div>
@@ -3453,7 +4104,7 @@ window.logRecurring = function(templateId){
     </div>
     <div class="form-row">
       <div class="form-group"><label>Type</label>
-        <select id="edit-inc-type"><option>Salary</option><option>Bonus</option><option>Other</option></select>
+        <select id="edit-inc-type"><option>Salary</option><option>Bonus</option><option>Loan Repayment</option><option>Other</option></select>
       </div>
       <div class="form-group"><label>Amount (₱)</label><input type="number" id="edit-inc-amount" placeholder="0.00" min="0" step="0.01"></div>
     </div>
