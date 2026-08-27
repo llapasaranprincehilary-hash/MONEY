@@ -804,6 +804,23 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
 .cbox-wrap input[type="checkbox"]:checked ~ .cbox-box svg{stroke-dashoffset:0}
 
 </style>
+<!-- Firebase (Cloud Sync) — compat SDK, no build step needed -->
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBMkUBMpcKy7kMEReov933RIJsKMztB9NA",
+    authDomain: "moneythings-94584.firebaseapp.com",
+    projectId: "moneythings-94584",
+    storageBucket: "moneythings-94584.firebasestorage.app",
+    messagingSenderId: "851470533910",
+    appId: "1:851470533910:web:5fbd6961579f428f46fc37"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const fbAuth = firebase.auth();
+  const fbDb = firebase.firestore();
+</script>
 </head>
 <body>
 <div class="shell">
@@ -1550,6 +1567,17 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
       </div>
     </div>
 
+    <!-- CLOUD SYNC -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-hd"><div class="card-title">☁️ Cloud Sync</div></div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:16px" id="cloud-status-text">Not connected. Sign in to sync your data across devices — everything stays local until you connect.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <button class="btn btn-primary" onclick="cloudSignIn()" id="cloud-signin-btn">Sign in with Google</button>
+        <button class="btn btn-danger" onclick="cloudSignOut()" id="cloud-signout-btn" style="display:none">Sign Out</button>
+        <span id="cloud-sync-spinner" style="display:none;font-size:12px;color:var(--muted)">Syncing…</span>
+      </div>
+    </div>
+
     <!-- ACCOUNT -->
     <div class="card" style="margin-bottom:14px">
       <div class="card-hd"><div class="card-title">👤 Account</div></div>
@@ -1808,7 +1836,94 @@ function loadState(){
   }
   catch(e){return def;}
 }
-function save(){localStorage.setItem('kwentadoV1',JSON.stringify(state));}
+function save(){
+  localStorage.setItem('kwentadoV1',JSON.stringify(state));
+  queueCloudPush();
+}
+
+// ── Cloud Sync (Firebase) ──────────────────────────────────
+let cloudUser=null;
+let cloudSyncTimer=null;
+
+function queueCloudPush(){
+  if(!cloudUser)return;
+  clearTimeout(cloudSyncTimer);
+  cloudSyncTimer=setTimeout(pushToCloud,800);
+}
+
+function setCloudSpinner(on){
+  const s=document.getElementById('cloud-sync-spinner');
+  if(s)s.style.display=on?'inline':'none';
+}
+
+async function pushToCloud(){
+  if(!cloudUser)return;
+  setCloudSpinner(true);
+  try{
+    await fbDb.collection('users').doc(cloudUser.uid).set({data:JSON.stringify(state),updatedAt:Date.now()});
+  }catch(e){
+    console.error('Cloud sync failed',e);
+    toast('Cloud sync failed — check your connection','error');
+  }
+  setCloudSpinner(false);
+}
+
+async function pullFromCloud(uid){
+  setCloudSpinner(true);
+  try{
+    const doc=await fbDb.collection('users').doc(uid).get();
+    if(doc.exists && doc.data().data){
+      const useRemote=confirm('Cloud data found for this account.\n\nOK = load cloud data (replaces what\'s on this device)\nCancel = keep this device\'s data (uploads it to the cloud instead)');
+      if(useRemote){
+        const remote=JSON.parse(doc.data().data);
+        Object.keys(state).forEach(k=>delete state[k]);
+        Object.assign(state,remote);
+        localStorage.setItem('kwentadoV1',JSON.stringify(state));
+        render();
+        toast('☁️ Cloud data loaded');
+      }else{
+        await pushToCloud();
+        toast('This device\'s data uploaded to the cloud');
+      }
+    }else{
+      await pushToCloud();
+      toast('☁️ Connected — this device\'s data uploaded to the cloud');
+    }
+  }catch(e){
+    console.error(e);
+    toast('Could not reach cloud data','error');
+  }
+  setCloudSpinner(false);
+}
+
+function cloudSignIn(){
+  const provider=new firebase.auth.GoogleAuthProvider();
+  fbAuth.signInWithPopup(provider).catch(function(e){
+    console.error(e);
+    toast('Sign-in failed: '+e.message,'error');
+  });
+}
+
+function cloudSignOut(){
+  fbAuth.signOut();
+}
+
+fbAuth.onAuthStateChanged(function(user){
+  cloudUser=user;
+  const statusEl=document.getElementById('cloud-status-text');
+  const inBtn=document.getElementById('cloud-signin-btn');
+  const outBtn=document.getElementById('cloud-signout-btn');
+  if(user){
+    if(statusEl)statusEl.textContent='Connected as '+(user.email||user.displayName||'your account')+' — data syncs automatically across your devices.';
+    if(inBtn)inBtn.style.display='none';
+    if(outBtn)outBtn.style.display='';
+    pullFromCloud(user.uid);
+  }else{
+    if(statusEl)statusEl.textContent='Not connected. Sign in to sync your data across devices — everything stays local until you connect.';
+    if(inBtn)inBtn.style.display='';
+    if(outBtn)outBtn.style.display='none';
+  }
+});
 const state=loadState();
 function fmt(n){return '₱'+Number(n).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});}
 const EYE_ON_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
