@@ -1315,7 +1315,10 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
         <div class="form-group" style="display:flex;flex-direction:column;justify-content:flex-end">
           <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em;font-weight:500">Options</label>
           <div style="display:flex;align-items:center;gap:9px;cursor:pointer;padding:9px 12px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r-sm)" onclick="document.getElementById('exp-recurring').click()">
-            <input type="checkbox" id="exp-recurring" style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer;flex-shrink:0" onclick="event.stopPropagation()">
+            <span class="cbox-wrap" style="margin-top:0">
+              <input type="checkbox" id="exp-recurring" onclick="event.stopPropagation()">
+              <span class="cbox-box"><svg viewBox="0 0 16 16"><path d="M3.5 8.3L6.3 11.2L12.5 4.5"/></svg></span>
+            </span>
             <span style="font-size:13px;color:var(--text);cursor:pointer;user-select:none">↺ Recurring monthly</span>
           </div>
         </div>
@@ -2346,12 +2349,14 @@ function renderExpenses(){
     });
     var templates=[];
     var seen={};
-    state.expenses.forEach(function(e){
-      if(e.recurring && !seen[e.desc]){ seen[e.desc]=true; templates.push(e); }
-    });
+    for(var ti=state.expenses.length-1;ti>=0;ti--){
+      var te=state.expenses[ti];
+      if(te.recurring && !seen[te.desc]){ seen[te.desc]=true; templates.push(te); }
+    }
+    templates.reverse();
     if(templates.length){
       var rows=templates.map(function(e){
-        var wl=(state.wallets||[]).find(function(w){return w.id==e.source;});
+        var wl=(state.wallets||[]).find(function(w){return w.id===e.source;});
         var done=loggedSet.has(e.desc);
         var btn=done
           ? '<span style="font-size:12px;color:var(--accent);font-weight:600;white-space:nowrap">✓ Logged</span>'
@@ -3999,14 +4004,13 @@ initAuth();
 setTimeout(()=>{
   const now=new Date();
   const curMo=now.getMonth(),curYr=now.getFullYear();
-  // Use ID-based dedup: find recurring templates not yet logged this month
-  const recurrings=[...new Map(state.expenses.filter(e=>e.recurring).map(e=>[e.id,e])).values()];
-  const missing=recurrings.filter(template=>{
-    return !state.expenses.some(e=>{
-      const d=new Date(e.date);
-      return e.recurringTemplateId===template.id&&!isNaN(d)&&d.getMonth()===curMo&&d.getFullYear()===curYr;
-    });
-  });
+  // Dedup by description: each unique recurring expense name is one template
+  const recurringDescs=[...new Set(state.expenses.filter(e=>e.recurring).map(e=>e.desc))];
+  const loggedDescs=new Set(state.expenses.filter(e=>{
+    const d=new Date(e.date);
+    return e.recurring&&!isNaN(d)&&d.getMonth()===curMo&&d.getFullYear()===curYr;
+  }).map(e=>e.desc));
+  const missing=recurringDescs.filter(desc=>!loggedDescs.has(desc));
   if(missing.length){toast('↺ '+missing.length+' recurring expense'+(missing.length>1?'s':'')+' not yet logged — go to Expenses');}
 },1800);
 
@@ -4034,7 +4038,7 @@ window.logRecurring = function(templateId){
   var now=new Date(), cm=now.getMonth(), cy=now.getFullYear();
   var alreadyLogged=state.expenses.some(function(e){
     var d=new Date(e.date);
-    return e.recurringTemplateId===template.id && !isNaN(d) && d.getMonth()===cm && d.getFullYear()===cy;
+    return e.recurring && e.desc===template.desc && !isNaN(d) && d.getMonth()===cm && d.getFullYear()===cy;
   });
   if(alreadyLogged){ toast(template.desc+' already logged this month','error'); return; }
   var wallet=deductWalletBalance(template.source, template.amount);
