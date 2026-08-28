@@ -1178,6 +1178,9 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
         <div id="sidebar-username" style="font-size:12.5px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</div>
         <div style="font-size:10px;color:var(--muted2)">my account</div>
       </div>
+      <button onclick="authSignOut()" title="Log out" style="flex-shrink:0;width:28px;height:28px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s" onmouseover="this.style.background='var(--red)';this.style.color='#fff';this.style.borderColor='var(--red)'" onmouseout="this.style.background='transparent';this.style.color='var(--muted)';this.style.borderColor='var(--border2)'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
     </div>
     <div class="kbd-hint"><kbd class="kbd">?</kbd> show shortcuts</div>
   </div>
@@ -1830,8 +1833,8 @@ const CAT_LABELS={food:'🍜 Food',transport:'🚌 Transport',shopping:'🛍️ 
 let expFilter='all';
 
 function today(){return new Date().toISOString().split('T')[0];}
-function loadState(){
-  const def={
+function defaultState(){
+  return {
     username:'',
     wallets:[
       {id:'maya',label:'Maya',balance:0,updated:today()},
@@ -1850,6 +1853,9 @@ function loadState(){
     securityQuestion:'',
     securityAnswer:''
   };
+}
+function loadState(){
+  const def=defaultState();
   try{
     let s=localStorage.getItem('kwentadoV1');
     if(!s){
@@ -1980,10 +1986,15 @@ function updateAccountSettingsUI(){
 }
 
 function authSignOut(){
-  mtConfirm('Sign out of Kwentado on this device? Your data stays saved to your account in the cloud.','🚪','Sign Out','var(--red)').then(ok=>{
+  mtConfirm('Sign out of Kwentado on this device? Your data stays saved to your account in the cloud, and this device will reset to a clean app so someone else can use it.','🚪','Sign Out','var(--red)').then(ok=>{
     if(!ok)return;
     sessionStorage.removeItem('mtUnlocked');
     stateLoadedForUid=null;
+    // wipe this device's local copy so the next person gets a fresh app, not your leftover data
+    Object.keys(state).forEach(k=>delete state[k]);
+    Object.assign(state,defaultState());
+    localStorage.removeItem('kwentadoV1');
+    localStorage.removeItem('mtTutDone');
     fbAuth.signOut();
   });
 }
