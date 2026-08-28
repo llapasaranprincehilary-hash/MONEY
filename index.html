@@ -828,6 +828,43 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
 <!-- AUTH OVERLAY (login / register / PIN) -->
 <div id="auth-overlay" class="pin-overlay" style="display:none">
 
+  <!-- STEP: ACCOUNT LOGIN / REGISTER (entry point) -->
+  <div id="auth-login" class="pin-box" style="display:none;max-width:380px">
+    <div style="width:56px;height:56px;margin:0 auto 14px;background:linear-gradient(135deg,rgba(168,224,56,.18),rgba(168,224,56,.07));border:1px solid rgba(168,224,56,.3);border-radius:14px;display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="3" width="12" height="18" rx="2.2" stroke="var(--accent)" stroke-width="1.7"/><circle cx="6" cy="7.2" r="0.9" fill="var(--accent)"/><circle cx="6" cy="12" r="0.9" fill="var(--accent)"/><circle cx="6" cy="16.8" r="0.9" fill="var(--accent)"/><path d="M9.3 12.6L11.3 14.9L15.2 10" stroke="var(--accent)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="pin-title">Kwen<span style="color:var(--accent)">tado</span></div>
+    <div class="pin-sub" style="margin-bottom:22px">Sign in to sync your data across devices</div>
+
+    <button class="btn btn-primary" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px" onclick="authGoogleSignIn()">
+      <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.9 32.9 29.4 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l6-6C34.5 5.5 29.5 3.5 24 3.5 12.7 3.5 3.5 12.7 3.5 24S12.7 44.5 24 44.5 44.5 35.3 44.5 24c0-1.2-.1-2.4-.9-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.7 18.9 13 24 13c3.1 0 5.8 1.1 8 3l6-6C34.5 6.5 29.5 4.5 24 4.5c-7.8 0-14.5 4.4-17.7 10.2z"/><path fill="#4CAF50" d="M24 44.5c5.4 0 10.3-1.9 14-5.1l-6.5-5.4C29.5 35.6 26.9 36.5 24 36.5c-5.4 0-9.9-3.1-11.4-7.9l-6.6 5.1C9.4 40.1 16.1 44.5 24 44.5z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-1 3-3.1 5.5-6 7l6.5 5.4C39.8 37.4 44.5 31.4 44.5 24c0-1.2-.1-2.4-.9-3.5z"/></svg>
+      Continue with Google
+    </button>
+
+    <div style="display:flex;align-items:center;gap:10px;width:100%;margin:16px 0;color:var(--muted2);font-size:11px">
+      <div style="flex:1;height:1px;background:var(--border2)"></div>OR<div style="flex:1;height:1px;background:var(--border2)"></div>
+    </div>
+
+    <div style="display:flex;width:100%;margin-bottom:14px;background:var(--surface2);border-radius:10px;padding:3px;border:1px solid var(--border2)">
+      <button id="login-tab-signin" class="btn-sm" style="flex:1;border:none;border-radius:8px;padding:8px;font-family:var(--font-b);font-weight:600;cursor:pointer;background:var(--accent);color:#080808" onclick="authSetMode('signin')">Sign In</button>
+      <button id="login-tab-register" class="btn-sm" style="flex:1;border:none;border-radius:8px;padding:8px;font-family:var(--font-b);font-weight:600;cursor:pointer;background:transparent;color:var(--muted)" onclick="authSetMode('register')">Register</button>
+    </div>
+
+    <div style="text-align:left;width:100%;margin-bottom:10px">
+      <input type="email" id="login-email" placeholder="Email address" autocomplete="email" style="width:100%;padding:11px 14px;font-size:14px;border-radius:10px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);outline:none;font-family:var(--font-b)">
+    </div>
+    <div style="text-align:left;width:100%;margin-bottom:16px">
+      <input type="password" id="login-password" placeholder="Password" autocomplete="current-password" style="width:100%;padding:11px 14px;font-size:14px;border-radius:10px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);outline:none;font-family:var(--font-b)" onkeydown="if(event.key==='Enter')authEmailSubmit()">
+    </div>
+    <div class="pin-error" id="login-error"></div>
+    <button class="btn btn-primary" id="login-submit-btn" style="width:100%;margin-bottom:10px" onclick="authEmailSubmit()">Sign In</button>
+    <button class="btn btn-ghost btn-sm" id="login-forgot-pw-btn" onclick="authForgotPassword()">Forgot password?</button>
+
+    <div style="display:flex;align-items:center;gap:10px;width:100%;margin:16px 0;color:var(--muted2);font-size:11px">
+      <div style="flex:1;height:1px;background:var(--border2)"></div>OR<div style="flex:1;height:1px;background:var(--border2)"></div>
+    </div>
+    <button class="btn btn-ghost" style="width:100%" onclick="authAnonymousSignIn()">Continue as Guest</button>
+    <div style="font-size:11px;color:var(--muted2);margin-top:10px;line-height:1.5">Guest mode keeps you anonymous — you can still set a nickname just for the greeting. Your data syncs to this guest account, but there's no email to recover it if you lose this device.</div>
+  </div>
+
   <!-- STEP: TERMS OF USE & PRIVACY NOTICE (first-time consent) -->
   <div id="auth-terms" class="pin-box" style="display:none;max-width:560px;text-align:left">
     <div style="text-align:center;margin-bottom:18px">
@@ -845,8 +882,8 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
       <p style="font-weight:700;margin-bottom:4px">2. What Kwentado Is Not</p>
       <p style="margin-bottom:12px">Kwentado is <b>not</b> a bank, e-wallet, remittance provider, lending company, payment processor, or financial institution. It does not move, hold, transmit, or have any connection to your actual money, bank accounts, or e-wallet accounts. All wallet balances and loan records are figures you type in for your own reference only. Nothing in the App constitutes financial, investment, tax, or legal advice, and any devotional or scripture content included is for personal encouragement only, not professional or pastoral counsel.</p>
 
-      <p style="font-weight:700;margin-bottom:4px">3. Your Data Stays on Your Device</p>
-      <p style="margin-bottom:12px">All information you enter is stored locally in your browser's storage (localStorage) on the device you're using. Kwentado has no server or backend — the developer does not collect, transmit, receive, view, or have any ability to access, recover, or restore your data. No account information is sent anywhere outside your browser.</p>
+      <p style="font-weight:700;margin-bottom:4px">3. Your Data & Your Account</p>
+      <p style="margin-bottom:12px">A copy of your information is stored locally in your browser's storage (localStorage) on the device you're using, and also synced to a cloud database (Firebase/Firestore) tied to the account you signed in with (Google, email, or an anonymous guest account), so your data can follow you across devices. The developer does not manually access, view, or use your individual data. If you sign in as a Guest, your account has no email attached, so if you lose access to this device or clear its storage, that data cannot be recovered or linked back to you.</p>
 
       <p style="font-weight:700;margin-bottom:4px">4. You Are Responsible for Backups</p>
       <p style="margin-bottom:12px">Because your data lives only in this browser, it can be permanently lost if you clear your browsing data/cache, use private/incognito mode, switch browsers or devices, uninstall or reset the browser, or if local storage becomes corrupted. Kwentado provides a manual Backup/Export feature (Settings). You are solely responsible for creating and safekeeping your own backups; the developer is not responsible for any data loss.</p>
@@ -891,7 +928,7 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
   <div id="auth-register" class="pin-box" style="display:none">
     <div style="font-size:32px;margin-bottom:14px">👋</div>
     <div class="pin-title">Welcome to <span style="color:var(--accent)">Kwentado</span></div>
-    <div class="pin-sub" style="margin-bottom:22px">Create your account to get started</div>
+    <div class="pin-sub" style="margin-bottom:22px">Set up your profile and a PIN for this device</div>
     <div style="text-align:left;width:100%;margin-bottom:14px">
       <label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:500;display:block;margin-bottom:6px">Your Name</label>
       <input type="text" id="reg-username" placeholder="e.g. Juan, Maria..." style="width:100%;padding:11px 14px;font-size:14px;border-radius:10px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);outline:none;font-family:var(--font-b)" oninput="document.getElementById('reg-username').style.borderColor='var(--border2)'" maxlength="24">
@@ -960,6 +997,12 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
   <!-- STEP: FORGOT PIN (recovery) -->
   <div id="auth-forgot" class="pin-box" style="display:none;max-width:380px">
     <div style="font-size:32px;margin-bottom:14px">🔓</div>
+    <div id="forgot-reauth-view" style="display:none">
+      <div class="pin-title">Recover Access</div>
+      <div class="pin-sub" style="margin-bottom:18px">Sign out and sign back in with your account to prove it's you — you'll be able to set a new PIN right after, and none of your data is touched.</div>
+      <div class="pin-error" id="forgot-reauth-error"></div>
+      <button class="btn btn-primary" style="width:100%;margin-top:4px" onclick="authForgotPinReauth()">Sign Out &amp; Verify</button>
+    </div>
     <div id="forgot-has-q-view">
       <div class="pin-title">Recover Access</div>
       <div class="pin-sub" id="forgot-question-text" style="margin-bottom:18px">—</div>
@@ -1567,13 +1610,13 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
       </div>
     </div>
 
-    <!-- CLOUD SYNC -->
+    <!-- ACCOUNT -->
     <div class="card" style="margin-bottom:14px">
-      <div class="card-hd"><div class="card-title">☁️ Cloud Sync</div></div>
-      <div style="font-size:13px;color:var(--muted);margin-bottom:16px" id="cloud-status-text">Not connected. Sign in to sync your data across devices — everything stays local until you connect.</div>
+      <div class="card-hd"><div class="card-title">☁️ Account &amp; Cloud Sync</div></div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:16px" id="cloud-status-text">Not signed in.</div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-        <button class="btn btn-primary" onclick="cloudSignIn()" id="cloud-signin-btn">Sign in with Google</button>
-        <button class="btn btn-danger" onclick="cloudSignOut()" id="cloud-signout-btn" style="display:none">Sign Out</button>
+        <button class="btn btn-primary" onclick="authLinkToGoogle()" id="cloud-link-btn" style="display:none">Link to Google</button>
+        <button class="btn btn-danger" onclick="authSignOut()" id="cloud-signout-btn" style="display:none">Sign Out</button>
         <span id="cloud-sync-spinner" style="display:none;font-size:12px;color:var(--muted)">Syncing…</span>
       </div>
     </div>
@@ -1856,11 +1899,25 @@ function setCloudSpinner(on){
   if(s)s.style.display=on?'inline':'none';
 }
 
+function stripUndefined(val){
+  if(Array.isArray(val)){
+    return val.map(stripUndefined);
+  }else if(val && typeof val==='object'){
+    const out={};
+    Object.keys(val).forEach(k=>{
+      const v=val[k];
+      if(v!==undefined)out[k]=stripUndefined(v);
+    });
+    return out;
+  }
+  return val;
+}
+
 async function pushToCloud(){
   if(!cloudUser)return;
   setCloudSpinner(true);
   try{
-    await fbDb.collection('users').doc(cloudUser.uid).set({data:JSON.stringify(state),updatedAt:Date.now()});
+    await fbDb.collection('users').doc(cloudUser.uid).set({data:stripUndefined(state),updatedAt:Date.now()});
   }catch(e){
     console.error('Cloud sync failed',e);
     toast('Cloud sync failed — check your connection','error');
@@ -1868,61 +1925,118 @@ async function pushToCloud(){
   setCloudSpinner(false);
 }
 
-async function pullFromCloud(uid){
+let stateLoadedForUid=null;
+
+async function loadStateForUser(user){
+  if(stateLoadedForUid===user.uid)return; // already synced this session, avoid re-prompting on token refresh
   setCloudSpinner(true);
   try{
-    const doc=await fbDb.collection('users').doc(uid).get();
+    const doc=await fbDb.collection('users').doc(user.uid).get();
     if(doc.exists && doc.data().data){
-      const useRemote=confirm('Cloud data found for this account.\n\nOK = load cloud data (replaces what\'s on this device)\nCancel = keep this device\'s data (uploads it to the cloud instead)');
+      const raw=doc.data().data;
+      const remote=(typeof raw==='string')?JSON.parse(raw):raw;
+      const localHasData=!!state.username||(state.income&&state.income.length)||(state.expenses&&state.expenses.length)||(state.wallets||[]).some(w=>w.balance);
+      let useRemote=true;
+      if(localHasData){
+        useRemote=confirm('Cloud data found for this account.\n\nOK = load cloud data (replaces what\'s on this device)\nCancel = keep this device\'s data (uploads it to the cloud instead)');
+      }
       if(useRemote){
-        const remote=JSON.parse(doc.data().data);
         Object.keys(state).forEach(k=>delete state[k]);
         Object.assign(state,remote);
         localStorage.setItem('kwentadoV1',JSON.stringify(state));
-        render();
-        toast('☁️ Cloud data loaded');
       }else{
         await pushToCloud();
-        toast('This device\'s data uploaded to the cloud');
       }
     }else{
+      // brand-new account — seed the cloud with whatever's local (usually defaults)
       await pushToCloud();
-      toast('☁️ Connected — this device\'s data uploaded to the cloud');
     }
   }catch(e){
-    console.error(e);
-    toast('Could not reach cloud data','error');
+    console.error('Cloud load failed',e);
+    toast('Could not reach cloud data — working offline for now','error');
   }
+  stateLoadedForUid=user.uid;
   setCloudSpinner(false);
 }
 
-function cloudSignIn(){
-  const provider=new firebase.auth.GoogleAuthProvider();
-  fbAuth.signInWithPopup(provider).catch(function(e){
-    console.error(e);
-    toast('Sign-in failed: '+e.message,'error');
+function updateAccountSettingsUI(){
+  const statusEl=document.getElementById('cloud-status-text');
+  const outBtn=document.getElementById('cloud-signout-btn');
+  const linkBtn=document.getElementById('cloud-link-btn');
+  if(!cloudUser){
+    if(statusEl)statusEl.textContent='Not signed in.';
+    if(outBtn)outBtn.style.display='none';
+    if(linkBtn)linkBtn.style.display='none';
+    return;
+  }
+  if(outBtn)outBtn.style.display='';
+  if(cloudUser.isAnonymous){
+    if(statusEl)statusEl.textContent='Signed in as a Guest — this account has no email attached. Link it to Google to make sure you never lose access.';
+    if(linkBtn)linkBtn.style.display='';
+  }else{
+    if(statusEl)statusEl.textContent='Signed in as '+(cloudUser.email||cloudUser.displayName||'your account')+' — data syncs automatically across your devices.';
+    if(linkBtn)linkBtn.style.display='none';
+  }
+}
+
+function authSignOut(){
+  mtConfirm('Sign out of Kwentado on this device? Your data stays saved to your account in the cloud.','🚪','Sign Out','var(--red)').then(ok=>{
+    if(!ok)return;
+    sessionStorage.removeItem('mtUnlocked');
+    stateLoadedForUid=null;
+    fbAuth.signOut();
   });
 }
 
-function cloudSignOut(){
-  fbAuth.signOut();
+async function authLinkToGoogle(){
+  if(!cloudUser||!cloudUser.isAnonymous)return;
+  const provider=new firebase.auth.GoogleAuthProvider();
+  try{
+    await cloudUser.linkWithPopup(provider);
+    updateAccountSettingsUI();
+    toast('Linked to Google — your data is now backed by a real account ✓');
+  }catch(e){
+    console.error(e);
+    toast('Linking failed: '+authFriendlyError(e),'error');
+  }
+}
+
+/* ── CENTRAL AUTH CONTROLLER ── */
+async function handleAuthState(user){
+  cloudUser=user;
+  updateAccountSettingsUI();
+  if(!user){
+    showLoginScreen();
+    return;
+  }
+  await loadStateForUser(user);
+  if(!state.termsAccepted){
+    showTermsScreen();
+    return;
+  }
+  if(!state.username||!state.pin){
+    showRegisterScreen();
+    return;
+  }
+  if(forcePinResetAfterAuth){
+    forcePinResetAfterAuth=false;
+    pinRecoveryActive=true;
+    showPinSetup();
+    return;
+  }
+  if(!sessionStorage.getItem('mtUnlocked')){
+    showPinScreen();
+    return;
+  }
+  sessionStorage.setItem('mtUnlocked','1');
+  document.getElementById('auth-overlay').style.display='none';
+  render();
+  updateSidebarUsername();
+  if(!localStorage.getItem('mtTutDone')){showTutorial();}else{showSplash();}
 }
 
 fbAuth.onAuthStateChanged(function(user){
-  cloudUser=user;
-  const statusEl=document.getElementById('cloud-status-text');
-  const inBtn=document.getElementById('cloud-signin-btn');
-  const outBtn=document.getElementById('cloud-signout-btn');
-  if(user){
-    if(statusEl)statusEl.textContent='Connected as '+(user.email||user.displayName||'your account')+' — data syncs automatically across your devices.';
-    if(inBtn)inBtn.style.display='none';
-    if(outBtn)outBtn.style.display='';
-    pullFromCloud(user.uid);
-  }else{
-    if(statusEl)statusEl.textContent='Not connected. Sign in to sync your data across devices — everything stays local until you connect.';
-    if(inBtn)inBtn.style.display='';
-    if(outBtn)outBtn.style.display='none';
-  }
+  handleAuthState(user);
 });
 const state=loadState();
 function fmt(n){return '₱'+Number(n).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});}
@@ -3387,10 +3501,126 @@ function saveEditGoal(){
 
 /* ── AUTH SCREEN SWITCHER ── */
 function hideAllAuthScreens(){
-  ['auth-terms','auth-register','auth-secsetup','auth-forgot','auth-pin','auth-pinsetup','auth-clearconfirm'].forEach(id=>{
+  ['auth-login','auth-terms','auth-register','auth-secsetup','auth-forgot','auth-pin','auth-pinsetup','auth-clearconfirm'].forEach(id=>{
     const el=document.getElementById(id);
     if(el)el.style.display='none';
   });
+}
+
+/* ── ACCOUNT LOGIN (Google / Email+Password / Anonymous) ── */
+let authMode='signin'; // 'signin' or 'register'
+
+function showLoginScreen(){
+  document.getElementById('auth-overlay').style.display='flex';
+  hideAllAuthScreens();
+  document.getElementById('auth-login').style.display='block';
+  document.getElementById('login-error').textContent='';
+}
+
+function authSetMode(mode){
+  authMode=mode;
+  const signinTab=document.getElementById('login-tab-signin');
+  const registerTab=document.getElementById('login-tab-register');
+  const submitBtn=document.getElementById('login-submit-btn');
+  const forgotBtn=document.getElementById('login-forgot-pw-btn');
+  if(mode==='signin'){
+    signinTab.style.background='var(--accent)';signinTab.style.color='#080808';
+    registerTab.style.background='transparent';registerTab.style.color='var(--muted)';
+    submitBtn.textContent='Sign In';
+    forgotBtn.style.display='inline-block';
+  }else{
+    registerTab.style.background='var(--accent)';registerTab.style.color='#080808';
+    signinTab.style.background='transparent';signinTab.style.color='var(--muted)';
+    submitBtn.textContent='Create Account';
+    forgotBtn.style.display='none';
+  }
+  document.getElementById('login-error').textContent='';
+}
+
+function authFriendlyError(e){
+  const map={
+    'auth/invalid-email':'That email address looks invalid.',
+    'auth/user-not-found':'No account found with that email. Try Register instead.',
+    'auth/wrong-password':'Incorrect password.',
+    'auth/invalid-credential':'Incorrect email or password.',
+    'auth/email-already-in-use':'That email is already registered. Try Sign In instead.',
+    'auth/weak-password':'Password should be at least 6 characters.',
+    'auth/too-many-requests':'Too many attempts. Please wait a bit and try again.',
+    'auth/network-request-failed':'Network error — check your connection.',
+    'auth/popup-closed-by-user':'Sign-in was cancelled.'
+  };
+  return map[e.code]||(e.message||'Something went wrong. Please try again.');
+}
+
+async function authEmailSubmit(){
+  const email=document.getElementById('login-email').value.trim();
+  const pw=document.getElementById('login-password').value;
+  const errEl=document.getElementById('login-error');
+  errEl.textContent='';
+  if(!email||!pw){errEl.textContent='Please enter both email and password.';return;}
+  if(pw.length<6){errEl.textContent='Password should be at least 6 characters.';return;}
+  const btn=document.getElementById('login-submit-btn');
+  btn.disabled=true;
+  try{
+    if(authMode==='register'){
+      await fbAuth.createUserWithEmailAndPassword(email,pw);
+    }else{
+      await fbAuth.signInWithEmailAndPassword(email,pw);
+    }
+    // onAuthStateChanged picks up from here
+  }catch(e){
+    console.error(e);
+    errEl.textContent=authFriendlyError(e);
+  }
+  btn.disabled=false;
+}
+
+async function authForgotPassword(){
+  const email=document.getElementById('login-email').value.trim();
+  const errEl=document.getElementById('login-error');
+  if(!email){errEl.textContent='Enter your email above first, then tap "Forgot password?"';return;}
+  try{
+    await fbAuth.sendPasswordResetEmail(email);
+    errEl.style.color='var(--accent)';
+    errEl.textContent='Password reset email sent — check your inbox.';
+  }catch(e){
+    errEl.style.color='';
+    errEl.textContent=authFriendlyError(e);
+  }
+}
+
+async function authGoogleSignIn(){
+  const errEl=document.getElementById('login-error');
+  errEl.textContent='';
+  const provider=new firebase.auth.GoogleAuthProvider();
+  try{
+    if(cloudUser&&cloudUser.isAnonymous){
+      await cloudUser.linkWithPopup(provider);
+      toast('Account linked — your guest data is now saved to Google ✓');
+    }else{
+      await fbAuth.signInWithPopup(provider);
+    }
+  }catch(e){
+    console.error(e);
+    if(e.code==='auth/credential-already-in-use'){
+      // that Google account already has its own data — sign into it directly instead
+      try{ await fbAuth.signInWithPopup(provider); }
+      catch(e2){ errEl.textContent=authFriendlyError(e2); }
+    }else{
+      errEl.textContent=authFriendlyError(e);
+    }
+  }
+}
+
+async function authAnonymousSignIn(){
+  const errEl=document.getElementById('login-error');
+  errEl.textContent='';
+  try{
+    await fbAuth.signInAnonymously();
+  }catch(e){
+    console.error(e);
+    errEl.textContent=authFriendlyError(e);
+  }
 }
 
 /* ── REGISTRATION (new user) ── */
@@ -3401,6 +3631,10 @@ function showRegisterScreen(){
   hideAllAuthScreens();
   document.getElementById('auth-register').style.display='block';
   regPinBuf=''; regPinPhase='set';
+  const nmInput=document.getElementById('reg-username');
+  if(nmInput && !nmInput.value && cloudUser && cloudUser.displayName){
+    nmInput.value=cloudUser.displayName.split(' ')[0];
+  }
   updateRegDots();
 }
 
@@ -3409,11 +3643,14 @@ function regPinKey(k){
     if(regPinBuf.length>=4)return;
     regPinBuf+=k; updateRegDots();
     if(regPinBuf.length===4){
-      // validate name first
-      const nm=document.getElementById('reg-username').value.trim();
+      // validate name first (optional for guest/anonymous accounts)
+      const nmInput=document.getElementById('reg-username');
+      let nm=nmInput.value.trim();
+      const isGuest=cloudUser && cloudUser.isAnonymous;
+      if(!nm && isGuest){ nm='Guest'; nmInput.value='Guest'; }
       if(!nm){
         document.getElementById('reg-pin-error').textContent='Please enter your name first.';
-        document.getElementById('reg-username').style.borderColor='var(--red)';
+        nmInput.style.borderColor='var(--red)';
         regPinBuf=''; updateRegDots(); return;
       }
       regPinFirst=regPinBuf; regPinBuf=''; regPinPhase='confirm';
@@ -3444,7 +3681,11 @@ function regConfirmKey(k){
         pendingRegUsername=document.getElementById('reg-username').value.trim();
         pendingRegPin=regPinFirst;
         regPinBuf=''; regConfirmBuf=''; regPinFirst=''; regPinPhase='set';
-        showSecSetupScreen();
+        if(cloudUser && cloudUser.isAnonymous){
+          showSecSetupScreen();
+        }else{
+          finalizeRegistration('','');
+        }
       } else {
         // shake and reset confirm
         shakeDotsEl('reg-confirm-dots');
@@ -3554,9 +3795,11 @@ function showForgotPin(){
   document.getElementById('auth-overlay').style.display='flex';
   hideAllAuthScreens();
   document.getElementById('auth-forgot').style.display='block';
+  const isAnon=!cloudUser||cloudUser.isAnonymous;
   const hasQ=!!state.securityQuestion;
-  document.getElementById('forgot-has-q-view').style.display=hasQ?'block':'none';
-  document.getElementById('forgot-no-q-view').style.display=hasQ?'none':'block';
+  document.getElementById('forgot-reauth-view').style.display=isAnon?'none':'block';
+  document.getElementById('forgot-has-q-view').style.display=(!isAnon)?'none':(hasQ?'block':'none');
+  document.getElementById('forgot-no-q-view').style.display=(!isAnon)?'none':(hasQ?'none':'block');
   if(hasQ){
     document.getElementById('forgot-question-text').textContent=state.securityQuestion;
     document.getElementById('forgot-answer-input').value='';
@@ -3564,6 +3807,15 @@ function showForgotPin(){
   } else {
     document.getElementById('forgot-noq-error').textContent='';
   }
+}
+
+let forcePinResetAfterAuth=false;
+function authForgotPinReauth(){
+  forcePinResetAfterAuth=true;
+  sessionStorage.removeItem('mtUnlocked');
+  stateLoadedForUid=null;
+  document.getElementById('auth-overlay').style.display='none';
+  fbAuth.signOut();
 }
 
 function verifySecurityAnswer(){
@@ -3589,9 +3841,8 @@ function clearAndResetAccount(){
     state.username='';state.pin='';state.securityQuestion='';state.securityAnswer='';
     save();
     sessionStorage.removeItem('mtUnlocked');
-    document.getElementById('auth-overlay').style.display='none';
-    toast('Account reset. Please register again.');
-    initAuth();
+    toast('Account reset. Please set up your profile again.');
+    showRegisterScreen();
   });
 }
 
@@ -3706,27 +3957,6 @@ function shakeDotsEl(id){
   setTimeout(()=>el.style.animation='',400);
 }
 function shakeDots(){shakeDotsEl('pin-dots');}
-
-/* ── INIT AUTH ── */
-function initAuth(){
-  // New user: no username set — must accept Terms & Privacy Notice first
-  if(!state.username){
-    if(!state.termsAccepted){
-      showTermsScreen();
-      return;
-    }
-    showRegisterScreen();
-    return;
-  }
-  // Returning user with PIN: show pin screen (only once per session)
-  if(state.pin && !sessionStorage.getItem('mtUnlocked')){
-    showPinScreen();
-    return;
-  }
-  // Returning user, no PIN or already unlocked: show splash
-  sessionStorage.setItem('mtUnlocked','1');
-  showSplash();
-}
 
 function showTermsScreen(){
   document.getElementById('auth-overlay').style.display='flex';
@@ -4114,7 +4344,7 @@ onLoanTypeChange();
 document.getElementById('welcome-splash').style.display='none';
 render();
 updateSidebarUsername();
-initAuth();
+// Auth entry point is now driven entirely by fbAuth.onAuthStateChanged → handleAuthState()
 // Recurring reminder: check if any recurring expenses haven't been logged this month
 setTimeout(()=>{
   const now=new Date();
