@@ -848,6 +848,9 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
       <button id="login-tab-register" class="btn-sm" style="flex:1;border:none;border-radius:8px;padding:8px;font-family:var(--font-b);font-weight:600;cursor:pointer;background:transparent;color:var(--muted)" onclick="authSetMode('register')">Register</button>
     </div>
 
+    <div id="login-name-wrap" style="display:none;text-align:left;width:100%;margin-bottom:10px">
+      <input type="text" id="login-name" placeholder="Full name" autocomplete="name" maxlength="24" style="width:100%;padding:11px 14px;font-size:14px;border-radius:10px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);outline:none;font-family:var(--font-b)">
+    </div>
     <div style="text-align:left;width:100%;margin-bottom:10px">
       <input type="email" id="login-email" placeholder="Email address" autocomplete="email" style="width:100%;padding:11px 14px;font-size:14px;border-radius:10px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);outline:none;font-family:var(--font-b)">
     </div>
@@ -928,7 +931,7 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
   <div id="auth-register" class="pin-box" style="display:none">
     <div style="font-size:32px;margin-bottom:14px">👋</div>
     <div class="pin-title">Welcome to <span style="color:var(--accent)">Kwentado</span></div>
-    <div class="pin-sub" style="margin-bottom:22px">Set up your profile and a PIN for this device</div>
+    <div class="pin-sub" style="margin-bottom:22px">Just set a 4-digit PIN for this device</div>
     <div style="text-align:left;width:100%;margin-bottom:14px">
       <label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:500;display:block;margin-bottom:6px">Your Name</label>
       <input type="text" id="reg-username" placeholder="e.g. Juan, Maria..." style="width:100%;padding:11px 14px;font-size:14px;border-radius:10px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);outline:none;font-family:var(--font-b)" oninput="document.getElementById('reg-username').style.borderColor='var(--border2)'" maxlength="24">
@@ -3520,12 +3523,18 @@ function hideAllAuthScreens(){
 
 /* ── ACCOUNT LOGIN (Google / Email+Password / Anonymous) ── */
 let authMode='signin'; // 'signin' or 'register'
+let pendingRegNameFromLogin='';
 
 function showLoginScreen(){
   document.getElementById('auth-overlay').style.display='flex';
   hideAllAuthScreens();
   document.getElementById('auth-login').style.display='block';
   document.getElementById('login-error').textContent='';
+  document.getElementById('login-name').value='';
+  document.getElementById('login-email').value='';
+  document.getElementById('login-password').value='';
+  pendingRegNameFromLogin='';
+  authSetMode('signin');
 }
 
 function authSetMode(mode){
@@ -3534,16 +3543,19 @@ function authSetMode(mode){
   const registerTab=document.getElementById('login-tab-register');
   const submitBtn=document.getElementById('login-submit-btn');
   const forgotBtn=document.getElementById('login-forgot-pw-btn');
+  const nameWrap=document.getElementById('login-name-wrap');
   if(mode==='signin'){
     signinTab.style.background='var(--accent)';signinTab.style.color='#080808';
     registerTab.style.background='transparent';registerTab.style.color='var(--muted)';
     submitBtn.textContent='Sign In';
     forgotBtn.style.display='inline-block';
+    nameWrap.style.display='none';
   }else{
     registerTab.style.background='var(--accent)';registerTab.style.color='#080808';
     signinTab.style.background='transparent';signinTab.style.color='var(--muted)';
     submitBtn.textContent='Create Account';
     forgotBtn.style.display='none';
+    nameWrap.style.display='block';
   }
   document.getElementById('login-error').textContent='';
 }
@@ -3568,6 +3580,11 @@ async function authEmailSubmit(){
   const pw=document.getElementById('login-password').value;
   const errEl=document.getElementById('login-error');
   errEl.textContent='';
+  if(authMode==='register'){
+    const nm=document.getElementById('login-name').value.trim();
+    if(!nm){errEl.textContent='Please enter your name.';return;}
+    pendingRegNameFromLogin=nm;
+  }
   if(!email||!pw){errEl.textContent='Please enter both email and password.';return;}
   if(pw.length<6){errEl.textContent='Password should be at least 6 characters.';return;}
   const btn=document.getElementById('login-submit-btn');
@@ -3643,8 +3660,12 @@ function showRegisterScreen(){
   document.getElementById('auth-register').style.display='block';
   regPinBuf=''; regPinPhase='set';
   const nmInput=document.getElementById('reg-username');
-  if(nmInput && !nmInput.value && cloudUser && cloudUser.displayName){
-    nmInput.value=cloudUser.displayName.split(' ')[0];
+  if(nmInput && !nmInput.value){
+    if(pendingRegNameFromLogin){
+      nmInput.value=pendingRegNameFromLogin;
+    }else if(cloudUser && cloudUser.displayName){
+      nmInput.value=cloudUser.displayName.split(' ')[0];
+    }
   }
   updateRegDots();
 }
@@ -3742,7 +3763,7 @@ function finalizeRegistration(question,answer){
   state.securityAnswer=answer||'';
   save();
   document.getElementById('auth-overlay').style.display='none';
-  pendingRegUsername=''; pendingRegPin='';
+  pendingRegUsername=''; pendingRegPin=''; pendingRegNameFromLogin='';
   updateSidebarUsername();
   if(!localStorage.getItem('mtTutDone')){showTutorial();}else{showSplash();}
   toast('Welcome, '+state.username+'! 🎉');
