@@ -3708,6 +3708,9 @@ function isStandaloneApp(){
 function isIOSDevice(){
   return /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
 }
+function isAndroidDevice(){
+  return /android/i.test(navigator.userAgent);
+}
 function updateInstallBanner(){
   const banner=document.getElementById('pwa-install-banner');
   const btn=document.getElementById('pwa-install-btn');
@@ -3718,17 +3721,21 @@ function updateInstallBanner(){
     banner.style.display='none';
     return;
   }
+  // Always show the card with manual fallback steps — upgrade to a real
+  // one-tap button if/when the browser actually offers the native prompt.
+  banner.style.display='block';
   if(deferredInstallPrompt){
-    banner.style.display='block';
     if(btn)btn.style.display='block';
     if(sub)sub.textContent='Get it as an app on your home screen — faster, works offline.';
   } else if(isIOSDevice()){
-    // iOS Safari has no one-tap install API — show instructions instead
-    banner.style.display='block';
     if(btn)btn.style.display='none';
     if(sub)sub.textContent='Tap the Share icon below, then "Add to Home Screen" to install.';
+  } else if(isAndroidDevice()){
+    if(btn)btn.style.display='none';
+    if(sub)sub.textContent='Tap the ⋮ menu (top right), then "Install app" or "Add to Home screen".';
   } else {
-    banner.style.display='none';
+    if(btn)btn.style.display='none';
+    if(sub)sub.textContent="Look for an install icon in your browser's address bar to add this app.";
   }
 }
 window.addEventListener('beforeinstallprompt',e=>{
