@@ -353,11 +353,12 @@ body.light input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0
 /* Slim, dismissible install nudge — flush across the top of the card like a
    system notification, not a form element competing with sign-in. */
 #pwa-install-strip{display:none;align-items:center;gap:9px;width:100%;padding:10px 16px;background:var(--accent-bg);border-bottom:1px solid rgba(168,224,56,.25);border-radius:20px 20px 0 0}
-#pwa-install-strip .pis-icon{font-size:15px;flex-shrink:0}
-#pwa-install-strip .pis-text{flex:1;min-width:0;font-size:11.5px;color:var(--text);text-align:left;line-height:1.4}
-#pwa-install-strip .pis-action{display:inline-flex;flex-shrink:0;background:var(--accent);color:#080808;border:none;border-radius:7px;padding:6px 12px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:var(--font-b);white-space:nowrap}
-#pwa-install-strip .pis-dismiss{flex-shrink:0;background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:16px;line-height:1;padding:2px 4px}
-#pwa-install-strip .pis-dismiss:hover{color:var(--text)}
+#pwa-install-strip-dash{display:none;align-items:center;gap:9px;max-width:1000px;margin:16px clamp(16px,3.5vw,36px) 0;padding:10px 16px;background:var(--accent-bg);border:1px solid rgba(168,224,56,.25);border-radius:12px;box-sizing:border-box}
+.pis-icon{font-size:15px;flex-shrink:0}
+.pis-text{flex:1;min-width:0;font-size:11.5px;color:var(--text);text-align:left;line-height:1.4}
+.pis-action{display:inline-flex;flex-shrink:0;background:var(--accent);color:#080808;border:none;border-radius:7px;padding:6px 12px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:var(--font-b);white-space:nowrap}
+.pis-dismiss{flex-shrink:0;background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:16px;line-height:1;padding:2px 4px}
+.pis-dismiss:hover{color:var(--text)}
 @media (max-width:420px){
   #auth-login .auth-login-inner{padding:24px 18px}
   #auth-login{border-radius:16px}
@@ -860,7 +861,7 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
 <div class="shell">
 
 <!-- AUTH OVERLAY (login / register / PIN) -->
-<div id="auth-overlay" class="pin-overlay" style="display:none">
+<div id="auth-overlay" class="pin-overlay" style="display:flex">
 
   <!-- STEP: ACCOUNT LOGIN / REGISTER (entry point) -->
   <div id="auth-login" class="pin-box" style="display:none;max-width:380px">
@@ -1248,6 +1249,13 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
         <span class="tb-export-label">Export</span>
       </button>
     </div>
+  </div>
+
+  <div id="pwa-install-strip-dash" onclick="event.stopPropagation()">
+    <div class="pis-icon">📲</div>
+    <div class="pis-text" id="pwa-install-sub-dash">Install Kwentado for faster, offline access.</div>
+    <button id="pwa-install-btn-dash" class="pis-action" style="display:none" onclick="installApp()">Install</button>
+    <button class="pis-dismiss" onclick="dismissInstallStrip()" aria-label="Dismiss">&times;</button>
   </div>
 
   <div class="content">
@@ -2250,7 +2258,7 @@ function dismissGuestBanner(){
   const el=document.getElementById('guest-link-banner');
   if(el)el.style.display='none';
 }
-function render(){renderBalances();renderDash();renderIncome();renderExpenses();renderLoans();renderGoals();renderSettings();updateBadges();syncEyeButtons();renderGuestBanner();}
+function render(){renderBalances();renderDash();renderIncome();renderExpenses();renderLoans();renderGoals();renderSettings();updateBadges();syncEyeButtons();renderGuestBanner();updateInstallBanner();}
 function updateBadges(){
   document.getElementById('nav-badge-income').textContent=state.income.length;
   document.getElementById('nav-badge-expenses').textContent=state.expenses.length;
@@ -3739,37 +3747,48 @@ function isInstallStripDismissed(){
   // next restart/open until the app is actually installed.
   return sessionStorage.getItem('mtInstallStripDismissed')==='1';
 }
+// Two strips share the same install-prompt logic: one on the login screen,
+// one on the dashboard (for people who are already signed in).
+const INSTALL_STRIPS=[
+  {banner:'pwa-install-strip',btn:'pwa-install-btn',sub:'pwa-install-sub'},
+  {banner:'pwa-install-strip-dash',btn:'pwa-install-btn-dash',sub:'pwa-install-sub-dash'}
+];
 function dismissInstallStrip(){
   sessionStorage.setItem('mtInstallStripDismissed','1');
-  const strip=document.getElementById('pwa-install-strip');
-  if(strip)strip.style.display='none';
+  INSTALL_STRIPS.forEach(cfg=>{
+    const strip=document.getElementById(cfg.banner);
+    if(strip)strip.style.display='none';
+  });
 }
 function updateInstallBanner(){
-  const banner=document.getElementById('pwa-install-strip');
-  const btn=document.getElementById('pwa-install-btn');
-  const sub=document.getElementById('pwa-install-sub');
-  if(!banner)return;
-  if(isStandaloneApp()||isInstallStripDismissed()){
-    // already installed, or the person already dismissed it recently
-    banner.style.display='none';
-    return;
-  }
-  // Always show a slim strip with manual fallback steps — upgrade to a real
-  // one-tap button if/when the browser actually offers the native prompt.
-  banner.style.display='flex';
-  if(deferredInstallPrompt){
-    if(btn)btn.style.display='inline-flex';
-    if(sub)sub.textContent='Get it as an app on your home screen — faster, works offline.';
-  } else if(isIOSDevice()){
-    if(btn)btn.style.display='none';
-    if(sub)sub.textContent='Tap the Share icon below, then "Add to Home Screen" to install.';
-  } else if(isAndroidDevice()){
-    if(btn)btn.style.display='none';
-    if(sub)sub.textContent='Tap the ⋮ menu (top right), then "Install app" or "Add to Home screen".';
-  } else {
-    if(btn)btn.style.display='none';
-    if(sub)sub.textContent="Look for an install icon in your browser's address bar to add this app.";
-  }
+  const hide=isStandaloneApp()||isInstallStripDismissed();
+  INSTALL_STRIPS.forEach(cfg=>{
+    const banner=document.getElementById(cfg.banner);
+    const btn=document.getElementById(cfg.btn);
+    const sub=document.getElementById(cfg.sub);
+    if(!banner)return;
+    if(hide){
+      // already installed, or the person already dismissed it this session
+      banner.style.display='none';
+      return;
+    }
+    // Always show a slim strip with manual fallback steps — upgrade to a real
+    // one-tap button if/when the browser actually offers the native prompt.
+    banner.style.display='flex';
+    if(deferredInstallPrompt){
+      if(btn)btn.style.display='inline-flex';
+      if(sub)sub.textContent='Get it as an app on your home screen — faster, works offline.';
+    } else if(isIOSDevice()){
+      if(btn)btn.style.display='none';
+      if(sub)sub.textContent='Tap the Share icon below, then "Add to Home Screen" to install.';
+    } else if(isAndroidDevice()){
+      if(btn)btn.style.display='none';
+      if(sub)sub.textContent='Tap the ⋮ menu (top right), then "Install app" or "Add to Home screen".';
+    } else {
+      if(btn)btn.style.display='none';
+      if(sub)sub.textContent="Look for an install icon in your browser's address bar to add this app.";
+    }
+  });
 }
 window.addEventListener('beforeinstallprompt',e=>{
   e.preventDefault();
