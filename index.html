@@ -338,6 +338,20 @@ body.light input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0
 .pin-key.empty{background:transparent;border:none;cursor:default}
 .pin-error{font-size:12px;color:var(--red);margin-top:12px;min-height:18px}
 #terms-continue-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* ── Login card: give the sign-in screen a real container + fix low-contrast text ── */
+#auth-login{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:32px 26px;box-shadow:0 12px 40px rgba(0,0,0,.4)}
+#auth-login .pin-sub{margin-bottom:24px}
+#auth-login .auth-divider{display:flex;align-items:center;gap:10px;width:100%;margin:18px 0;color:var(--muted);font-size:11px;font-weight:600;letter-spacing:.06em}
+#auth-login .auth-divider .line{flex:1;height:1px;background:var(--border2)}
+#auth-login input{transition:border-color var(--tr),background var(--tr)}
+#auth-login input:focus{border-color:var(--accent) !important;background:var(--surface3) !important}
+#auth-login .btn-ghost{background:var(--surface3);color:#b4b4c4;border:1px solid var(--border2);font-weight:600}
+#auth-login .btn-ghost:hover{color:var(--text);border-color:var(--accent-dim);background:var(--surface3)}
+#auth-login-guest-note{font-size:11.5px;color:#82828f;margin-top:12px;line-height:1.55}
+@media (max-width:420px){
+  #auth-login{padding:24px 18px;border-radius:16px}
+}
 #terms-scroll::-webkit-scrollbar{width:6px}
 #terms-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
 
@@ -859,9 +873,7 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
       Continue with Google
     </button>
 
-    <div style="display:flex;align-items:center;gap:10px;width:100%;margin:16px 0;color:var(--muted2);font-size:11px">
-      <div style="flex:1;height:1px;background:var(--border2)"></div>OR<div style="flex:1;height:1px;background:var(--border2)"></div>
-    </div>
+    <div class="auth-divider"><div class="line"></div>OR<div class="line"></div></div>
 
     <div style="display:flex;width:100%;margin-bottom:14px;background:var(--surface2);border-radius:10px;padding:3px;border:1px solid var(--border2)">
       <button id="login-tab-signin" class="btn-sm" style="flex:1;border:none;border-radius:8px;padding:8px;font-family:var(--font-b);font-weight:600;cursor:pointer;background:var(--accent);color:#080808" onclick="authSetMode('signin')">Sign In</button>
@@ -881,11 +893,9 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
     <button class="btn btn-primary" id="login-submit-btn" style="width:100%;margin-bottom:10px" onclick="authEmailSubmit()">Sign In</button>
     <button class="btn btn-ghost btn-sm" id="login-forgot-pw-btn" onclick="authForgotPassword()">Forgot password?</button>
 
-    <div style="display:flex;align-items:center;gap:10px;width:100%;margin:16px 0;color:var(--muted2);font-size:11px">
-      <div style="flex:1;height:1px;background:var(--border2)"></div>OR<div style="flex:1;height:1px;background:var(--border2)"></div>
-    </div>
+    <div class="auth-divider"><div class="line"></div>OR<div class="line"></div></div>
     <button class="btn btn-ghost" style="width:100%" onclick="authAnonymousSignIn()">Continue as Guest</button>
-    <div style="font-size:11px;color:var(--muted2);margin-top:10px;line-height:1.5">Guest mode keeps you anonymous — you can still set a nickname just for the greeting. Your data syncs to this guest account, but there's no email to recover it if you lose this device.</div>
+    <div id="auth-login-guest-note">Guest mode keeps you anonymous — you can still set a nickname just for the greeting. Your data syncs to this guest account, but there's no email to recover it if you lose this device.</div>
   </div>
 
   <!-- STEP: TERMS OF USE & PRIVACY NOTICE (first-time consent) -->
