@@ -44,6 +44,27 @@ self.addEventListener('fetch', event => {
   });
   if (!isShellAsset) return; // let every other request (Firestore, Auth, images...) pass through untouched
 
+  // The page itself (index.html / the app's start URL) goes network-first so a
+  // pushed update shows up on the very next open instead of needing two opens.
+  // Everything else in the shell (icons, manifest, Firebase SDK — rarely change)
+  // stays cache-first for an instant, offline-friendly load.
+  const isPageRequest = event.request.mode === 'navigate' ||
+    event.request.url === new URL('./', self.location.href).href ||
+    event.request.url === new URL('./index.html', self.location.href).href;
+
+  if (isPageRequest) {
+    event.respondWith(
+      fetch(event.request).then(response => {
+        if (response && response.status === 200) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+        }
+        return response;
+      }).catch(() => caches.match(event.request)) // offline: fall back to last cached page
+    );
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then(cached => {
       const networkFetch = fetch(event.request).then(response => {
