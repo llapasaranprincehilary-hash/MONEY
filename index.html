@@ -3733,14 +3733,14 @@ function isIOSDevice(){
 function isAndroidDevice(){
   return /android/i.test(navigator.userAgent);
 }
-const INSTALL_STRIP_DISMISS_DAYS=7;
 function isInstallStripDismissed(){
-  const ts=parseInt(localStorage.getItem('mtInstallStripDismissAt')||'0');
-  if(!ts)return false;
-  return (Date.now()-ts) < INSTALL_STRIP_DISMISS_DAYS*24*60*60*1000;
+  // Session-only: dismissing just hides it for this tab/session so it
+  // doesn't nag while you're using it, but it always comes back on the
+  // next restart/open until the app is actually installed.
+  return sessionStorage.getItem('mtInstallStripDismissed')==='1';
 }
 function dismissInstallStrip(){
-  localStorage.setItem('mtInstallStripDismissAt',String(Date.now()));
+  sessionStorage.setItem('mtInstallStripDismissed','1');
   const strip=document.getElementById('pwa-install-strip');
   if(strip)strip.style.display='none';
 }
