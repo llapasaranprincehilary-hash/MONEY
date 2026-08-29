@@ -338,32 +338,6 @@ body.light input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0
 .pin-key.empty{background:transparent;border:none;cursor:default}
 .pin-error{font-size:12px;color:var(--red);margin-top:12px;min-height:18px}
 #terms-continue-btn:disabled{opacity:.4;cursor:not-allowed}
-
-/* ── Login card: give the sign-in screen a real container + fix low-contrast text ── */
-#auth-login{background:var(--surface);border:1px solid var(--border);border-radius:20px;box-shadow:0 12px 40px rgba(0,0,0,.4);flex-shrink:0}
-#auth-login .auth-login-inner{padding:32px 26px}
-#auth-login .pin-sub{margin-bottom:24px}
-#auth-login .auth-divider{display:flex;align-items:center;gap:10px;width:100%;margin:18px 0;color:var(--muted);font-size:11px;font-weight:600;letter-spacing:.06em}
-#auth-login .auth-divider .line{flex:1;height:1px;background:var(--border2)}
-#auth-login input{transition:border-color var(--tr),background var(--tr)}
-#auth-login input:focus{border-color:var(--accent) !important;background:var(--surface3) !important}
-#auth-login .btn-ghost{background:var(--surface3);color:#b4b4c4;border:1px solid var(--border2);font-weight:600}
-#auth-login .btn-ghost:hover{color:var(--text);border-color:var(--accent-dim);background:var(--surface3)}
-#auth-login-guest-note{font-size:11.5px;color:#82828f;margin-top:12px;line-height:1.55}
-/* Slim, dismissible install nudge — flush across the top of the card like a
-   system notification, not a form element competing with sign-in. */
-#pwa-install-strip{display:none;align-items:center;gap:9px;width:100%;padding:10px 16px;background:var(--accent-bg);border-bottom:1px solid rgba(168,224,56,.25);border-radius:20px 20px 0 0}
-#pwa-install-strip-dash{display:none;align-items:center;gap:9px;max-width:1000px;margin:16px clamp(16px,3.5vw,36px) 0;padding:10px 16px;background:var(--accent-bg);border:1px solid rgba(168,224,56,.25);border-radius:12px;box-sizing:border-box}
-.pis-icon{font-size:15px;flex-shrink:0}
-.pis-text{flex:1;min-width:0;font-size:11.5px;color:var(--text);text-align:left;line-height:1.4}
-.pis-action{display:inline-flex;flex-shrink:0;background:var(--accent);color:#080808;border:none;border-radius:7px;padding:6px 12px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:var(--font-b);white-space:nowrap}
-.pis-dismiss{flex-shrink:0;background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:16px;line-height:1;padding:2px 4px}
-.pis-dismiss:hover{color:var(--text)}
-@media (max-width:420px){
-  #auth-login .auth-login-inner{padding:24px 18px}
-  #auth-login{border-radius:16px}
-  #pwa-install-strip{border-radius:16px 16px 0 0}
-}
 #terms-scroll::-webkit-scrollbar{width:6px}
 #terms-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
 
@@ -861,54 +835,57 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
 <div class="shell">
 
 <!-- AUTH OVERLAY (login / register / PIN) -->
-<div id="auth-overlay" class="pin-overlay" style="display:flex">
+<div id="auth-overlay" class="pin-overlay" style="display:none">
 
   <!-- STEP: ACCOUNT LOGIN / REGISTER (entry point) -->
   <div id="auth-login" class="pin-box" style="display:none;max-width:380px">
+    <div style="width:56px;height:56px;margin:0 auto 14px;background:linear-gradient(135deg,rgba(168,224,56,.18),rgba(168,224,56,.07));border:1px solid rgba(168,224,56,.3);border-radius:14px;display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="3" width="12" height="18" rx="2.2" stroke="var(--accent)" stroke-width="1.7"/><circle cx="6" cy="7.2" r="0.9" fill="var(--accent)"/><circle cx="6" cy="12" r="0.9" fill="var(--accent)"/><circle cx="6" cy="16.8" r="0.9" fill="var(--accent)"/><path d="M9.3 12.6L11.3 14.9L15.2 10" stroke="var(--accent)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="pin-title">Kwen<span style="color:var(--accent)">tado</span></div>
+    <div class="pin-sub" style="margin-bottom:22px">Sign in to sync your data across devices</div>
 
-    <div id="pwa-install-strip" onclick="event.stopPropagation()">
-      <div class="pis-icon">📲</div>
-      <div class="pis-text" id="pwa-install-sub">Install Kwentado for faster, offline access.</div>
-      <button id="pwa-install-btn" class="pis-action" style="display:none" onclick="installApp()">Install</button>
-      <button class="pis-dismiss" onclick="dismissInstallStrip()" aria-label="Dismiss">&times;</button>
+    <div id="pwa-install-banner" style="display:none;width:100%;margin-bottom:18px;background:var(--accent-bg);border:1px solid rgba(168,224,56,.3);border-radius:12px;padding:12px 14px;text-align:left">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:20px;flex-shrink:0">📲</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:700;color:var(--text)">Install Kwentado</div>
+          <div id="pwa-install-sub" style="font-size:11px;color:var(--muted)">Get it as an app on your home screen — faster, works offline.</div>
+        </div>
+      </div>
+      <button id="pwa-install-btn" class="btn btn-primary btn-sm" style="width:100%;margin-top:10px;display:none" onclick="installApp()">Install App</button>
     </div>
 
-    <div class="auth-login-inner">
-      <div style="width:56px;height:56px;margin:0 auto 14px;background:linear-gradient(135deg,rgba(168,224,56,.18),rgba(168,224,56,.07));border:1px solid rgba(168,224,56,.3);border-radius:14px;display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="3" width="12" height="18" rx="2.2" stroke="var(--accent)" stroke-width="1.7"/><circle cx="6" cy="7.2" r="0.9" fill="var(--accent)"/><circle cx="6" cy="12" r="0.9" fill="var(--accent)"/><circle cx="6" cy="16.8" r="0.9" fill="var(--accent)"/><path d="M9.3 12.6L11.3 14.9L15.2 10" stroke="var(--accent)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <div class="pin-title">Kwen<span style="color:var(--accent)">tado</span></div>
-      <div class="pin-sub" style="margin-bottom:22px">Sign in to sync your data across devices</div>
+    <button class="btn btn-primary" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px" onclick="authGoogleSignIn()">
+      <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.9 32.9 29.4 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l6-6C34.5 5.5 29.5 3.5 24 3.5 12.7 3.5 3.5 12.7 3.5 24S12.7 44.5 24 44.5 44.5 35.3 44.5 24c0-1.2-.1-2.4-.9-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.7 18.9 13 24 13c3.1 0 5.8 1.1 8 3l6-6C34.5 6.5 29.5 4.5 24 4.5c-7.8 0-14.5 4.4-17.7 10.2z"/><path fill="#4CAF50" d="M24 44.5c5.4 0 10.3-1.9 14-5.1l-6.5-5.4C29.5 35.6 26.9 36.5 24 36.5c-5.4 0-9.9-3.1-11.4-7.9l-6.6 5.1C9.4 40.1 16.1 44.5 24 44.5z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-1 3-3.1 5.5-6 7l6.5 5.4C39.8 37.4 44.5 31.4 44.5 24c0-1.2-.1-2.4-.9-3.5z"/></svg>
+      Continue with Google
+    </button>
 
-      <button class="btn btn-primary" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px" onclick="authGoogleSignIn()">
-        <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.9 32.9 29.4 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l6-6C34.5 5.5 29.5 3.5 24 3.5 12.7 3.5 3.5 12.7 3.5 24S12.7 44.5 24 44.5 44.5 35.3 44.5 24c0-1.2-.1-2.4-.9-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.7 18.9 13 24 13c3.1 0 5.8 1.1 8 3l6-6C34.5 6.5 29.5 4.5 24 4.5c-7.8 0-14.5 4.4-17.7 10.2z"/><path fill="#4CAF50" d="M24 44.5c5.4 0 10.3-1.9 14-5.1l-6.5-5.4C29.5 35.6 26.9 36.5 24 36.5c-5.4 0-9.9-3.1-11.4-7.9l-6.6 5.1C9.4 40.1 16.1 44.5 24 44.5z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-1 3-3.1 5.5-6 7l6.5 5.4C39.8 37.4 44.5 31.4 44.5 24c0-1.2-.1-2.4-.9-3.5z"/></svg>
-        Continue with Google
-      </button>
-
-      <div class="auth-divider"><div class="line"></div>OR<div class="line"></div></div>
-
-      <div style="display:flex;width:100%;margin-bottom:14px;background:var(--surface2);border-radius:10px;padding:3px;border:1px solid var(--border2)">
-        <button id="login-tab-signin" class="btn-sm" style="flex:1;border:none;border-radius:8px;padding:8px;font-family:var(--font-b);font-weight:600;cursor:pointer;background:var(--accent);color:#080808" onclick="authSetMode('signin')">Sign In</button>
-        <button id="login-tab-register" class="btn-sm" style="flex:1;border:none;border-radius:8px;padding:8px;font-family:var(--font-b);font-weight:600;cursor:pointer;background:transparent;color:var(--muted)" onclick="authSetMode('register')">Register</button>
-      </div>
-
-      <div id="login-name-wrap" style="display:none;text-align:left;width:100%;margin-bottom:10px">
-        <input type="text" id="login-name" placeholder="Full name" autocomplete="name" maxlength="24" style="width:100%;padding:11px 14px;font-size:14px;border-radius:10px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);outline:none;font-family:var(--font-b)">
-      </div>
-      <div style="text-align:left;width:100%;margin-bottom:10px">
-        <input type="email" id="login-email" placeholder="Email address" autocomplete="email" style="width:100%;padding:11px 14px;font-size:14px;border-radius:10px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);outline:none;font-family:var(--font-b)">
-      </div>
-      <div style="text-align:left;width:100%;margin-bottom:16px">
-        <input type="password" id="login-password" placeholder="Password" autocomplete="current-password" style="width:100%;padding:11px 14px;font-size:14px;border-radius:10px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);outline:none;font-family:var(--font-b)" onkeydown="if(event.key==='Enter')authEmailSubmit()">
-      </div>
-      <div class="pin-error" id="login-error"></div>
-      <button class="btn btn-primary" id="login-submit-btn" style="width:100%;margin-bottom:10px" onclick="authEmailSubmit()">Sign In</button>
-      <button class="btn btn-ghost btn-sm" id="login-forgot-pw-btn" onclick="authForgotPassword()">Forgot password?</button>
-
-      <div class="auth-divider"><div class="line"></div>OR<div class="line"></div></div>
-      <div style="text-align:center">
-        <span onclick="authAnonymousSignIn()" style="font-size:12.5px;color:var(--muted);text-decoration:underline;cursor:pointer;font-weight:600">Continue as Guest</span>
-      </div>
-      <div id="auth-login-guest-note">Guest mode keeps you anonymous — you can still set a nickname just for the greeting. Your data syncs to this guest account, but there's no email to recover it if you lose this device.</div>
+    <div style="display:flex;align-items:center;gap:10px;width:100%;margin:16px 0;color:var(--muted2);font-size:11px">
+      <div style="flex:1;height:1px;background:var(--border2)"></div>OR<div style="flex:1;height:1px;background:var(--border2)"></div>
     </div>
+
+    <div style="display:flex;width:100%;margin-bottom:14px;background:var(--surface2);border-radius:10px;padding:3px;border:1px solid var(--border2)">
+      <button id="login-tab-signin" class="btn-sm" style="flex:1;border:none;border-radius:8px;padding:8px;font-family:var(--font-b);font-weight:600;cursor:pointer;background:var(--accent);color:#080808" onclick="authSetMode('signin')">Sign In</button>
+      <button id="login-tab-register" class="btn-sm" style="flex:1;border:none;border-radius:8px;padding:8px;font-family:var(--font-b);font-weight:600;cursor:pointer;background:transparent;color:var(--muted)" onclick="authSetMode('register')">Register</button>
+    </div>
+
+    <div id="login-name-wrap" style="display:none;text-align:left;width:100%;margin-bottom:10px">
+      <input type="text" id="login-name" placeholder="Full name" autocomplete="name" maxlength="24" style="width:100%;padding:11px 14px;font-size:14px;border-radius:10px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);outline:none;font-family:var(--font-b)">
+    </div>
+    <div style="text-align:left;width:100%;margin-bottom:10px">
+      <input type="email" id="login-email" placeholder="Email address" autocomplete="email" style="width:100%;padding:11px 14px;font-size:14px;border-radius:10px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);outline:none;font-family:var(--font-b)">
+    </div>
+    <div style="text-align:left;width:100%;margin-bottom:16px">
+      <input type="password" id="login-password" placeholder="Password" autocomplete="current-password" style="width:100%;padding:11px 14px;font-size:14px;border-radius:10px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);outline:none;font-family:var(--font-b)" onkeydown="if(event.key==='Enter')authEmailSubmit()">
+    </div>
+    <div class="pin-error" id="login-error"></div>
+    <button class="btn btn-primary" id="login-submit-btn" style="width:100%;margin-bottom:10px" onclick="authEmailSubmit()">Sign In</button>
+    <button class="btn btn-ghost btn-sm" id="login-forgot-pw-btn" onclick="authForgotPassword()">Forgot password?</button>
+
+    <div style="display:flex;align-items:center;gap:10px;width:100%;margin:16px 0;color:var(--muted2);font-size:11px">
+      <div style="flex:1;height:1px;background:var(--border2)"></div>OR<div style="flex:1;height:1px;background:var(--border2)"></div>
+    </div>
+    <button class="btn btn-ghost" style="width:100%" onclick="authAnonymousSignIn()">Continue as Guest</button>
+    <div style="font-size:11px;color:var(--muted2);margin-top:10px;line-height:1.5">Guest mode keeps you anonymous — you can still set a nickname just for the greeting. Your data syncs to this guest account, but there's no email to recover it if you lose this device.</div>
   </div>
 
   <!-- STEP: TERMS OF USE & PRIVACY NOTICE (first-time consent) -->
@@ -1249,13 +1226,6 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
         <span class="tb-export-label">Export</span>
       </button>
     </div>
-  </div>
-
-  <div id="pwa-install-strip-dash" onclick="event.stopPropagation()">
-    <div class="pis-icon">📲</div>
-    <div class="pis-text" id="pwa-install-sub-dash">Install Kwentado for faster, offline access.</div>
-    <button id="pwa-install-btn-dash" class="pis-action" style="display:none" onclick="installApp()">Install</button>
-    <button class="pis-dismiss" onclick="dismissInstallStrip()" aria-label="Dismiss">&times;</button>
   </div>
 
   <div class="content">
@@ -2258,7 +2228,7 @@ function dismissGuestBanner(){
   const el=document.getElementById('guest-link-banner');
   if(el)el.style.display='none';
 }
-function render(){renderBalances();renderDash();renderIncome();renderExpenses();renderLoans();renderGoals();renderSettings();updateBadges();syncEyeButtons();renderGuestBanner();updateInstallBanner();}
+function render(){renderBalances();renderDash();renderIncome();renderExpenses();renderLoans();renderGoals();renderSettings();updateBadges();syncEyeButtons();renderGuestBanner();}
 function updateBadges(){
   document.getElementById('nav-badge-income').textContent=state.income.length;
   document.getElementById('nav-badge-expenses').textContent=state.expenses.length;
@@ -3741,54 +3711,32 @@ function isIOSDevice(){
 function isAndroidDevice(){
   return /android/i.test(navigator.userAgent);
 }
-function isInstallStripDismissed(){
-  // Session-only: dismissing just hides it for this tab/session so it
-  // doesn't nag while you're using it, but it always comes back on the
-  // next restart/open until the app is actually installed.
-  return sessionStorage.getItem('mtInstallStripDismissed')==='1';
-}
-// Two strips share the same install-prompt logic: one on the login screen,
-// one on the dashboard (for people who are already signed in).
-const INSTALL_STRIPS=[
-  {banner:'pwa-install-strip',btn:'pwa-install-btn',sub:'pwa-install-sub'},
-  {banner:'pwa-install-strip-dash',btn:'pwa-install-btn-dash',sub:'pwa-install-sub-dash'}
-];
-function dismissInstallStrip(){
-  sessionStorage.setItem('mtInstallStripDismissed','1');
-  INSTALL_STRIPS.forEach(cfg=>{
-    const strip=document.getElementById(cfg.banner);
-    if(strip)strip.style.display='none';
-  });
-}
 function updateInstallBanner(){
-  const hide=isStandaloneApp()||isInstallStripDismissed();
-  INSTALL_STRIPS.forEach(cfg=>{
-    const banner=document.getElementById(cfg.banner);
-    const btn=document.getElementById(cfg.btn);
-    const sub=document.getElementById(cfg.sub);
-    if(!banner)return;
-    if(hide){
-      // already installed, or the person already dismissed it this session
-      banner.style.display='none';
-      return;
-    }
-    // Always show a slim strip with manual fallback steps — upgrade to a real
-    // one-tap button if/when the browser actually offers the native prompt.
-    banner.style.display='flex';
-    if(deferredInstallPrompt){
-      if(btn)btn.style.display='inline-flex';
-      if(sub)sub.textContent='Get it as an app on your home screen — faster, works offline.';
-    } else if(isIOSDevice()){
-      if(btn)btn.style.display='none';
-      if(sub)sub.textContent='Tap the Share icon below, then "Add to Home Screen" to install.';
-    } else if(isAndroidDevice()){
-      if(btn)btn.style.display='none';
-      if(sub)sub.textContent='Tap the ⋮ menu (top right), then "Install app" or "Add to Home screen".';
-    } else {
-      if(btn)btn.style.display='none';
-      if(sub)sub.textContent="Look for an install icon in your browser's address bar to add this app.";
-    }
-  });
+  const banner=document.getElementById('pwa-install-banner');
+  const btn=document.getElementById('pwa-install-btn');
+  const sub=document.getElementById('pwa-install-sub');
+  if(!banner)return;
+  if(isStandaloneApp()){
+    // already running as an installed app — nothing to offer
+    banner.style.display='none';
+    return;
+  }
+  // Always show the card with manual fallback steps — upgrade to a real
+  // one-tap button if/when the browser actually offers the native prompt.
+  banner.style.display='block';
+  if(deferredInstallPrompt){
+    if(btn)btn.style.display='block';
+    if(sub)sub.textContent='Get it as an app on your home screen — faster, works offline.';
+  } else if(isIOSDevice()){
+    if(btn)btn.style.display='none';
+    if(sub)sub.textContent='Tap the Share icon below, then "Add to Home Screen" to install.';
+  } else if(isAndroidDevice()){
+    if(btn)btn.style.display='none';
+    if(sub)sub.textContent='Tap the ⋮ menu (top right), then "Install app" or "Add to Home screen".';
+  } else {
+    if(btn)btn.style.display='none';
+    if(sub)sub.textContent="Look for an install icon in your browser's address bar to add this app.";
+  }
 }
 window.addEventListener('beforeinstallprompt',e=>{
   e.preventDefault();
