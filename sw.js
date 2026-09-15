@@ -4,7 +4,7 @@
    It never touches Firestore/Auth network calls — those are left alone so
    cloud sync keeps working normally whenever you do have a connection. */
 
-const CACHE_NAME = 'kwentado-shell-v1';
+const CACHE_NAME = 'kwentado-shell-v2';
 
 const APP_SHELL = [
   './',
