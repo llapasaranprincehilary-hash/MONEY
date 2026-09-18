@@ -309,7 +309,7 @@ body.light input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0
 .toast.show{opacity:1;transform:translateY(0)}
 
 /* SHORTCUTS */
-.sco{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);z-index:300;display:none;align-items:center;justify-content:center;padding:20px}
+.sco{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);z-index:300;display:none;align-items:safe center;justify-content:safe center;padding:20px;overflow-y:auto}
 .sco.show{display:flex}
 .sc-box{background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:28px 32px;width:min(340px,100%);max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-lg)}
 .sc-title{font-family:var(--font-d);font-size:15px;font-weight:700;margin-bottom:18px}
@@ -397,6 +397,12 @@ body.light .snapshot-card{background:linear-gradient(135deg,#f0f7e8 0%,#e8f5d5 1
   .stat-grid{grid-template-columns:1fr 1fr}
   .hero-wallets{grid-template-columns:1fr}
   .bottom-nav{display:flex;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);z-index:50;padding:8px 0 max(8px,env(safe-area-inset-bottom));box-shadow:0 -4px 20px rgba(0,0,0,.3)}
+  /* iOS Safari force-zooms on focus into any input/select/textarea with a
+     font-size under 16px, and since zoom is disabled site-wide the user
+     gets stuck zoomed-in with no way to pinch back out. Forcing 16px on
+     mobile (independent of any inline font-size on the element) prevents
+     that trigger entirely, without changing desktop sizing. */
+  input,select,textarea{font-size:16px !important}
 }
 @media(max-width:380px){
   .content{padding:12px 12px 90px}
@@ -1129,7 +1135,7 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
 </div>
 
 <!-- TUTORIAL OVERLAY -->
-<div id="tutorial-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:1500;align-items:center;justify-content:center;padding:20px">
+<div id="tutorial-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:1500;align-items:safe center;justify-content:safe center;padding:20px;overflow-y:auto">
   <div id="tutorial-box" style="background:var(--surface);border:1px solid var(--border2);border-radius:20px;max-width:460px;width:100%;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.3)">
     <!-- Progress bar -->
     <div style="height:3px;background:var(--surface3)"><div id="tut-progress" style="height:100%;background:var(--accent);transition:width .4s ease;border-radius:3px"></div></div>
@@ -1564,7 +1570,7 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
     </div>
 
     <!-- RECOVERY QUESTION UPDATE MODAL -->
-    <div id="secq-update-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;padding:20px">
+    <div id="secq-update-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3000;align-items:safe center;justify-content:safe center;padding:20px;overflow-y:auto">
       <div style="background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:24px 22px;max-width:380px;width:100%;box-shadow:var(--shadow-lg)">
         <div class="card-title" style="margin-bottom:14px">Recovery Question</div>
         <div style="font-size:12px;color:var(--muted);margin-bottom:16px">Used only if you forget your PIN. Stored on this device, not encrypted.</div>
@@ -4720,7 +4726,7 @@ window.logRecurring = function(templateId){
 </script>
 
 <!-- EDIT LOAN MODAL -->
-<div id="edit-loan-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;padding:20px">
+<div id="edit-loan-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3000;align-items:safe center;justify-content:safe center;padding:20px;overflow-y:auto">
   <div style="background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:24px 22px;max-width:360px;width:100%;box-shadow:var(--shadow-lg)">
     <div class="card-title" style="margin-bottom:16px">Edit Loan</div>
     <input type="hidden" id="edit-loan-id">
@@ -4747,7 +4753,7 @@ window.logRecurring = function(templateId){
 </div>
 
 <!-- SETTLE LOAN MODAL -->
-<div id="settle-loan-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;padding:20px">
+<div id="settle-loan-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3000;align-items:safe center;justify-content:safe center;padding:20px;overflow-y:auto">
   <div style="background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:24px 22px;max-width:360px;width:100%;box-shadow:var(--shadow-lg)">
     <div class="card-title" style="margin-bottom:6px">Settle Loan</div>
     <div id="settle-loan-label" style="font-size:13px;color:var(--muted);margin-bottom:16px"></div>
@@ -4765,7 +4771,7 @@ window.logRecurring = function(templateId){
 </div>
 
 <!-- EDIT INCOME MODAL -->
-<div id="edit-income-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;padding:20px">
+<div id="edit-income-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3000;align-items:safe center;justify-content:safe center;padding:20px;overflow-y:auto">
   <div style="background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:24px 22px;max-width:380px;width:100%;box-shadow:var(--shadow-lg)">
     <div class="card-title" style="margin-bottom:16px">Edit Income Entry</div>
     <input type="hidden" id="edit-inc-id">
@@ -4793,7 +4799,7 @@ window.logRecurring = function(templateId){
 </div>
 
 <!-- EDIT EXPENSE MODAL -->
-<div id="edit-expense-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;padding:20px">
+<div id="edit-expense-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3000;align-items:safe center;justify-content:safe center;padding:20px;overflow-y:auto">
   <div style="background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:24px 22px;max-width:380px;width:100%;box-shadow:var(--shadow-lg)">
     <div class="card-title" style="margin-bottom:16px">Edit Expense</div>
     <input type="hidden" id="edit-exp-id">
@@ -4820,7 +4826,7 @@ window.logRecurring = function(templateId){
 </div>
 
 <!-- EDIT GOAL MODAL -->
-<div id="edit-goal-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;padding:20px">
+<div id="edit-goal-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3000;align-items:safe center;justify-content:safe center;padding:20px;overflow-y:auto">
   <div style="background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:24px 22px;max-width:360px;width:100%;box-shadow:var(--shadow-lg)">
     <div class="card-title" style="margin-bottom:16px">Edit Goal</div>
     <input type="hidden" id="edit-goal-id">
@@ -4838,7 +4844,7 @@ window.logRecurring = function(templateId){
 </div>
 
 <!-- STATS BREAKDOWN MODAL -->
-<div id="stats-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)closeStatsModal()">
+<div id="stats-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3000;align-items:safe center;justify-content:safe center;padding:20px;overflow-y:auto" onclick="if(event.target===this)closeStatsModal()">
   <div style="background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:24px 22px 22px;max-width:440px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-lg)">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
       <div class="card-title" id="sbm-title" style="margin-bottom:0">Breakdown</div>
@@ -4849,7 +4855,7 @@ window.logRecurring = function(templateId){
 </div>
 
 <!-- CONFIRM MODAL -->
-<div id="guest-signout-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;padding:20px">
+<div id="guest-signout-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3000;align-items:safe center;justify-content:safe center;padding:20px;overflow-y:auto">
   <div style="background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:30px 28px 24px;max-width:360px;width:100%;box-shadow:var(--shadow-lg)">
     <div style="font-size:32px;margin-bottom:12px;text-align:center">⚠️</div>
     <div style="font-size:15px;font-weight:700;color:var(--text);text-align:center;margin-bottom:8px">You're signed in as a Guest</div>
@@ -4864,7 +4870,7 @@ window.logRecurring = function(templateId){
   </div>
 </div>
 
-<div id="merge-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;padding:20px">
+<div id="merge-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3000;align-items:safe center;justify-content:safe center;padding:20px;overflow-y:auto">
   <div style="background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:30px 28px 24px;max-width:380px;width:100%;box-shadow:var(--shadow-lg)">
     <div style="font-size:32px;margin-bottom:12px;text-align:center">☁️</div>
     <div style="font-size:15px;font-weight:700;color:var(--text);text-align:center;margin-bottom:8px">This account already has cloud data</div>
@@ -4875,7 +4881,7 @@ window.logRecurring = function(templateId){
   </div>
 </div>
 
-<div id="confirm-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3000;align-items:center;justify-content:center;padding:20px">
+<div id="confirm-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3000;align-items:safe center;justify-content:safe center;padding:20px;overflow-y:auto">
   <div style="background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:30px 28px 24px;max-width:340px;width:100%;box-shadow:var(--shadow-lg)">
     <div id="confirm-icon" style="font-size:32px;margin-bottom:12px;text-align:center"></div>
     <div id="confirm-msg" style="font-size:14px;color:var(--text);text-align:center;line-height:1.6;margin-bottom:22px"></div>
