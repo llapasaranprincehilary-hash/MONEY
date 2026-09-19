@@ -11,7 +11,7 @@
    CACHE_NAME — so an unchanged cache name means old, stale assets (icons
    included) can keep being served indefinitely even after you replace the
    underlying files. */
-const CACHE_NAME = 'finuity-shell-v4';
+const CACHE_NAME = 'finuity-shell-v5';
 
 const APP_SHELL = [
   './',
@@ -61,7 +61,11 @@ self.addEventListener('fetch', event => {
 
   if (isPageRequest) {
     event.respondWith(
-      fetch(event.request).then(response => {
+      // cache:'no-cache' makes the browser revalidate with the server instead of
+      // reusing its own HTTP cache. Without it, hosts like GitHub Pages (which send
+      // a ~10 minute max-age) can hand back the OLD index.html even though this
+      // fetch looks "network-first".
+      fetch(event.request, { cache: 'no-cache' }).then(response => {
         if (response && response.status === 200) {
           const clone = response.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
