@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FINUITY Admin</title>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<style>
+  :root{
+    --bg:#060608; --surface:#101014; --surface2:#16161c; --border:rgba(255,255,255,.08);
+    --border2:rgba(255,255,255,.12); --accent:#b4f265; --accent-dim:#9fdb56;
+    --text:#f2f2f2; --muted:#9a9aa0; --red:#ef4444;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100vh}
+  .wrap{max-width:1000px;margin:0 auto;padding:24px 20px 60px}
+  h1{font-size:20px;margin:0 0 4px;display:flex;align-items:center;gap:10px}
+  .sub{font-size:13px;color:var(--muted);margin:0 0 28px}
+
+  /* Login screen */
+  #login-screen{max-width:340px;margin:80px auto;text-align:center;padding:0 20px}
+  #login-screen input{width:100%;padding:11px 14px;font-size:14px;border-radius:10px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);outline:none;margin-bottom:10px}
+  #login-screen button{width:100%;background:var(--accent);color:#080808;border:none;padding:12px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;margin-top:6px}
+  #login-error{color:var(--red);font-size:13px;min-height:18px;margin-top:8px}
+
+  /* Table view */
+  #dashboard{display:none}
+  .toolbar{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+  #search{flex:1;min-width:200px;padding:10px 14px;font-size:13px;border-radius:10px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);outline:none}
+  .stat-pills{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+  .pill{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 16px;font-size:12px;color:var(--muted)}
+  .pill b{color:var(--accent);font-size:15px;display:block;margin-top:2px}
+
+  table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+  th,td{text-align:left;padding:12px 14px;font-size:13px;border-bottom:1px solid var(--border)}
+  th{color:var(--muted);text-transform:uppercase;font-size:10.5px;letter-spacing:.06em;cursor:pointer;user-select:none;white-space:nowrap}
+  th:hover{color:var(--text)}
+  th.sorted{color:var(--accent)}
+  tr:last-child td{border-bottom:none}
+  tbody tr{cursor:pointer;transition:background .1s}
+  tbody tr:hover{background:var(--surface2)}
+  .uid{color:var(--muted);font-size:11px;font-family:monospace}
+  .bal{font-weight:700;font-family:monospace}
+  .empty{padding:40px;text-align:center;color:var(--muted);font-size:13px}
+
+  /* Detail modal */
+  #detail-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto}
+  #detail-card{background:var(--surface);border:1px solid var(--border2);border-radius:14px;max-width:600px;width:100%;padding:24px;max-height:85vh;overflow-y:auto}
+  #detail-card h2{margin:0 0 4px;font-size:17px}
+  #detail-card .uid{margin-bottom:18px}
+  #detail-card h3{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:20px 0 8px}
+  #detail-card h3:first-of-type{margin-top:0}
+  .kv{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border)}
+  .kv:last-child{border-bottom:none}
+  #detail-close{background:var(--surface2);border:1px solid var(--border2);color:var(--text);padding:9px 18px;border-radius:9px;font-size:13px;cursor:pointer;margin-top:20px}
+  .badge-you{background:rgba(180,242,101,.15);color:var(--accent);font-size:10px;padding:2px 7px;border-radius:6px;margin-left:6px}
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+  <h1 style="justify-content:center">FINUITY Admin</h1>
+  <p class="sub">Sign in with your admin account</p>
+  <input type="email" id="admin-email" placeholder="Email address" autocomplete="username">
+  <input type="password" id="admin-password" placeholder="Password" autocomplete="current-password">
+  <button onclick="doLogin()">Sign In</button>
+  <div id="login-error"></div>
+</div>
+
+<div class="wrap" id="dashboard">
+  <h1>👥 FINUITY Admin</h1>
+  <p class="sub" id="signed-in-as"></p>
+
+  <div class="stat-pills" id="stat-pills"></div>
+
+  <div class="toolbar">
+    <input type="text" id="search" placeholder="Search by username or UID…" oninput="renderTable()">
+    <button onclick="signOutAdmin()" style="background:var(--surface2);border:1px solid var(--border2);color:var(--text);padding:10px 16px;border-radius:10px;font-size:13px;cursor:pointer">Sign Out</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th data-key="username" onclick="setSort('username')">Username</th>
+        <th data-key="totalBalance" onclick="setSort('totalBalance')">Total Balance</th>
+        <th data-key="entryCount" onclick="setSort('entryCount')">Entries</th>
+        <th data-key="updatedAt" onclick="setSort('updatedAt')">Last Updated</th>
+        <th>UID</th>
+      </tr>
+    </thead>
+    <tbody id="table-body"></tbody>
+  </table>
+  <div class="empty" id="empty-msg" style="display:none">No users found.</div>
+</div>
+
+<div id="detail-overlay" onclick="if(event.target===this)closeDetail()">
+  <div id="detail-card"></div>
+</div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBMkUBMpcKy7kMEReov933RIJsKMztB9NA",
+  authDomain: "moneythings-94584.firebaseapp.com",
+  projectId: "moneythings-94584",
+  storageBucket: "moneythings-94584.firebasestorage.app",
+  messagingSenderId: "851470533910",
+  appId: "1:851470533910:web:5fbd6961579f428f46fc37"
+};
+
+let fbAuth, fbDb;
+try{
+  firebase.initializeApp(firebaseConfig);
+  fbAuth = firebase.auth();
+  fbDb = firebase.firestore();
+}catch(err){
+  document.getElementById('login-error').textContent = "Couldn't connect to Firebase. Check your internet connection.";
+}
+
+let allUsers = [];
+let sortKey = 'totalBalance';
+let sortDir = 'desc';
+let currentUid = null;
+
+async function doLogin(){
+  const email = document.getElementById('admin-email').value.trim();
+  const pw = document.getElementById('admin-password').value;
+  const errEl = document.getElementById('login-error');
+  errEl.textContent = '';
+  if(!email || !pw){ errEl.textContent = 'Enter your email and password.'; return; }
+  try{
+    await fbAuth.signInWithEmailAndPassword(email, pw);
+  }catch(err){
+    errEl.textContent = err.message || 'Sign in failed.';
+  }
+}
+
+function signOutAdmin(){
+  fbAuth.signOut();
+}
+
+fbAuth && fbAuth.onAuthStateChanged(async (user) => {
+  if(!user){
+    document.getElementById('login-screen').style.display = 'block';
+    document.getElementById('dashboard').style.display = 'none';
+    return;
+  }
+  currentUid = user.uid;
+  document.getElementById('signed-in-as').textContent = 'Signed in as ' + user.email;
+  await loadAllUsers();
+});
+
+async function loadAllUsers(){
+  const loginScreen = document.getElementById('login-screen');
+  const dashboard = document.getElementById('dashboard');
+  try{
+    const snap = await fbDb.collection('users').get();
+    allUsers = [];
+    snap.forEach(doc => {
+      const raw = doc.data() || {};
+      const data = raw.data || {};
+      const wallets = Array.isArray(data.wallets) ? data.wallets : [];
+      const totalBalance = wallets.reduce((sum, w) => sum + (Number(w.balance) || 0), 0);
+      const entryCount = (data.income||[]).length + (data.expenses||[]).length + (data.loans||[]).length + (data.goals||[]).length;
+      allUsers.push({
+        uid: doc.id,
+        username: data.username || '(no name set)',
+        totalBalance,
+        entryCount,
+        updatedAt: raw.updatedAt || 0,
+        fullData: data
+      });
+    });
+    loginScreen.style.display = 'none';
+    dashboard.style.display = 'block';
+    renderStats();
+    renderTable();
+  }catch(err){
+    loginScreen.style.display = 'block';
+    dashboard.style.display = 'none';
+    const errEl = document.getElementById('login-error');
+    if(err.code === 'permission-denied'){
+      errEl.textContent = "Signed in, but this account isn't allowed to view all users. Check the Firestore security rules.";
+    }else{
+      errEl.textContent = 'Could not load users: ' + err.message;
+    }
+    fbAuth.signOut();
+  }
+}
+
+function fmtPeso(n){
+  return '₱' + Number(n).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+function fmtDate(ms){
+  if(!ms) return '—';
+  return new Date(ms).toLocaleDateString('en-PH',{year:'numeric',month:'short',day:'numeric'});
+}
+
+function renderStats(){
+  const total = allUsers.length;
+  const sumAll = allUsers.reduce((s,u)=>s+u.totalBalance,0);
+  const top = allUsers.slice().sort((a,b)=>b.totalBalance-a.totalBalance)[0];
+  document.getElementById('stat-pills').innerHTML = `
+    <div class="pill">Total users<b>${total}</b></div>
+    <div class="pill">Combined balance<b>${fmtPeso(sumAll)}</b></div>
+    <div class="pill">Top balance<b>${top ? top.username : '—'}</b></div>
+  `;
+}
+
+function setSort(key){
+  if(sortKey === key){ sortDir = sortDir === 'asc' ? 'desc' : 'asc'; }
+  else { sortKey = key; sortDir = key === 'username' ? 'asc' : 'desc'; }
+  renderTable();
+}
+
+function renderTable(){
+  const q = document.getElementById('search').value.trim().toLowerCase();
+  let rows = allUsers.filter(u =>
+    !q || u.username.toLowerCase().includes(q) || u.uid.toLowerCase().includes(q)
+  );
+  rows.sort((a,b) => {
+    let av = a[sortKey], bv = b[sortKey];
+    if(typeof av === 'string') { av = av.toLowerCase(); bv = bv.toLowerCase(); }
+    if(av < bv) return sortDir === 'asc' ? -1 : 1;
+    if(av > bv) return sortDir === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  document.querySelectorAll('th[data-key]').forEach(th => {
+    th.classList.toggle('sorted', th.dataset.key === sortKey);
+  });
+
+  const tbody = document.getElementById('table-body');
+  document.getElementById('empty-msg').style.display = rows.length ? 'none' : 'block';
+  tbody.innerHTML = rows.map(u => `
+    <tr onclick="openDetail('${u.uid}')">
+      <td>${escapeHtml(u.username)}${u.uid===currentUid?'<span class="badge-you">you</span>':''}</td>
+      <td class="bal">${fmtPeso(u.totalBalance)}</td>
+      <td>${u.entryCount}</td>
+      <td>${fmtDate(u.updatedAt)}</td>
+      <td class="uid">${u.uid}</td>
+    </tr>
+  `).join('');
+}
+
+function escapeHtml(s){
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function openDetail(uid){
+  const u = allUsers.find(x => x.uid === uid);
+  if(!u) return;
+  const d = u.fullData;
+  const wallets = (d.wallets||[]).map(w => `<div class="kv"><span>${escapeHtml(w.label||w.id)}</span><span>${fmtPeso(w.balance||0)}</span></div>`).join('') || '<div class="kv"><span>No wallets</span></div>';
+  const card = document.getElementById('detail-card');
+  card.innerHTML = `
+    <h2>${escapeHtml(u.username)}</h2>
+    <div class="uid">${u.uid}</div>
+    <h3>Wallets (Total: ${fmtPeso(u.totalBalance)})</h3>
+    ${wallets}
+    <h3>Summary</h3>
+    <div class="kv"><span>Income entries</span><span>${(d.income||[]).length}</span></div>
+    <div class="kv"><span>Expense entries</span><span>${(d.expenses||[]).length}</span></div>
+    <div class="kv"><span>Loans/Payables</span><span>${(d.loans||[]).length}</span></div>
+    <div class="kv"><span>Savings goals</span><span>${(d.goals||[]).length}</span></div>
+    <div class="kv"><span>Last updated</span><span>${fmtDate(u.updatedAt)}</span></div>
+    <button id="detail-close" onclick="closeDetail()">Close</button>
+  `;
+  document.getElementById('detail-overlay').style.display = 'flex';
+}
+function closeDetail(){
+  document.getElementById('detail-overlay').style.display = 'none';
+}
+</script>
+</body>
+</html>
