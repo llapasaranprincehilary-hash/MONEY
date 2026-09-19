@@ -11,7 +11,7 @@
    CACHE_NAME — so an unchanged cache name means old, stale assets (icons
    included) can keep being served indefinitely even after you replace the
    underlying files. */
-const CACHE_NAME = 'finuity-shell-v5';
+const CACHE_NAME = 'finuity-shell-v6';
 
 const APP_SHELL = [
   './',
@@ -28,9 +28,12 @@ const APP_SHELL = [
 self.addEventListener('install', event => {
   self.skipWaiting();
   event.waitUntil(
+    // Cache each file on its own. cache.addAll() is all-or-nothing: one missing icon or a
+    // blocked CDN request would silently leave the WHOLE app uncached (no offline mode).
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(APP_SHELL))
-      .catch(err => console.error('SW install: failed to cache app shell', err))
+      .then(cache => Promise.all(APP_SHELL.map(url =>
+        cache.add(url).catch(err => console.warn('SW install: could not cache', url, err))
+      )))
   );
 });
 

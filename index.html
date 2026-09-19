@@ -932,6 +932,8 @@ input[type="date"]{min-width:0;-webkit-appearance:none;appearance:none}
 .hero-amount .hero-peso{font-size:.58em !important}
 /* search icon no longer sits on top of the placeholder text */
 .search-bar input{padding-left:38px !important}
+
+.badge-loan-repayment{background:var(--blue-bg);color:var(--blue)}
 </style>
 <!-- Firebase (Cloud Sync) — compat SDK, no build step needed -->
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
@@ -1085,7 +1087,7 @@ input[type="date"]{min-width:0;-webkit-appearance:none;appearance:none}
         <input type="checkbox" id="terms-agree-check" disabled onchange="document.getElementById('terms-continue-btn').disabled=!this.checked">
         <span class="cbox-box"><svg viewBox="0 0 16 16"><path d="M3.5 8.3L6.3 11.2L12.5 4.5"/></svg></span>
       </span>
-      <span style="font-size:12.5px;color:var(--text);line-height:1.5">I have read and agree to the <b>Terms of Use &amp; Privacy Notice</b> above, and I understand my data is stored only on this device.</span>
+      <span style="font-size:12.5px;color:var(--text);line-height:1.5">I have read and agree to the <b>Terms of Use &amp; Privacy Notice</b> above, and I understand how my data is stored (on this device and synced to my account).</span>
     </label>
 
     <button id="terms-continue-btn" onclick="acceptTermsAndContinue()" disabled style="width:100%;background:var(--accent);color:#080808;border:none;padding:12px;border-radius:10px;font-family:var(--font-d);font-size:14px;font-weight:700;cursor:pointer;opacity:1">Agree &amp; Continue</button>
@@ -1135,7 +1137,7 @@ input[type="date"]{min-width:0;-webkit-appearance:none;appearance:none}
   <div id="auth-secsetup" class="pin-box" style="display:none;max-width:380px">
     <div style="font-size:32px;margin-bottom:14px">🛟</div>
     <div class="pin-title">Set a Recovery Question</div>
-    <div class="pin-sub" style="margin-bottom:18px">FINUITY has no email or server, so this is the only way back in if you forget your PIN.</div>
+    <div class="pin-sub" style="margin-bottom:18px">Guest accounts have no email, so this is the only way back in if you forget your PIN.</div>
     <div style="text-align:left;width:100%;margin-bottom:14px">
       <label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:500;display:block;margin-bottom:6px">Choose a Question</label>
       <select id="secsetup-question" onchange="document.getElementById('secsetup-custom-wrap').style.display=this.value==='__custom__'?'block':'none'" style="width:100%;padding:11px 14px;font-size:13.5px;border-radius:10px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);outline:none;font-family:var(--font-b)">
@@ -1156,7 +1158,7 @@ input[type="date"]{min-width:0;-webkit-appearance:none;appearance:none}
       <label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:500;display:block;margin-bottom:6px">Your Answer</label>
       <input type="text" id="secsetup-answer" placeholder="Something only you'd know" style="width:100%;padding:11px 14px;font-size:13.5px;border-radius:10px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);outline:none;font-family:var(--font-b)" maxlength="60">
     </div>
-    <div style="font-size:11px;color:var(--muted2);text-align:left;width:100%;margin-bottom:16px">Answers aren't case-sensitive. Pick something memorable, since this is stored only on this device, not encrypted.</div>
+    <div style="font-size:11px;color:var(--muted2);text-align:left;width:100%;margin-bottom:16px">Answers aren't case-sensitive. Pick something memorable — it's stored as a one-way hash, so it can't be read back.</div>
     <div class="pin-error" id="secsetup-error"></div>
     <button class="btn btn-primary" style="width:100%;margin-top:4px" onclick="finishRegistrationWithSecurity()">Save &amp; Finish Setup</button>
     <button class="btn btn-ghost btn-sm" style="margin-top:10px" onclick="skipSecuritySetup()">Skip for now</button>
@@ -1712,7 +1714,7 @@ input[type="date"]{min-width:0;-webkit-appearance:none;appearance:none}
     <div id="secq-update-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3000;align-items:safe center;justify-content:safe center;padding:20px;overflow-y:auto">
       <div style="background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:24px 22px;max-width:380px;width:100%;box-shadow:var(--shadow-lg)">
         <div class="card-title" style="margin-bottom:14px">Recovery Question</div>
-        <div style="font-size:12px;color:var(--muted);margin-bottom:16px">Used only if you forget your PIN. Stored on this device, not encrypted.</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:16px">Used only if you forget your PIN. Your answer is stored as a one-way hash, not as plain text.</div>
         <div style="text-align:left;width:100%;margin-bottom:14px">
           <label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:500;display:block;margin-bottom:6px">Choose a Question</label>
           <select id="secq-modal-question" onchange="document.getElementById('secq-modal-custom-wrap').style.display=this.value==='__custom__'?'block':'none'" style="width:100%;padding:11px 14px;font-size:13.5px;border-radius:10px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);outline:none;font-family:var(--font-b)">
@@ -1837,7 +1839,7 @@ input[type="date"]{min-width:0;-webkit-appearance:none;appearance:none}
         <div class="form-group"><label>Period</label>
           <select id="report-month">
             <option value="all">All Time — Full Report</option>
-            <option value="year-2026">Year 2026</option><option value="year-2025">Year 2025</option><option value="year-2024">Year 2024</option>
+            
             <option disabled>── by month ──</option>
             <option>January</option><option>February</option><option>March</option><option>April</option><option>May</option><option>June</option><option>July</option><option>August</option><option>September</option><option>October</option><option>November</option><option>December</option>
           </select>
@@ -2113,10 +2115,12 @@ function save(){
 // ── Cloud Sync (Firebase) ──────────────────────────────────
 let cloudUser=null;
 let cloudSyncTimer=null;
+let lastCloudUpdatedAt=0,cloudPushPending=false,cloudPushing=false,cloudPulling=false,lastCloudPullAt=0;
 
 function queueCloudPush(){
   if(!cloudUser)return;
   clearTimeout(cloudSyncTimer);
+  cloudPushPending=true;
   cloudSyncTimer=setTimeout(pushToCloud,800);
 }
 
@@ -2141,13 +2145,17 @@ function stripUndefined(val){
 
 async function pushToCloud(){
   if(!cloudUser)return;
+  cloudPushPending=false;cloudPushing=true;
   setCloudSpinner(true);
   try{
-    await fbDb.collection('users').doc(cloudUser.uid).set({data:stripUndefined(state),updatedAt:Date.now()});
+    const ts=Date.now();
+    await fbDb.collection('users').doc(cloudUser.uid).set({data:stripUndefined(state),updatedAt:ts});
+    lastCloudUpdatedAt=ts;
   }catch(e){
     console.error('Cloud sync failed',e);
     toast('Cloud sync failed — check your connection','error');
   }
+  cloudPushing=false;
   setCloudSpinner(false);
 }
 
@@ -2161,6 +2169,7 @@ async function loadStateForUser(user){
     if(doc.exists && doc.data().data){
       const raw=doc.data().data;
       const remote=(typeof raw==='string')?JSON.parse(raw):raw;
+      lastCloudUpdatedAt=doc.data().updatedAt||0;
       const localHasData=!!state.username||(state.income&&state.income.length)||(state.expenses&&state.expenses.length)||(state.wallets||[]).some(w=>w.balance);
       let useRemote=true;
       if(localHasData){
@@ -2184,6 +2193,35 @@ async function loadStateForUser(user){
   stateLoadedForUid=user.uid;
   setCloudSpinner(false);
 }
+
+/* Another phone/tablet may have saved newer data while this one sat open. Without this,
+   the stale copy would overwrite it on the next save. We re-check when the app comes
+   back to the foreground (throttled) and only pull when nothing local is waiting to upload. */
+async function pullCloudIfNewer(){
+  if(!cloudUser||!stateLoadedForUid||cloudPushPending||cloudPushing||cloudPulling)return;
+  if(Date.now()-lastCloudPullAt<15000)return;
+  lastCloudPullAt=Date.now();cloudPulling=true;
+  try{
+    const doc=await fbDb.collection('users').doc(cloudUser.uid).get();
+    if(doc.exists&&doc.data().data){
+      const at=doc.data().updatedAt||0;
+      if(at>lastCloudUpdatedAt&&!cloudPushPending&&!cloudPushing){
+        const raw=doc.data().data;
+        const remote=(typeof raw==='string')?JSON.parse(raw):raw;
+        Object.keys(state).forEach(k=>delete state[k]);
+        Object.assign(state,defaultState(),remote);
+        lastCloudUpdatedAt=at;
+        localStorage.setItem('kwentadoV1',JSON.stringify(state));
+        render();updateSidebarUsername();
+        toast('Updated with your latest data from another device ✓');
+      }
+    }
+  }catch(e){console.warn('Cloud refresh failed',e);}
+  cloudPulling=false;
+}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')pullCloudIfNewer();});
+window.addEventListener('online',pullCloudIfNewer);
+window.addEventListener('focus',pullCloudIfNewer);
 
 function updateAccountSettingsUI(){
   const statusEl=document.getElementById('cloud-status-text');
@@ -2268,7 +2306,7 @@ async function handleAuthState(user){
     showTermsScreen();
     return;
   }
-  if(!state.username||!state.pinHash){
+  if(!state.username){
     showRegisterScreen();
     return;
   }
@@ -2278,7 +2316,7 @@ async function handleAuthState(user){
     showPinSetup();
     return;
   }
-  if(!sessionStorage.getItem('mtUnlocked')){
+  if(state.pinHash && !sessionStorage.getItem('mtUnlocked')){
     showPinScreen();
     return;
   }
@@ -2400,7 +2438,18 @@ function dismissGuestBanner(){
   const el=document.getElementById('guest-link-banner');
   if(el)el.style.display='none';
 }
-function render(){renderBalances();renderDash();renderIncome();renderExpenses();renderLoans();renderGoals();renderSettings();updateBadges();syncEyeButtons();renderGuestBanner();}
+function populateReportYears(){
+  const sel=document.getElementById('report-month');if(!sel)return;
+  const cur=new Date().getFullYear();const ys=new Set([cur,cur-1,cur-2]);
+  state.income.forEach(i=>{if(i.year)ys.add(i.year);});
+  state.expenses.forEach(e=>{const d=new Date(e.date);if(!isNaN(d))ys.add(d.getFullYear());});
+  const prev=sel.value;
+  sel.querySelectorAll('option[data-yr]').forEach(o=>o.remove());
+  const anchor=sel.querySelector('option[disabled]');
+  [...ys].sort((a,b)=>b-a).forEach(y=>{const o=document.createElement('option');o.value='year-'+y;o.textContent='Year '+y;o.setAttribute('data-yr','1');sel.insertBefore(o,anchor);});
+  if([...sel.options].some(o=>o.value===prev))sel.value=prev;
+}
+function render(){renderBalances();renderDash();renderIncome();renderExpenses();renderLoans();renderGoals();renderSettings();updateBadges();syncEyeButtons();renderGuestBanner();populateReportYears();}
 function updateBadges(){
   document.getElementById('nav-badge-income').textContent=state.income.length;
   document.getElementById('nav-badge-expenses').textContent=state.expenses.length;
@@ -2415,7 +2464,7 @@ function renderDash(){
   // Personalized greeting
   const _h=now.getHours();
   const _gr=_h<12?'Good morning':_h<17?'Good afternoon':'Good evening';
-  const _nm=state.username?(', '+state.username):'';
+  const _nm=state.username?(', '+esc(state.username)):'';
   const _wave=_h<12?'☀️':_h<17?'👋':'🌙';
   const _gEl=document.getElementById('dash-greeting');
   if(_gEl)_gEl.innerHTML=_gr+_nm+' <span style="font-size:22px">'+_wave+'</span>';
@@ -2727,7 +2776,7 @@ function renderIncomeStatsModal(){
     const color=SBM_PALETTE[i%SBM_PALETTE.length];
     return `<div class="sbm-cat-row">
       <div class="sbm-cat-top">
-        <span class="sbm-cat-name">${type}</span>
+        <span class="sbm-cat-name">${esc(type)}</span>
         <span class="sbm-cat-meta">${cnt} entr${cnt===1?'y':'ies'} · ${pct}%</span>
       </div>
       <div class="sbm-cat-track"><div class="sbm-cat-fill" style="width:${pct}%;background:${color}"></div></div>
@@ -2740,7 +2789,7 @@ function renderIncomeStatsModal(){
       <div style="display:flex;align-items:center;gap:10px;min-width:0">
         <div class="sbm-top-rank">${i+1}</div>
         <div style="min-width:0">
-          <div style="font-size:12.5px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e.type||'Other'}${e.note?' · '+e.note:''}</div>
+          <div style="font-size:12.5px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(e.type||'Other')}${e.note?' · '+esc(e.note):''}</div>
           <div style="font-size:10.5px;color:var(--muted)">${e.month} ${e.year||curYear}</div>
         </div>
       </div>
@@ -2757,7 +2806,7 @@ function renderIncomeStatsModal(){
     <div class="sbm-highlight">
       <div>
         <div class="sbm-highlight-lbl">Biggest source</div>
-        <div class="sbm-highlight-name">${biggest.type||'Other'}${biggest.note?' · '+biggest.note:''}</div>
+        <div class="sbm-highlight-name">${esc(biggest.type||'Other')}${biggest.note?' · '+esc(biggest.note):''}</div>
         <div class="sbm-highlight-meta">${biggest.month} ${biggest.year||curYear}</div>
       </div>
       <div style="font-family:var(--font-d);font-size:17px;font-weight:700;color:var(--accent);white-space:nowrap">${fmt(biggest.amount)}</div>
@@ -2787,13 +2836,14 @@ function renderIncome(){
   const bEl=document.getElementById('inc-breakdown');
   if(bCard&&bEl&&state.income.length){
     bCard.style.display='';
-    const types=[{key:'Salary',cls:'badge-salary',color:'var(--accent)'},{key:'Bonus',cls:'badge-bonus',color:'var(--amber)'},{key:'Other',cls:'',color:'var(--muted)'}];
+    const _typeColors={Salary:'var(--accent)',Bonus:'var(--amber)','Loan Repayment':'var(--blue)'};
+    const types=[...new Set(state.income.map(e=>e.type||'Other'))].map(k=>({key:k,color:_typeColors[k]||'var(--muted)'}));
     bEl.innerHTML=types.map(t=>{
-      const tot=state.income.filter(e=>e.type===t.key).reduce((a,b)=>a+b.amount,0);
-      const cnt=state.income.filter(e=>e.type===t.key).length;
+      const tot=state.income.filter(e=>(e.type||'Other')===t.key).reduce((a,b)=>a+b.amount,0);
+      const cnt=state.income.filter(e=>(e.type||'Other')===t.key).length;
       if(!cnt)return '';
       return `<div style="flex:1;min-width:120px;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:12px 14px">
-        <div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:${t.color};font-weight:600;margin-bottom:4px">${t.key}</div>
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:${t.color};font-weight:600;margin-bottom:4px">${esc(t.key)}</div>
         <div style="font-family:var(--font-d);font-size:18px;font-weight:700;color:${t.color}">${fmt(tot)}</div>
         <div style="font-size:11px;color:var(--muted);margin-top:2px">${cnt} entr${cnt===1?'y':'ies'}</div>
       </div>`;
@@ -2823,7 +2873,7 @@ function renderIncome(){
       const _isLatest=e.id===latestId;
       const _entryStyle=_isLatest?' style="background:var(--accent-bg);border-left:2px solid var(--accent);border-radius:8px;padding-left:10px;padding-right:10px;margin:0 -10px 0 -10px"':'';
       const _latestTag=_isLatest?'<span style="font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);font-weight:700;background:var(--accent-bg);border:1px solid rgba(168,224,56,.3);border-radius:20px;padding:2px 7px">Latest</span>':'';
-      html+=`<div class="entry"${_entryStyle}><div class="info"><div class="name">${esc(e.month)}${e.note?' — '+esc(e.note):''}</div><div class="meta"><span class="badge badge-${e.type.toLowerCase()}">${esc(e.type)}</span>${_latestTag}${_iw?`<span style="font-size:11px;color:var(--muted)">→ ${esc(_iw.label)}</span>`:''} ${_dateStr}</div></div><div class="right"><span class="amt ap">${fmt(e.amount)}</span><button class="btn btn-ghost btn-sm" onclick="openEditIncome(${e.id})">Edit</button><button class="btn btn-danger btn-sm" onclick="del('income',${e.id})">Remove</button></div></div>`;
+      html+=`<div class="entry"${_entryStyle}><div class="info"><div class="name">${esc(e.month)}${e.note?' — '+esc(e.note):''}</div><div class="meta"><span class="badge badge-${String(e.type).toLowerCase().replace(/[^a-z0-9]+/g,'-')}">${esc(e.type)}</span>${_latestTag}${_iw?`<span style="font-size:11px;color:var(--muted)">→ ${esc(_iw.label)}</span>`:''} ${_dateStr}</div></div><div class="right"><span class="amt ap">${fmt(e.amount)}</span><button class="btn btn-ghost btn-sm" onclick="openEditIncome(${e.id})">Edit</button><button class="btn btn-danger btn-sm" onclick="del('income',${e.id})">Remove</button></div></div>`;
     });
     html+='</div>';
   });
@@ -2908,7 +2958,7 @@ function renderExpenses(){
           : '<button style="padding:6px 14px;background:var(--accent);color:#080808;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font-b)" onclick="window.logRecurring('+e.id+')">Log Now</button>';
         return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);gap:12px">'
           +'<div><div style="font-size:13px;font-weight:500">'+esc(e.desc)+'</div>'
-          +'<div style="font-size:11px;color:var(--muted);margin-top:2px">'+fmt(e.amount)+(wl?' · '+wl.label:'')+' · monthly</div></div>'
+          +'<div style="font-size:11px;color:var(--muted);margin-top:2px">'+fmt(e.amount)+(wl?' · '+esc(wl.label):'')+' · monthly</div></div>'
           +btn+'</div>';
       }).join('');
       panel.innerHTML='<div style="background:var(--surface);border:1px solid rgba(167,139,250,.35);border-radius:14px;padding:18px 20px;margin-bottom:14px">'
@@ -2933,8 +2983,8 @@ function renderExpenses(){
     ?list.map(function(e){
         var wl=(state.wallets||[]).find(function(w){return w.id===e.source;});
         var srcLabel=wl?wl.label:e.source;
-        return '<div class="entry"><div class="info"><div class="name">'+e.desc+(e.recurring?'<span class="badge badge-recurring" style="margin-left:6px;font-size:9px">↺ recurring</span>':'')+'</div>'
-          +'<div class="meta">'+fmtDate(e.date)+' · '+srcLabel+(e.note?' · <em style="color:var(--muted)">'+esc(e.note)+'</em>':'')+'<span class="badge badge-'+(e.cat||'other-exp')+'">'+CAT_LABELS[e.cat||'other-exp']+'</span></div></div>'
+        return '<div class="entry"><div class="info"><div class="name">'+esc(e.desc)+(e.recurring?'<span class="badge badge-recurring" style="margin-left:6px;font-size:9px">↺ recurring</span>':'')+'</div>'
+          +'<div class="meta">'+fmtDate(e.date)+' · '+esc(srcLabel)+(e.note?' · <em style="color:var(--muted)">'+esc(e.note)+'</em>':'')+'<span class="badge badge-'+(e.cat||'other-exp')+'">'+CAT_LABELS[e.cat||'other-exp']+'</span></div></div>'
           +'<div class="right"><span class="amt an">'+fmt(e.amount)+'</span>'
           +'<button class="btn btn-ghost btn-sm" onclick="openEditExpense('+e.id+')">Edit</button>'
           +'<button class="btn btn-danger btn-sm" onclick="del(\'expenses\','+e.id+')">Remove</button></div></div>';
@@ -3509,12 +3559,12 @@ function exportCSV(type){
   if(type==='income'){rows=[['Month','Year','Type','Amount','Note'],...state.income.map(e=>[e.month,e.year||2026,e.type,e.amount,e.note||''])];filename='income.csv';}
   else if(type==='expenses'){rows=[['Date','Description','Category','Amount','Source'],...state.expenses.map(e=>{const _w=(state.wallets||[]).find(w=>w.id===e.source);return [fmtDate(e.date),e.desc,CAT_LABELS[e.cat||'other-exp']||'Other',e.amount,_w?_w.label:e.source];})];filename='expenses.csv';}
   else{rows=[['Name','Amount','Type','Note','Due Date','Settled'],...state.loans.map(l=>[l.name,l.amount,l.type,l.note||'',l.due||'',l.settled?'Yes':'No'])];filename='loans.csv';}
-  const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const csv=rows.map(r=>r.map(c=>{let v=String(c);if(typeof c==='string'&&/^[=+\-@\t\r]/.test(v))v="'"+v;return `"${v.replace(/"/g,'""')}"`;}).join(',')).join('\n');
   dlFile(csv,filename,'text/csv');toast('CSV downloaded ✓');
 }
 function backupData(){
   const backup=JSON.stringify(state,null,2);
-  const d=new Date().toISOString().split('T')[0];
+  const d=today();
   dlFile(backup,`finuity-backup-${d}.json`,'application/json');toast('Backup saved ✓');
 }
 function migrateBackup(parsed){
@@ -3725,7 +3775,7 @@ function buildReportHTML(){
 }
 function exportMonthlyReport(){
   const {reportHTML,reportLabel}=buildReportHTML();
-  const d=new Date().toISOString().split('T')[0];
+  const d=today();
   dlFile(reportHTML,`financial-report-${reportLabel.toLowerCase().replace(/\s+/g,'-')}-${d}.html`,'text/html');
   toast('Report downloaded ✓');
 }
@@ -4675,22 +4725,25 @@ function startVerseTimer(){
 function resetVerseTimer(){startVerseTimer();}
 
 /* ── SWIPE TO DELETE (mobile) ── */
-let swipeStart=null,swipeEl=null;
+let swipeStart=null,swipeEl=null,swipeY=0;
 document.addEventListener('touchstart',e=>{
   const entry=e.target.closest('.entry');
-  if(!entry)return;
-  swipeEl=entry;swipeStart=e.touches[0].clientX;
+  if(!entry||e.target.closest('input,select,textarea,button'))return;
+  swipeEl=entry;swipeStart=e.touches[0].clientX;swipeY=e.touches[0].clientY;
 },{passive:true});
 document.addEventListener('touchmove',e=>{
   if(!swipeEl||swipeStart===null)return;
   const dx=e.touches[0].clientX-swipeStart;
+  const dy=e.touches[0].clientY-swipeY;
+  if(Math.abs(dy)>Math.abs(dx))return; // vertical scroll, not a swipe
   if(dx<-10&&dx>-120){swipeEl.style.transform=`translateX(${dx}px)`;swipeEl.style.transition='none';}
 },{passive:true});
 document.addEventListener('touchend',e=>{
   if(!swipeEl||swipeStart===null)return;
   const dx=e.changedTouches[0].clientX-swipeStart;
+  const dyEnd=e.changedTouches[0].clientY-swipeY;
   swipeEl.style.transition='transform .25s ease';
-  if(dx<-80){
+  if(dx<-80&&Math.abs(dx)>Math.abs(dyEnd)){
     // find delete button and click it
     const delBtn=swipeEl.querySelector('.btn-danger');
     swipeEl.style.transform='translateX(0)';
@@ -4794,6 +4847,7 @@ function renderTutSlide(){
 let _confirmResolve=null;
 function mtConfirm(msg,icon='⚠️',okLabel='Confirm',okColor='var(--red)'){
   return new Promise(resolve=>{
+    if(_confirmResolve){_confirmResolve(false);_confirmResolve=null;}
     _confirmResolve=resolve;
     document.getElementById('confirm-modal').style.display='flex';
     document.getElementById('confirm-icon').textContent=icon;
