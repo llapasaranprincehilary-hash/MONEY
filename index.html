@@ -91,7 +91,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-b);font-size:
 .kbd{background:var(--surface2);border:1px solid var(--border2);border-radius:4px;padding:1px 5px;font-size:10px;color:var(--muted);font-family:var(--font-b)}
 
 /* MAIN */
-.main{margin-left:var(--sw);flex:1;min-height:100vh;display:flex;flex-direction:column}
+.main{margin-left:var(--sw);flex:1;min-width:0;min-height:100vh;display:flex;flex-direction:column}
 
 /* TOPBAR */
 .topbar{position:sticky;top:0;background:rgba(15,15,18,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 32px;height:56px;display:flex;align-items:center;justify-content:space-between;z-index:40;box-shadow:0 1px 0 var(--border)}
@@ -396,7 +396,7 @@ body.light .snapshot-card{background:linear-gradient(135deg,#f0f7e8 0%,#e8f5d5 1
 
 /* MOBILE */
 .bottom-nav{display:none}
-@media(max-width:820px){
+@media(max-width:900px){
   :root{--sw:0px}
   .sidebar{display:none}
   .main{margin-left:0}
@@ -515,7 +515,7 @@ body.light .tb-sep{background:rgba(0,0,0,.12)}
 
 /* Content area */
 .content{padding:clamp(16px,3.5vw,36px) clamp(16px,3.5vw,36px) 100px !important;max-width:1020px !important}
-@media(max-width:820px){.content{padding-left:16px !important;padding-right:16px !important;padding-bottom:90px !important}}
+@media(max-width:900px){.content{padding-left:16px !important;padding-right:16px !important;padding-bottom:90px !important}}
 @media(max-width:380px){.content{padding-left:12px !important;padding-right:12px !important}}
 
 /* Page headers — more imposing */
@@ -633,7 +633,7 @@ input,select,textarea{
 /* Mobile: 16px minimum, placed last so it always wins over the 14px
    rule above and any inline font-size — this is what actually stops
    iOS Safari from force-zooming when a field is tapped. */
-@media(max-width:820px){
+@media(max-width:900px){
   input,select,textarea{font-size:16px !important}
 }
 body.light input,body.light select,body.light textarea{
@@ -746,7 +746,7 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
 
 /* Tablets / small laptops (iPad landscape, etc.) — sidebar stays,
    just give content a little less padding than full desktop */
-@media(min-width:821px) and (max-width:1100px){
+@media(min-width:901px) and (max-width:1100px){
   .content{padding-left:24px !important;padding-right:24px !important}
   .topbar{padding:0 24px !important}
 }
@@ -821,6 +821,117 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
 .cbox-wrap input[type="checkbox"]:checked ~ .cbox-box{background:var(--accent);border-color:var(--accent)}
 .cbox-wrap input[type="checkbox"]:checked ~ .cbox-box svg{stroke-dashoffset:0}
 
+
+/* ═══════════════════════════════════════════
+   MOBILE OVERFLOW FIX
+   Root cause: .main is a flex item (.shell{display:flex}) and flex items
+   default to min-width:auto, so any wide nowrap content (button rows,
+   inputs, etc.) stretched the WHOLE page wider than the phone screen.
+   min-width:0 lets it shrink; the rules below stop children from
+   pushing out again.
+═══════════════════════════════════════════ */
+.shell{width:100%;max-width:100%}
+.main{min-width:0;max-width:100%;overflow-x:clip}
+.content{min-width:0}
+.section,.card,.hero-card,.snapshot-card{min-width:0;max-width:100%}
+/* grid/flex children must be allowed to shrink too (1fr = minmax(auto,1fr)) */
+.two-col>*,.form-row>*,.form-row-3>*,.stat-grid>*,.bal-cards>*,
+.goals-grid>*,.snapshot-grid>*,.hero-wallets>*,.sum-row>*{min-width:0}
+input,select,textarea{min-width:0;max-width:100%}
+input[type="date"]{min-width:0;-webkit-appearance:none;appearance:none}
+#month-snapshot>div:first-child{gap:10px}
+#month-snapshot>div:first-child>div:last-child{text-align:right;min-width:0}
+
+@media(max-width:900px){
+  /* rows/entries wrap instead of overflowing when buttons don't fit */
+  .row{flex-wrap:wrap}
+  .entry{flex-wrap:wrap}
+  .entry .info{flex:1 1 150px}
+  .entry .right{flex:0 1 auto;flex-wrap:wrap;justify-content:flex-end}
+  #loan-list .entry>div:first-child{flex-wrap:wrap}
+  .settings-name-row{flex-wrap:wrap;width:100%}
+  .settings-name-row input{flex:1 1 120px;width:auto !important;min-width:0}
+  .card-hd{flex-wrap:wrap;gap:8px}
+  .btn{min-width:0;padding-left:14px !important;padding-right:14px !important}
+  .btn-sm{padding-left:11px !important;padding-right:11px !important}
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE — fits phones, tablets (iPad), laptops, big monitors
+   Breakpoints: ≤480 small phone · ≤600 phone · 601–900 tablet portrait / phone landscape
+   (bottom nav) · 901+ sidebar layout (iPad landscape, laptops) · 1600+ wide
+═══════════════════════════════════════════ */
+/* dvh = real visible height on mobile browsers (address bar aware) */
+.shell,.main{min-height:100vh;min-height:100dvh}
+/* always centre the content column, on every screen */
+.content{margin-left:auto;margin-right:auto}
+.btn{max-width:100%}
+/* installed PWA / notch: keep the top bar clear of the status bar */
+.topbar{padding-top:env(safe-area-inset-top,0px);height:calc(58px + env(safe-area-inset-top,0px)) !important}
+/* numbers scale down instead of getting clipped */
+.snapshot-val{font-size:clamp(13px,4.4vw,19px) !important;overflow-wrap:anywhere}
+.stat .sv,.hw-val,.bal-card .amount,.goal-pct{overflow-wrap:anywhere}
+.stat .sv{font-size:clamp(16px,5vw,22px) !important}
+.bal-card .amount{font-size:clamp(22px,7vw,30px) !important}
+.total-bar,.card-hd{gap:8px}
+
+@media(max-width:900px){
+  /* landscape phones / notched devices */
+  .main{padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+  .bottom-nav{padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+  .bnav-item{min-width:0}
+}
+
+/* small phones: button pairs stack instead of overflowing */
+@media(max-width:480px){
+  #export .card>div[style*="display:flex"]{flex-wrap:wrap}
+  #export .card>div[style*="display:flex"]>.btn{flex:1 1 100%}
+  .btn{padding-left:16px !important;padding-right:16px !important}
+  .btn-sm{padding-left:11px !important;padding-right:11px !important}
+}
+
+/* TABLET PORTRAIT (iPad mini / iPad / iPad Air with bottom nav):
+   use the extra width — two-column forms & cards instead of a stretched phone layout */
+@media(min-width:601px) and (max-width:900px){
+  .content{padding-left:24px !important;padding-right:24px !important;padding-bottom:100px !important}
+  .topbar{padding-left:24px !important;padding-right:24px !important}
+  .two-col{grid-template-columns:1fr 1fr}
+  .form-row{grid-template-columns:1fr 1fr}
+  .form-row-3{grid-template-columns:1fr 1fr 1fr}
+  .stat-grid{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+  .bal-cards{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+  .hero-wallets{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  .page-title{font-size:30px !important}
+  .bottom-nav{justify-content:center}
+  .bnav-item{max-width:130px;font-size:11px}
+}
+
+/* wide desktops / iPad Pro landscape+: give the content a bit more room */
+@media(min-width:1600px){
+  .content{max-width:1200px !important}
+}
+
+/* long text wraps instead of being cut off */
+.row .lbl{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere}
+.entry .name{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere}
+/* rows of buttons wrap instead of overflowing, at every width */
+#export .card>div[style*="display:flex"]{flex-wrap:wrap}
+#export .card>div[style*="display:flex"]>.btn{flex:1 1 150px}
+#loan-list .entry>div:nth-child(2){flex-wrap:wrap}
+#loan-list .entry>div:nth-child(2) input{min-width:110px}
+
+/* money amounts scale to the size of their own card (container query units) —
+   they shrink to fit instead of breaking mid-number or getting clipped.
+   Older browsers without cqw simply keep the fixed sizes above. */
+.stat,.hw,.bal-card,.snapshot-item,.hero-card{container-type:inline-size}
+.stat .sv{font-size:clamp(13px,13cqw,22px) !important}
+.hw-val{font-size:clamp(12px,11cqw,17px) !important}
+.bal-card .amount{font-size:clamp(18px,9.5cqw,30px) !important}
+.snapshot-val{font-size:clamp(12px,14cqw,19px) !important}
+.hero-amount{font-size:clamp(26px,12cqw,56px) !important}
+.hero-amount .hero-peso{font-size:.58em !important}
+/* search icon no longer sits on top of the placeholder text */
+.search-bar input{padding-left:38px !important}
 </style>
 <!-- Firebase (Cloud Sync) — compat SDK, no build step needed -->
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
