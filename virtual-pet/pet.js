@@ -89,7 +89,7 @@
   var STALE_GOAL_DAYS = 14;
   var GOAL_RENUDGE_MS = 14*24*60*60*1000;
 
-  var DEFAULT_SETTINGS = { frequency:'normal', muteTips:false, muteBudget:false, muteInsights:false, name:'Fin', tone:'playful' };
+  var DEFAULT_SETTINGS = { frequency:'normal', muteTips:false, muteBudget:false, muteInsights:false, name:'Fin', tone:'playful', lang:'taglish' };
 
   var els = {};
   var pet = {
@@ -160,6 +160,18 @@
     var s = getSettings();
     s.tone = s.tone==='businesslike' ? 'playful' : 'businesslike';
     saveSettings(s);
+    return s;
+  }
+  function syncLang(s){
+    var d = window.FinPetDialogue;
+    if(d && d.setLang) d.setLang((s||getSettings()).lang);
+  }
+  function cycleLang(){
+    var s = getSettings();
+    var order = ['taglish','english','bisaya'];
+    s.lang = order[(order.indexOf(s.lang)+1)%order.length];
+    saveSettings(s);
+    syncLang(s);
     return s;
   }
   function applyFrequency(s){
@@ -547,7 +559,10 @@
     var startTs = null;
     var duration = Math.min(2200, Math.max(500, Math.abs(targetRightPx-startRight)*6));
     var goingLeft = targetRightPx > startRight; // increasing "right" moves the element visually left
-    els.root.style.transform = goingLeft ? 'scaleX(1)' : 'scaleX(-1)';
+    // Flip only the sprite (not the root) so the speech bubble text never mirrors.
+    els.root.style.transform = '';
+    var spr = els.root.querySelector('.fin-avatar-sprite');
+    if(spr) spr.style.scale = goingLeft ? '1 1' : '-1 1';
     SpriteFX.setAnimation('walking');
     if(walkRAF) cancelAnimationFrame(walkRAF);
     function step(ts){
@@ -754,6 +769,9 @@
         break;
       case 'settings-toggle-tone':
         showBubble(dlg.getSettingsPersonalizeMessage(cycleTone()));
+        break;
+      case 'settings-toggle-lang':
+        showBubble(dlg.getSettingsPersonalizeMessage(cycleLang()));
         break;
       case 'settings-rename':
         renamePet();
@@ -2175,6 +2193,7 @@
   /* ---------- init ---------- */
   function init(){
     applyFrequency(getSettings());
+    syncLang();
     buildDOM();
     hookApp();
     wireActivityListeners();
