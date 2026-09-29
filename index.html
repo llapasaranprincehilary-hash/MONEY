@@ -1108,6 +1108,18 @@ label.fa-row{cursor:pointer}
      except by calling the app's own existing functions. -->
 <link rel="stylesheet" href="virtual-pet/pet.css">
 <link rel="stylesheet" href="virtual-pet/tour.css">
+<script>
+/* Instant lock: if this device has a PIN and the session isn't unlocked yet, hide the app
+   content from the very first paint (before the big script below has even loaded). */
+(function(){try{
+  var st=JSON.parse(localStorage.getItem('kwentadoV1')||'null');
+  if(st&&st.pinHash&&!sessionStorage.getItem('mtUnlocked')){
+    document.documentElement.classList.add('finlock');
+    setTimeout(function(){document.documentElement.classList.remove('finlock');},8000); // failsafe
+  }
+}catch(e){}})();
+</script>
+<style>html.finlock body>*:not(#auth-overlay){visibility:hidden!important}</style>
 </head>
 <body>
 <div class="shell">
@@ -2663,7 +2675,9 @@ async function handleAuthState(user){
     return;
   }
   if(state.pinHash && !sessionStorage.getItem('mtUnlocked')){
-    showPinScreen();
+    const pe=document.getElementById('auth-pin'),oe=document.getElementById('auth-overlay');
+    // already showing (shown instantly at startup): leave it alone so typed digits aren't wiped
+    if(!(pe&&pe.style.display==='block'&&oe&&oe.style.display==='flex'))showPinScreen();
     return;
   }
   sessionStorage.setItem('mtUnlocked','1');
@@ -5567,6 +5581,9 @@ initTheme();
 onLoanTypeChange();
 // Hide splash initially — auth flow controls when to show it
 document.getElementById('welcome-splash').style.display='none';
+// Lock immediately from the local copy: don't wait for Firebase/cloud before asking for the PIN.
+if(state.pinHash&&!sessionStorage.getItem('mtUnlocked')){showPinScreen();}
+document.documentElement.classList.remove('finlock');
 render();
 updateSidebarUsername();
 // Auth entry point is now driven entirely by fbAuth.onAuthStateChanged → handleAuthState()
