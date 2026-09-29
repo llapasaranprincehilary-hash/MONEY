@@ -2473,6 +2473,7 @@ async function pushToCloud(){
     const ts=Date.now();
     await fbDb.collection('users').doc(cloudUser.uid).set({data:stripUndefined(state),updatedAt:ts});
     lastCloudUpdatedAt=ts;
+    markCloudLinked(cloudUser.uid,ts);
   }catch(e){
     console.error('Cloud sync failed',e);
     toast('Cloud sync failed — check your connection','error');
@@ -2482,6 +2483,17 @@ async function pushToCloud(){
 }
 
 let stateLoadedForUid=null;
+
+/* Remember that THIS device's copy is already linked to a cloud account (and when it last matched),
+   so the "cloud vs device" question is only asked for a genuine first-time conflict. */
+function markCloudLinked(uid,at){
+  try{localStorage.setItem('finCloudLinked',JSON.stringify({uid:uid,at:at||Date.now()}));}catch(e){}
+}
+function getCloudLinked(uid){
+  try{const l=JSON.parse(localStorage.getItem('finCloudLinked')||'null');if(l&&l.uid===uid)return l;}catch(e){}
+  return null;
+}
+function clearCloudLinked(){try{localStorage.removeItem('finCloudLinked');}catch(e){}}
 
 async function loadStateForUser(user){
   if(stateLoadedForUid===user.uid)return; // already synced this session, avoid re-prompting on token refresh
@@ -2493,14 +2505,23 @@ async function loadStateForUser(user){
       const remote=(typeof raw==='string')?JSON.parse(raw):raw;
       lastCloudUpdatedAt=doc.data().updatedAt||0;
       const localHasData=!!state.username||(state.income&&state.income.length)||(state.expenses&&state.expenses.length)||(state.wallets||[]).some(w=>w.balance);
+      const remoteAt=doc.data().updatedAt||0;
+      const linked=getCloudLinked(user.uid);
       let useRemote=true;
       if(localHasData){
-        useRemote=await showMergeChoice(remote,doc.data().updatedAt);
+        if(linked){
+          // Already connected to this account before: no question needed.
+          // Cloud newer (edited on another device) -> take it; otherwise keep this device's copy.
+          useRemote=remoteAt>linked.at;
+        }else{
+          useRemote=await showMergeChoice(remote,doc.data().updatedAt);
+        }
       }
       if(useRemote){
         Object.keys(state).forEach(k=>delete state[k]);
         Object.assign(state,remote);
         localStorage.setItem('kwentadoV1',JSON.stringify(state));
+        markCloudLinked(user.uid,remoteAt||Date.now());
       }else{
         await pushToCloud();
       }
@@ -2533,6 +2554,7 @@ async function pullCloudIfNewer(){
         Object.keys(state).forEach(k=>delete state[k]);
         Object.assign(state,defaultState(),remote);
         lastCloudUpdatedAt=at;
+        markCloudLinked(cloudUser.uid,at);
         localStorage.setItem('kwentadoV1',JSON.stringify(state));
         render();updateSidebarUsername();
         toast('Updated with your latest data from another device ✓');
@@ -2598,6 +2620,7 @@ function doSignOut(){
   Object.assign(state,defaultState());
   localStorage.removeItem('kwentadoV1');
   localStorage.removeItem('mtTutDone');
+  clearCloudLinked();
   fbAuth.signOut();
 }
 
@@ -5532,7 +5555,7 @@ async function deleteAccountAndData(){
   }
   sessionStorage.removeItem('mtUnlocked');stateLoadedForUid=null;
   Object.keys(state).forEach(k=>delete state[k]);Object.assign(state,defaultState());
-  ['kwentadoV1','mtTutDone','mtGuestBannerDismissAt','mtGuestNudge3Shown'].forEach(k=>localStorage.removeItem(k));
+  ['kwentadoV1','mtTutDone','mtGuestBannerDismissAt','mtGuestNudge3Shown','finCloudLinked'].forEach(k=>localStorage.removeItem(k));
   toast('Account and data deleted');
 }
 
