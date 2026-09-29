@@ -1341,6 +1341,7 @@ label.fa-row{cursor:pointer}
       <div class="pin-key empty"></div><div class="pin-key" onclick="pinKey('0')">0</div><div class="pin-key del" onclick="pinBackspace()">⌫</div>
     </div>
     <div class="pin-error" id="pin-error"></div>
+    <button class="btn btn-ghost btn-sm" id="pin-bio-btn" style="margin-top:8px;display:none" onclick="tryBiometricUnlock(false)">👆 Use Face ID / Fingerprint</button>
     <button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="showForgotPin()">Forgot PIN?</button>
   </div>
 
@@ -1895,6 +1896,11 @@ label.fa-row{cursor:pointer}
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px">
         <button class="btn btn-primary" onclick="showPinSetup()" id="pin-set-btn">Set / Change PIN</button>
         <button class="btn btn-danger" onclick="removePin()" id="pin-remove-btn" style="display:none">Remove PIN</button>
+      </div>
+      <div id="bio-block" style="border-top:1px solid var(--border);padding-top:16px;margin-bottom:18px;display:none">
+        <div style="font-size:12px;color:var(--text);font-weight:600;margin-bottom:4px">👆 Biometric Unlock (Face ID / Fingerprint)</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:10px" id="bio-status-text">Open the app with your face or fingerprint instead of typing your PIN. Your PIN always still works as a backup.</div>
+        <button class="btn btn-primary btn-sm" onclick="toggleBiometric()" id="bio-toggle-btn">Enable</button>
       </div>
       <div style="border-top:1px solid var(--border);padding-top:16px">
         <div style="font-size:12px;color:var(--text);font-weight:600;margin-bottom:4px">🛟 Recovery Question</div>
@@ -2632,7 +2638,7 @@ function doSignOut(){
   Object.assign(state,defaultState());
   localStorage.removeItem('kwentadoV1');
   localStorage.removeItem('mtTutDone');
-  clearCloudLinked();
+  clearCloudLinked();bioClear();
   fbAuth.signOut();
 }
 
@@ -4777,6 +4783,8 @@ function showPinScreen(){
   document.getElementById('pin-welcome-name').textContent=state.username?'Hi, '+state.username+' 👋':'';
   document.getElementById('pin-error').textContent='';
   updatePinDots();
+  updatePinBioButton();
+  if(bioEnrolled()&&!pinRecoveryActive)setTimeout(()=>tryBiometricUnlock(true),400);   // silent auto-attempt
 }
 function pinKey(k){
   if(pinBuffer.length>=4)return;
@@ -4800,6 +4808,93 @@ function pinKey(k){
 }
 function pinBackspace(){pinBuffer=pinBuffer.slice(0,-1); updatePinDots();}
 function updatePinDots(){for(let i=0;i<4;i++){const d=document.getElementById('pd'+i);if(d)d.className='pin-dot'+(i<pinBuffer.length?' filled':'');}}
+
+/* ── BIOMETRIC UNLOCK (WebAuthn: Face ID / Touch ID / Android fingerprint) ──
+   The phone's OS does the face/fingerprint check; the app never sees any biometric data.
+   Only an on-device credential reference is kept in this browser's localStorage (per device,
+   never synced to the cloud). It is a convenience lock like the PIN, and the PIN always works. */
+const BIO_KEY='finBioCred';
+let _bioBusy=false;
+function bioGet(){try{return JSON.parse(localStorage.getItem(BIO_KEY)||'null');}catch(e){return null;}}
+function bioClear(){try{localStorage.removeItem(BIO_KEY);}catch(e){}}
+function bioToB64(buf){let s='';new Uint8Array(buf).forEach(b=>s+=String.fromCharCode(b));return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
+function bioFromB64(str){str=str.replace(/-/g,'+').replace(/_/g,'/');while(str.length%4)str+='=';const bin=atob(str),a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return a;}
+async function bioSupported(){
+  try{return !!(window.PublicKeyCredential&&window.isSecureContext&&navigator.credentials&&await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable());}
+  catch(e){return false;}
+}
+function bioEnrolled(){return !!bioGet()&&!!state.pinHash;}
+function updatePinBioButton(){
+  const b=document.getElementById('pin-bio-btn');
+  if(b)b.style.display=bioEnrolled()?'':'none';
+}
+async function updateBioSettingsUI(){
+  const blk=document.getElementById('bio-block');if(!blk)return;
+  const ok=await bioSupported();
+  blk.style.display=ok?'':'none';
+  if(!ok)return;
+  const st=document.getElementById('bio-status-text'),btn=document.getElementById('bio-toggle-btn');
+  if(bioGet()){
+    st.innerHTML='<span style="color:var(--accent);font-weight:600">✓ Biometric unlock is on</span> for this device. Your PIN still works as a backup.';
+    btn.textContent='Turn Off';btn.className='btn btn-ghost btn-sm';
+  }else{
+    st.textContent=state.pinHash?'Open the app with your face or fingerprint instead of typing your PIN. Your PIN always still works as a backup.':'Set a PIN first — biometrics are an add-on to your PIN.';
+    btn.textContent='Enable';btn.className='btn btn-primary btn-sm';
+  }
+}
+async function toggleBiometric(){
+  if(bioGet()){
+    const ok=await mtConfirm('Turn off biometric unlock on this device? You will use your PIN instead.','👆','Turn Off','var(--amber)');
+    if(!ok)return;
+    bioClear();toast('Biometric unlock turned off');updateBioSettingsUI();return;
+  }
+  await enableBiometric();
+}
+async function enableBiometric(){
+  if(!state.pinHash){toast('Set a PIN first — it stays as your backup','error');return;}
+  if(!(await bioSupported())){toast("This device or browser doesn't support biometric unlock",'error');return;}
+  try{
+    const cred=await navigator.credentials.create({publicKey:{
+      challenge:crypto.getRandomValues(new Uint8Array(32)),
+      rp:{name:'FINUITY'},
+      user:{id:crypto.getRandomValues(new Uint8Array(16)),name:'finuity-device',displayName:state.username||'FINUITY'},
+      pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],
+      authenticatorSelection:{authenticatorAttachment:'platform',userVerification:'required',residentKey:'discouraged'},
+      attestation:'none',timeout:60000
+    }});
+    if(!cred)throw new Error('no credential');
+    localStorage.setItem(BIO_KEY,JSON.stringify({id:bioToB64(cred.rawId),at:Date.now()}));
+    toast('Biometric unlock enabled ✓');
+  }catch(e){
+    if(e&&e.name==='NotAllowedError')toast('Cancelled — biometric unlock not enabled');
+    else{console.warn('Biometric setup failed',e);toast('Could not set up biometrics on this device','error');}
+  }
+  updateBioSettingsUI();
+}
+async function tryBiometricUnlock(auto){
+  const c=bioGet();
+  if(!c||!state.pinHash||_bioBusy)return;
+  const pinBox=document.getElementById('auth-pin');
+  if(!pinBox||pinBox.style.display!=='block')return;      // only while the PIN screen is up
+  _bioBusy=true;
+  const errEl=document.getElementById('pin-error');
+  try{
+    const a=await navigator.credentials.get({publicKey:{
+      challenge:crypto.getRandomValues(new Uint8Array(32)),
+      allowCredentials:[{type:'public-key',id:bioFromB64(c.id),transports:['internal']}],
+      userVerification:'required',timeout:60000
+    }});
+    if(a&&pinBox.style.display==='block'){
+      document.getElementById('auth-overlay').style.display='none';
+      pinBuffer='';
+      sessionStorage.setItem('mtUnlocked','1');
+      showSplash();
+    }
+  }catch(e){
+    if(!auto&&errEl)errEl.textContent=(e&&e.name==='NotAllowedError')?'Biometric cancelled — enter your PIN.':'Biometric unavailable — use your PIN.';
+  }
+  _bioBusy=false;
+}
 
 /* ── FORGOT PIN (recovery) ── */
 function showForgotPin(){
@@ -4850,7 +4945,7 @@ function clearAndResetAccount(){
     if(!ok)return;
     state.income=[];state.expenses=[];state.loans=[];state.goals=[];state.budgetLimit=0;
     state.wallets.forEach(w=>{w.balance=0;w.updated=today();});
-    state.username='';state.pin='';state.pinHash='';state.pinSalt='';
+    state.username='';state.pin='';state.pinHash='';state.pinSalt='';bioClear();
     state.securityQuestion='';state.securityAnswer='';state.securityAnswerHash='';state.securityAnswerSalt='';
     save();
     sessionStorage.removeItem('mtUnlocked');
@@ -4989,6 +5084,7 @@ function updateSidebarUsername(){
 
 /* ── SETTINGS ── */
 function renderSettings(){
+  try{updateBioSettingsUI();}catch(e){}
   // PIN status
   const pinStatusEl=document.getElementById('pin-status-text');
   const pinRemoveBtn=document.getElementById('pin-remove-btn');
@@ -5082,7 +5178,7 @@ function changeName(){
 async function removePin(){
   const ok=await mtConfirm('Remove PIN lock? Your app will no longer be protected.','🔓','Remove PIN','var(--amber)');
   if(!ok)return;
-  state.pin='';state.pinHash='';state.pinSalt='';save();render();toast('PIN removed');
+  state.pin='';state.pinHash='';state.pinSalt='';bioClear();save();render();toast('PIN removed');
 }
 function showSettingsSecUpdate(){
   document.getElementById('secq-update-modal').style.display='flex';
@@ -5455,7 +5551,7 @@ terms:[
 ['Who May Use the App',`You must be at least 18 years old. If you are younger, a parent or legal guardian must read and accept these documents on your behalf and supervise your use. The App is for your own personal, non-commercial use.`],
 ['What FINUITY Is',`FINUITY is a personal, self-managed finance tracker for income, expenses, wallet balances (e.g. GCash, Maya, cash), loans and savings goals that <b>you</b> enter yourself. It is provided by ${LEGAL_DEV} ("we", "us") and is under active development.`],
 ['What FINUITY Is Not',`FINUITY is <b>not</b> a bank, e-wallet, electronic money issuer, lending or financing company, payment processor, remittance provider, broker or investment adviser, and is not supervised by the Bangko Sentral ng Pilipinas or the Securities and Exchange Commission. It has no connection to your real bank or e-wallet accounts and never moves money. Balances, loans and reports are figures you typed in; a loan entry is a personal note, not proof of a debt or a collection tool. Nothing in the App is financial, investment, tax, accounting or legal advice, and generated reports are unaudited and are not for tax filings or submission to any authority unless you verify them yourself.`],
-['Your Account and Security',`You are responsible for your sign-in credentials, your device, your 4-digit PIN and your recovery answer, and for all activity under your account. The PIN is a convenience lock, <b>not</b> encryption. Guest accounts have no email, so we cannot recover them if you lose the device or clear its storage. Tell us promptly if you suspect unauthorized access.`],
+['Your Account and Security',`You are responsible for your sign-in credentials, your device, your 4-digit PIN and your recovery answer, and for all activity under your account. The PIN (and optional device biometric unlock) is a convenience lock, <b>not</b> encryption. Guest accounts have no email, so we cannot recover them if you lose the device or clear its storage. Tell us promptly if you suspect unauthorized access.`],
 ['Your Data and Content',`You own the information you enter. You give us a limited, non-exclusive licence to store, process and sync it solely to run the App for you. You are responsible for its accuracy and for having the right to enter information about other people (for example names in loan records) - keep it to what is necessary. Do not enter government ID numbers, card numbers, bank credentials or passwords.`],
 ['Acceptable Use',`You agree not to: use the App for anything unlawful, fraudulent or for money laundering; try to access another person's account or data; probe, attack, overload, scrape or reverse-engineer the App or its services; upload malware; or bypass any security or usage limit.`],
 ['Backups and Availability',`The App is provided as available and may be interrupted, changed or discontinued. Syncing can fail or conflict between devices. You are responsible for exporting your own backups (Settings and Export). Restoring a backup overwrites current data.`],
@@ -5477,7 +5573,7 @@ privacy:[
 ['Where Your Data Is Kept',`A copy is stored in your browser on your device. If you use an account, a copy is also stored in Google Cloud Firestore under your account ID. Google servers may be located outside the Philippines, so your data may be transferred and processed abroad; Google acts as our processor under its own security and data-protection commitments, and we remain accountable for your data.`],
 ['Who We Share It With',`Only with service providers needed to run the App: Google (Firebase Authentication, Firestore, Google Sign-In, Google Fonts). We disclose data to authorities only when required by law or lawful order. We do not otherwise share, rent or sell personal data. The developer does not routinely view your individual records.`],
 ['How Long We Keep It',`Local data stays until you clear it or your browser storage. Cloud data stays until you delete it or your account, which you can do any time in Settings (Legal and Data). Backups you download are yours to manage. Inactive guest accounts may be removed after a long period. Deleted data may persist briefly in provider backups before being overwritten.`],
-['Security',`We use HTTPS/TLS in transit, Google's access controls, and salted hashing (SHA-256) for your PIN and recovery answer. Your records are <b>not</b> end-to-end encrypted, and the PIN is a convenience lock: someone with access to your unlocked device may see your data. No system is perfectly secure; use a device passcode and keep backups.`],
+['Security',`We use HTTPS/TLS in transit, Google's access controls, and salted hashing (SHA-256) for your PIN and recovery answer. Your records are <b>not</b> end-to-end encrypted, and the PIN is a convenience lock: someone with access to your unlocked device may see your data. <b>Optional biometric unlock:</b> if you turn it on, your device's operating system checks your face or fingerprint through the browser's WebAuthn feature; the App never receives, stores or transmits your face or fingerprint data, and keeps only an on-device credential reference in this browser. Your PIN always still works. No system is perfectly secure; use a device passcode and keep backups.`],
 ['Your Rights as a Data Subject',`Under Section 16 of the Data Privacy Act you may: be informed; object to processing; access your data; correct it; request erasure or blocking; withdraw consent; receive your data in a portable format; and claim damages for violations. In-app: edit any entry, download a JSON/CSV backup, or permanently delete your account and cloud data in Settings. Otherwise email ${LEGAL_EMAIL}; we aim to respond within 30 days. You may also complain to the National Privacy Commission (privacy.gov.ph). Withdrawing consent or deleting your account means we can no longer provide cloud sync.`],
 ['Data Breach Notification',`If a personal data breach that puts you at risk occurs, we will notify the NPC and affected users within 72 hours of knowledge or reasonable belief, as required by NPC rules, and tell you what happened and what to do.`],
 ['Other People\'s Data',`If you enter details about others (such as a person who owes you money), do so only as needed for your personal records and keep them accurate. You are responsible for that entry.`],
@@ -5569,7 +5665,7 @@ async function deleteAccountAndData(){
   }
   sessionStorage.removeItem('mtUnlocked');stateLoadedForUid=null;
   Object.keys(state).forEach(k=>delete state[k]);Object.assign(state,defaultState());
-  ['kwentadoV1','mtTutDone','mtGuestBannerDismissAt','mtGuestNudge3Shown','finCloudLinked'].forEach(k=>localStorage.removeItem(k));
+  ['kwentadoV1','mtTutDone','mtGuestBannerDismissAt','mtGuestNudge3Shown','finCloudLinked','finBioCred'].forEach(k=>localStorage.removeItem(k));
   toast('Account and data deleted');
 }
 
