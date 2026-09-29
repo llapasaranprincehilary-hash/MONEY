@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>FINUITY</title>
-<meta name="description" content="FINUITY — a private, on-device tracker for income, expenses, wallets, loans, and savings goals.">
+<meta name="description" content="FINUITY - a private, on-device tracker for income, expenses, wallets, loans, and savings goals.">
 <meta name="theme-color" content="#060608">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -12,7 +12,7 @@
 <meta property="og:title" content="FINUITY">
 <meta property="og:description" content="A private, on-device tracker for income, expenses, wallets, loans, and savings goals.">
 <meta property="og:type" content="website">
-<!-- Real icon files, not inline SVG — this is what actually lets a future icon
+<!-- Real icon files, not inline SVG - this is what actually lets a future icon
      swap take effect. Bump the ?v= number any time you replace these image
      files, the same way CACHE_NAME must be bumped in sw.js: browsers keep
      their own separate favicon cache that ignores the service worker, and
@@ -24,7 +24,7 @@
      blending in), so this deliberately uses the maskable icon, which
      already has a solid white background baked in. Inline SVG data URIs
      for apple-touch-icon (the old version) are also unreliable on real
-     iPhones — most iOS versions never render them at all. -->
+     iPhones - most iOS versions never render them at all. -->
 <link rel="apple-touch-icon" href="icon-512-maskable.png?v=2">
 <link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -114,7 +114,7 @@ body.light .topbar{background:rgba(255,255,255,.92)}
 .page-sub{color:var(--muted);font-size:13px;letter-spacing:.01em}
 
 /* ══════════════════════════════════════
-   DASHBOARD — HERO BALANCE CARD
+   DASHBOARD - HERO BALANCE CARD
 ═══════════════════════════════════════ */
 .hero-card{
   background:linear-gradient(145deg,var(--surface) 0%,var(--surface2) 60%,#0d160a 100%);
@@ -195,7 +195,7 @@ body.light .topbar{background:rgba(255,255,255,.92)}
 .sbm-top-row:last-child{border-bottom:none}
 .sbm-top-rank{width:20px;height:20px;border-radius:6px;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--muted);flex-shrink:0}
 
-/* SPEND CHART — canvas-free bar chart */
+/* SPEND CHART - canvas-free bar chart */
 .bar-chart-wrap{margin:4px 0 2px}
 .bar-chart{display:flex;align-items:flex-end;gap:4px;height:48px;padding-bottom:0}
 .bc-bar{flex:1;border-radius:3px 3px 0 0;min-height:3px;cursor:pointer;transition:opacity var(--tr);position:relative}
@@ -434,10 +434,10 @@ body.light .snapshot-card{background:linear-gradient(135deg,#f0f7e8 0%,#e8f5d5 1
 hr{border:none;border-top:1px solid var(--border);margin:18px 0}
 
 /* ═══════════════════════════════════════════
-   DESIGN OVERHAUL — v1.24 visual polish
+   DESIGN OVERHAUL - v1.24 visual polish
 ═══════════════════════════════════════════ */
 
-/* Sidebar — distinct darker background, accent stripe on active */
+/* Sidebar - distinct darker background, accent stripe on active */
 .sidebar{
   background:#080809 !important;
   border-right:1px solid #1a1a22 !important;
@@ -504,7 +504,7 @@ body.light .nav-badge{background:#ebebeb !important;color:#888 !important}
 .sb-bottom{padding:14px 12px 18px !important;border-top:1px solid #18181f !important}
 body.light .sb-bottom{border-top:1px solid #e4e4de !important}
 
-/* Topbar — proper frosted glass bar */
+/* Topbar - proper frosted glass bar */
 .topbar{
   height:58px !important;
   padding:0 clamp(16px,4vw,36px) !important;
@@ -529,7 +529,7 @@ body.light .tb-sep{background:rgba(0,0,0,.12)}
 @media(max-width:900px){.content{padding-left:16px !important;padding-right:16px !important;padding-bottom:90px !important}}
 @media(max-width:380px){.content{padding-left:12px !important;padding-right:12px !important}}
 
-/* Page headers — more imposing */
+/* Page headers - more imposing */
 .page-hd{margin-bottom:32px !important}
 .page-title{
   font-size:26px !important;
@@ -540,7 +540,7 @@ body.light .tb-sep{background:rgba(0,0,0,.12)}
 }
 .page-sub{font-size:13.5px !important;color:var(--muted) !important;letter-spacing:.01em !important}
 
-/* Cards — real depth */
+/* Cards - real depth */
 .card{
   background:var(--surface) !important;
   border:1px solid var(--border) !important;
@@ -606,7 +606,7 @@ body.light .stat{box-shadow:0 1px 3px rgba(0,0,0,.05),0 2px 8px rgba(0,0,0,.05) 
 .stat .sv{font-size:22px !important;letter-spacing:-.03em !important}
 .stat .sd{font-size:11.5px !important;margin-top:6px !important}
 
-/* Buttons — real primary button */
+/* Buttons - real primary button */
 .btn{
   font-weight:600 !important;
   font-size:13.5px !important;
@@ -642,7 +642,7 @@ input,select,textarea{
   font-size:14px !important;
 }
 /* Mobile: 16px minimum, placed last so it always wins over the 14px
-   rule above and any inline font-size — this is what actually stops
+   rule above and any inline font-size - this is what actually stops
    iOS Safari from force-zooming when a field is tapped. */
 @media(max-width:900px){
   input,select,textarea{font-size:16px !important}
@@ -751,24 +751,24 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
 .row{padding:12px 0 !important}
 
 /* ═══════════════════════════════════════════
-   RESPONSIVE — adapts across phones, tablets,
+   RESPONSIVE - adapts across phones, tablets,
    foldables, laptops and large desktop displays
 ═══════════════════════════════════════════ */
 
-/* Tablets / small laptops (iPad landscape, etc.) — sidebar stays,
+/* Tablets / small laptops (iPad landscape, etc.) - sidebar stays,
    just give content a little less padding than full desktop */
 @media(min-width:901px) and (max-width:1100px){
   .content{padding-left:24px !important;padding-right:24px !important}
   .topbar{padding:0 24px !important}
 }
 
-/* Large / ultra-wide desktop displays — center the content column
+/* Large / ultra-wide desktop displays - center the content column
    instead of leaving it pinned to the left edge next to the sidebar */
 @media(min-width:1440px){
   .content{margin-left:auto !important;margin-right:auto !important}
 }
 
-/* Settings "Change Name" row — wrap instead of clipping the
+/* Settings "Change Name" row - wrap instead of clipping the
    input/button on very narrow phones */
 @media(max-width:400px){
   .settings-name-row{flex-wrap:wrap}
@@ -785,7 +785,7 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
   .sc-box{padding:20px 16px}
 }
 
-/* Short / landscape phones — keep the PIN screen and hero card
+/* Short / landscape phones - keep the PIN screen and hero card
    from pushing content off screen when height is tight */
 @media(max-height:480px) and (orientation:landscape){
   .pin-overlay{padding:12px;justify-content:flex-start}
@@ -800,7 +800,7 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
   .hero-wallets{gap:6px}
 }
 
-/* Topbar — prevent overflow on narrow phones: drop the date/separator
+/* Topbar - prevent overflow on narrow phones: drop the date/separator
    first, then collapse Export to an icon-only button, and let the
    title truncate instead of forcing the row wider than the screen */
 @media(max-width:480px){
@@ -815,7 +815,7 @@ body.light .pin-key{background:rgba(0,0,0,.04) !important;border-color:rgba(0,0,
   .tb-export-btn{padding:9px !important}
 }
 
-/* Dashboard month snapshot (Income/Spent/Remaining) — keep 3 columns
+/* Dashboard month snapshot (Income/Spent/Remaining) - keep 3 columns
    but shrink text/gap so peso amounts don't overflow on tiny screens */
 @media(max-width:360px){
   .snapshot-grid{gap:6px}
@@ -868,7 +868,7 @@ input[type="date"]{min-width:0;-webkit-appearance:none;appearance:none}
 }
 
 /* ═══════════════════════════════════════════
-   RESPONSIVE — fits phones, tablets (iPad), laptops, big monitors
+   RESPONSIVE - fits phones, tablets (iPad), laptops, big monitors
    Breakpoints: ≤480 small phone · ≤600 phone · 601–900 tablet portrait / phone landscape
    (bottom nav) · 901+ sidebar layout (iPad landscape, laptops) · 1600+ wide
 ═══════════════════════════════════════════ */
@@ -902,7 +902,7 @@ input[type="date"]{min-width:0;-webkit-appearance:none;appearance:none}
 }
 
 /* TABLET PORTRAIT (iPad mini / iPad / iPad Air with bottom nav):
-   use the extra width — two-column forms & cards instead of a stretched phone layout */
+   use the extra width - two-column forms & cards instead of a stretched phone layout */
 @media(min-width:601px) and (max-width:900px){
   .content{padding-left:24px !important;padding-right:24px !important;padding-bottom:100px !important}
   .topbar{padding-left:24px !important;padding-right:24px !important}
@@ -931,7 +931,7 @@ input[type="date"]{min-width:0;-webkit-appearance:none;appearance:none}
 #loan-list .entry>div:nth-child(2){flex-wrap:wrap}
 #loan-list .entry>div:nth-child(2) input{min-width:110px}
 
-/* money amounts scale to the size of their own card (container query units) —
+/* money amounts scale to the size of their own card (container query units) - 
    they shrink to fit instead of breaking mid-number or getting clipped.
    Older browsers without cqw simply keep the fixed sizes above. */
 .stat,.hw,.bal-card,.snapshot-item,.hero-card{container-type:inline-size}
@@ -946,7 +946,7 @@ input[type="date"]{min-width:0;-webkit-appearance:none;appearance:none}
 
 .badge-loan-repayment{background:var(--blue-bg);color:var(--blue)}
 
-/* ═══ CINEMATIC MOTION LAYER — uses only the existing palette ═══ */
+/* ═══ CINEMATIC MOTION LAYER - uses only the existing palette ═══ */
 @keyframes riseIn{from{opacity:0;transform:translateY(16px)}}
 @keyframes riseBlur{from{opacity:0;transform:translateY(20px);filter:blur(8px)}}
 @keyframes fadeIn{from{opacity:0}}
@@ -962,7 +962,7 @@ input[type="date"]{min-width:0;-webkit-appearance:none;appearance:none}
 @keyframes heroGlow{to{transform:translate(-50px,40px) scale(1.25)}}
 @keyframes pop{50%{transform:scale(1.25)}}
 
-/* AUTH — ambient stage: lime glow balanced by a cool blue glow, vignette, letterbox reveal */
+/* AUTH - ambient stage: lime glow balanced by a cool blue glow, vignette, letterbox reveal */
 #auth-overlay .pin-box{position:relative;z-index:1}
 .auth-bg{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
 .auth-bg i{position:absolute;border-radius:50%;filter:blur(70px)}
@@ -985,13 +985,13 @@ body.light .auth-bg::after{display:none}
 #auth-view-landing .auth-view-main>div:first-child{animation:riseBlur .9s .1s cubic-bezier(.2,.7,.2,1) backwards,logoGlow 4.5s 1.2s ease-in-out infinite}
 #auth-overlay .btn-ghost:hover{border-color:rgba(var(--accent-rgb),.35) !important}
 
-/* BUTTONS — light sweep + lift */
+/* BUTTONS - light sweep + lift */
 .btn-primary{position:relative;overflow:hidden}
 .btn-primary::after{content:'';position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.35) 50%,transparent 65%);transform:translateX(-120%);pointer-events:none}
 .btn-primary:hover::after{transform:translateX(120%);transition:transform .7s ease}
 .btn-primary:hover:not(:active){transform:translateY(-1px)}
 
-/* APP — staged page entrances, growing charts, softer hovers */
+/* APP - staged page entrances, growing charts, softer hovers */
 .section.active>*{animation:riseIn .55s cubic-bezier(.2,.7,.2,1) backwards}
 .section.active>*:nth-child(2){animation-delay:.05s}.section.active>*:nth-child(3){animation-delay:.1s}
 .section.active>*:nth-child(4){animation-delay:.15s}.section.active>*:nth-child(5){animation-delay:.2s}
@@ -1060,7 +1060,7 @@ label.fa-row{cursor:pointer}
 .fa-sg{padding:10px 12px;border-radius:8px;font-size:13.5px;color:var(--text);cursor:pointer}
 .fa-sg:hover,.fa-sg.on{background:var(--accent-bg);color:var(--accent)}
 </style>
-<!-- Firebase (Cloud Sync) — compat SDK, no build step needed -->
+<!-- Firebase (Cloud Sync) - compat SDK, no build step needed -->
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
@@ -1078,7 +1078,7 @@ label.fa-row{cursor:pointer}
   // is undefined and this used to throw a bare ReferenceError. Because this was
   // plain top-level code, that error silently killed the *entire* rest of the
   // app's main script (everything after fbAuth.onAuthStateChanged below), with
-  // no message to the user — just a blank, non-functional dashboard shell.
+  // no message to the user - just a blank, non-functional dashboard shell.
   // Now we catch it, flag it, and let index.js show a real "can't connect"
   // screen instead. fbAuth/fbDb are declared with `var` (not const) so later
   // code can safely check them without a ReferenceError either way.
@@ -1098,11 +1098,11 @@ label.fa-row{cursor:pointer}
       }
     });
   }catch(err){
-    console.error('Firebase failed to initialize — running in connection-error mode.', err);
+    console.error('Firebase failed to initialize - running in connection-error mode.', err);
     window.firebaseInitFailed = true;
   }
 </script>
-<!-- Virtual pet companion ("Fin") — purely additive UI + JS, safe to remove
+<!-- Virtual pet companion ("Fin") - purely additive UI + JS, safe to remove
      by deleting this line, the two <script> tags near the end of <body>,
      and the virtual-pet/ folder. Does not touch app state or navigation
      except by calling the app's own existing functions. -->
@@ -1143,7 +1143,7 @@ label.fa-row{cursor:pointer}
             <div style="font-size:20px;flex-shrink:0">📲</div>
             <div style="flex:1;min-width:0">
               <div style="font-size:13px;font-weight:700;color:var(--text)">Install FINUITY</div>
-              <div id="pwa-install-sub" style="font-size:11px;color:var(--muted)">Get it as an app on your home screen — faster, works offline.</div>
+              <div id="pwa-install-sub" style="font-size:11px;color:var(--muted)">Get it as an app on your home screen - faster, works offline.</div>
             </div>
           </div>
           <button id="pwa-install-btn" class="btn btn-primary btn-sm" style="width:100%;margin-top:10px;display:none" onclick="event.stopPropagation();installApp()">Install App</button>
@@ -1154,7 +1154,7 @@ label.fa-row{cursor:pointer}
       </div>
       <div style="padding-top:22px">
         <span onclick="authAnonymousSignIn()" style="font-size:12.5px;color:var(--muted);cursor:pointer;text-decoration:underline">Continue as Guest</span>
-        <div style="font-size:11px;color:var(--muted2);margin-top:8px;line-height:1.5">Guest mode keeps you anonymous — you can still set a nickname just for the greeting. Your data syncs to this guest account, but there's no email to recover it if you lose this device.</div>
+        <div style="font-size:11px;color:var(--muted2);margin-top:8px;line-height:1.5">Guest mode keeps you anonymous - you can still set a nickname just for the greeting. Your data syncs to this guest account, but there's no email to recover it if you lose this device.</div>
         <div style="font-size:11px;color:var(--muted2);margin-top:10px;line-height:1.5">By continuing you agree to our <span class="auth-link" onclick="openLegal('terms')">Terms of Use</span> and <span class="auth-link" onclick="openLegal('privacy')">Privacy Policy</span>.</div>
       </div>
     </div>
@@ -1289,7 +1289,7 @@ label.fa-row{cursor:pointer}
       <label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:500;display:block;margin-bottom:6px">Your Answer</label>
       <input type="text" id="secsetup-answer" placeholder="Something only you'd know" style="width:100%;padding:11px 14px;font-size:13.5px;border-radius:10px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);outline:none;font-family:var(--font-b)" maxlength="60">
     </div>
-    <div style="font-size:11px;color:var(--muted2);text-align:left;width:100%;margin-bottom:16px">Answers aren't case-sensitive. Pick something memorable — it's stored as a one-way hash, so it can't be read back.</div>
+    <div style="font-size:11px;color:var(--muted2);text-align:left;width:100%;margin-bottom:16px">Answers aren't case-sensitive. Pick something memorable - it's stored as a one-way hash, so it can't be read back.</div>
     <div class="pin-error" id="secsetup-error"></div>
     <button class="btn btn-primary" style="width:100%;margin-top:4px" onclick="finishRegistrationWithSecurity()">Save &amp; Finish Setup</button>
     <button class="btn btn-ghost btn-sm" style="margin-top:10px" onclick="skipSecuritySetup()">Skip for now</button>
@@ -1300,13 +1300,13 @@ label.fa-row{cursor:pointer}
     <div style="font-size:32px;margin-bottom:14px">🔓</div>
     <div id="forgot-reauth-view" style="display:none">
       <div class="pin-title">Recover Access</div>
-      <div class="pin-sub" style="margin-bottom:18px">Sign out and sign back in with your account to prove it's you — you'll be able to set a new PIN right after, and none of your data is touched.</div>
+      <div class="pin-sub" style="margin-bottom:18px">Sign out and sign back in with your account to prove it's you - you'll be able to set a new PIN right after, and none of your data is touched.</div>
       <div class="pin-error" id="forgot-reauth-error"></div>
       <button class="btn btn-primary" style="width:100%;margin-top:4px" onclick="authForgotPinReauth()">Sign Out &amp; Verify</button>
     </div>
     <div id="forgot-has-q-view">
       <div class="pin-title">Recover Access</div>
-      <div class="pin-sub" id="forgot-question-text" style="margin-bottom:18px">—</div>
+      <div class="pin-sub" id="forgot-question-text" style="margin-bottom:18px">-</div>
       <div style="text-align:left;width:100%;margin-bottom:8px">
         <label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:500;display:block;margin-bottom:6px">Your Answer</label>
         <input type="text" id="forgot-answer-input" placeholder="Type your answer" style="width:100%;padding:11px 14px;font-size:13.5px;border-radius:10px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);outline:none;font-family:var(--font-b)" maxlength="60" onkeydown="if(event.key==='Enter')verifySecurityAnswer()">
@@ -1475,7 +1475,7 @@ label.fa-row{cursor:pointer}
     <div style="display:flex;align-items:center;gap:10px;padding:10px;margin-bottom:8px;background:var(--surface2);border-radius:10px;border:1px solid var(--border);box-shadow:var(--shadow-sm)">
       <div style="width:30px;height:30px;border-radius:50%;background:var(--accent-bg);border:1px solid rgba(var(--accent-rgb),.2);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">👤</div>
       <div style="min-width:0;flex:1">
-        <div id="sidebar-username" style="font-size:12.5px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</div>
+        <div id="sidebar-username" style="font-size:12.5px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">-</div>
         <div style="font-size:10px;color:var(--muted2)">my account</div>
       </div>
       <button onclick="authSignOut()" title="Log out" style="flex-shrink:0;width:28px;height:28px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s" onmouseover="this.style.background='var(--red)';this.style.color='#fff';this.style.borderColor='var(--red)'" onmouseout="this.style.background='transparent';this.style.color='var(--muted)';this.style.borderColor='var(--border2)'">
@@ -1543,7 +1543,7 @@ label.fa-row{cursor:pointer}
     <!-- INCOME vs EXPENSE CHART -->
     <div class="card">
       <div class="card-hd">
-        <div class="card-title">Income vs Expenses — by Month</div>
+        <div class="card-title">Income vs Expenses - by Month</div>
         <span class="card-link" onclick="show('income')">View income →</span>
       </div>
       <div id="dash-chart"></div>
@@ -1762,7 +1762,7 @@ label.fa-row{cursor:pointer}
       </div>
       <div class="form-group" id="loan-wallet-group" style="display:none">
         <label>Where's the money coming from?</label>
-        <select id="loan-wallet"><option value="">— Not tracked in a wallet —</option></select>
+        <select id="loan-wallet"><option value=""> - Not tracked in a wallet - </option></select>
       </div>
       <div class="form-group"><label>Note (optional)</label><input type="text" id="loan-note" placeholder="What's it for?"></div>
       <button class="btn btn-primary" onclick="addLoan()">
@@ -1828,7 +1828,7 @@ label.fa-row{cursor:pointer}
         <div class="set-profile">
           <div class="set-avatar" id="set-avatar">?</div>
           <div style="min-width:0">
-            <div class="set-pname" id="settings-username">—</div>
+            <div class="set-pname" id="settings-username">-</div>
             <div class="set-pmail" id="set-pmail"></div>
           </div>
         </div>
@@ -1865,7 +1865,7 @@ label.fa-row{cursor:pointer}
       <div class="set-panel single" data-panel="personal">
     <!-- ACCOUNT -->
     <div class="card" style="margin-bottom:14px">
-      <div class="row"><span class="lbl">Name</span><span id="set-panel-name" style="font-size:13px;font-weight:600;color:var(--text)">—</span></div>
+      <div class="row"><span class="lbl">Name</span><span id="set-panel-name" style="font-size:13px;font-weight:600;color:var(--text)">-</span></div>
       <div class="row" style="border-bottom:none">
         <div><div style="font-size:13px;font-weight:500">Change Name</div><div style="font-size:11px;color:var(--muted)">Update your display name</div></div>
         <div class="settings-name-row" style="display:flex;gap:8px;align-items:center">
@@ -1894,7 +1894,7 @@ label.fa-row{cursor:pointer}
       <div class="set-panel single" data-panel="security">
     <!-- PIN LOCK -->
     <div class="card" style="margin-bottom:14px">
-      <div style="font-size:13px;color:var(--muted);margin-bottom:16px" id="pin-status-text">Add a 4-digit lock screen so a casual glance doesn't reveal your numbers. This isn't encryption — anyone with access to this device's browser storage can still read the underlying data.</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:16px" id="pin-status-text">Add a 4-digit lock screen so a casual glance doesn't reveal your numbers. This isn't encryption - anyone with access to this device's browser storage can still read the underlying data.</div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px">
         <button class="btn btn-primary" onclick="showPinSetup()" id="pin-set-btn">Set / Change PIN</button>
         <button class="btn btn-danger" onclick="removePin()" id="pin-remove-btn" style="display:none">Remove PIN</button>
@@ -1906,7 +1906,7 @@ label.fa-row{cursor:pointer}
       </div>
       <div style="border-top:1px solid var(--border);padding-top:16px">
         <div style="font-size:12px;color:var(--text);font-weight:600;margin-bottom:4px">🛟 Recovery Question</div>
-        <div style="font-size:12px;color:var(--muted);margin-bottom:10px" id="secq-status-text">Not set — if you forget your PIN, you won't be able to recover this account.</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:10px" id="secq-status-text">Not set - if you forget your PIN, you won't be able to recover this account.</div>
         <button class="btn btn-ghost btn-sm" onclick="showSettingsSecUpdate()" id="secq-set-btn">Set Recovery Question</button>
       </div>
     </div>
@@ -2034,7 +2034,7 @@ label.fa-row{cursor:pointer}
         </div>
         <div class="form-group"><label>Period</label>
           <select id="report-month">
-            <option value="all">All Time — Full Report</option>
+            <option value="all">All Time - Full Report</option>
             
             <option disabled>── by month ──</option>
             <option>January</option><option>February</option><option>March</option><option>April</option><option>May</option><option>June</option><option>July</option><option>August</option><option>September</option><option>October</option><option>November</option><option>December</option>
@@ -2167,7 +2167,7 @@ const VERSES=[
   {text:"I have learned, in whatever situation I am, to be content.",ref:"Philippians 4:11"},
   {text:"The plans of the diligent lead surely to abundance, but everyone who is hasty comes only to poverty.",ref:"Proverbs 21:5"},
   {text:"Cast your bread upon the waters, for you will find it after many days.",ref:"Ecclesiastes 11:1"},
-  {text:"A feast is made for laughter, wine makes life merry, and money is the answer for everything — but wisdom is better than weapons of war.",ref:"Ecclesiastes 10:19"},
+  {text:"A feast is made for laughter, wine makes life merry, and money is the answer for everything - but wisdom is better than weapons of war.",ref:"Ecclesiastes 10:19"},
   {text:"Do not store up for yourselves treasures on earth... but store up for yourselves treasures in heaven.",ref:"Matthew 6:19-20"},
   {text:"In all toil there is profit, but mere talk tends only to poverty.",ref:"Proverbs 14:23"},
   {text:"Whoever loves money never has enough; whoever loves wealth is never satisfied with their income.",ref:"Ecclesiastes 5:10"},
@@ -2222,13 +2222,13 @@ const VERSES=[
   {text:"Delight yourself in the Lord, and he will give you the desires of your heart.",ref:"Psalm 37:4",w:["sat"]},
   {text:"In peace I will lie down and sleep, for you alone, Lord, make me dwell in safety.",ref:"Psalm 4:8",w:["night", "eve"]},
   {text:"Come to me, all you who are weary and burdened, and I will give you rest.",ref:"Matthew 11:28",w:["eve", "night"]},
-  {text:"In vain you rise early and stay up late, toiling for food to eat — for he grants sleep to those he loves.",ref:"Psalm 127:2",w:["night", "eve"]},
+  {text:"In vain you rise early and stay up late, toiling for food to eat - for he grants sleep to those he loves.",ref:"Psalm 127:2",w:["night", "eve"]},
   {text:"When you lie down, you will not be afraid; when you lie down, your sleep will be sweet.",ref:"Proverbs 3:24",w:["night"]},
   {text:"Weeping may stay for the night, but rejoicing comes in the morning.",ref:"Psalm 30:5",w:["night", "eve"]},
   {text:"Cast all your anxiety on him because he cares for you.",ref:"1 Peter 5:7",w:["eve", "night"]},
   {text:"Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God.",ref:"Philippians 4:6",w:["eve", "night"]},
   {text:"Therefore do not worry about tomorrow, for tomorrow will worry about itself. Each day has enough trouble of its own.",ref:"Matthew 6:34",w:["night", "eve"]},
-  {text:"I lift up my eyes to the hills — where does my help come from? My help comes from the Lord, the Maker of heaven and earth.",ref:"Psalm 121:1-2",w:["night", "eve"]},
+  {text:"I lift up my eyes to the hills - where does my help come from? My help comes from the Lord, the Maker of heaven and earth.",ref:"Psalm 121:1-2",w:["night", "eve"]},
   {text:"Cast your cares on the Lord and he will sustain you; he will never let the righteous be shaken.",ref:"Psalm 55:22",w:["night", "eve", "end"]},
   {text:"The prudent see danger and take refuge, but the simple keep going and pay the penalty.",ref:"Proverbs 22:3",w:["start"]},
   {text:"The wise store up choice food and olive oil, but fools gulp theirs down.",ref:"Proverbs 21:20",w:["start"]},
@@ -2351,7 +2351,7 @@ const CAT_LABELS={food:'🍜 Food',transport:'🚌 Transport',shopping:'🛍️ 
 let expFilter='all';
 
 function today(){
-  // Local calendar date, not UTC — toISOString() converts to UTC first, which
+  // Local calendar date, not UTC - toISOString() converts to UTC first, which
   // in timezones ahead of UTC (e.g. UTC+8) mislabels anything logged between
   // midnight and sunrise as the previous day.
   const d=new Date();
@@ -2374,7 +2374,7 @@ async function hashSecret(secret,salt){
 }
 // One-time (and restore-time) migration: upgrades any legacy plaintext pin/
 // securityAnswer left over from before hashing existed, or found in an old
-// backup file, into salted hashes — then wipes the plaintext.
+// backup file, into salted hashes - then wipes the plaintext.
 async function migratePlaintextSecrets(){
   let changed=false;
   if(state.pin && !state.pinHash){
@@ -2406,14 +2406,14 @@ function defaultState(){
     loans:[],
     goals:[],
     budgetLimit:0,
-    pin:'', // legacy plaintext field — kept only so old backups load; migrated to pinHash on read
+    pin:'', // legacy plaintext field - kept only so old backups load; migrated to pinHash on read
     pinHash:'',
     pinSalt:'',
     nextId:0,
     hideBalances:false,
     termsAccepted:null,
     securityQuestion:'',
-    securityAnswer:'', // legacy plaintext field — migrated to securityAnswerHash on read
+    securityAnswer:'', // legacy plaintext field - migrated to securityAnswerHash on read
     securityAnswerHash:'',
     securityAnswerSalt:''
   };
@@ -2496,7 +2496,7 @@ async function pushToCloud(){
     markCloudLinked(cloudUser.uid,ts);
   }catch(e){
     console.error('Cloud sync failed',e);
-    toast('Cloud sync failed — check your connection','error');
+    toast('Cloud sync failed - check your connection','error');
   }
   cloudPushing=false;
   setCloudSpinner(false);
@@ -2546,12 +2546,12 @@ async function loadStateForUser(user){
         await pushToCloud();
       }
     }else{
-      // brand-new account — seed the cloud with whatever's local (usually defaults)
+      // brand-new account - seed the cloud with whatever's local (usually defaults)
       await pushToCloud();
     }
   }catch(e){
     console.error('Cloud load failed',e);
-    toast('Could not reach cloud data — working offline for now','error');
+    toast('Could not reach cloud data - working offline for now','error');
   }
   stateLoadedForUid=user.uid;
   setCloudSpinner(false);
@@ -2601,14 +2601,14 @@ function updateAccountSettingsUI(){
     return;
   }
   if(cloudUser.isAnonymous){
-    if(statusEl)statusEl.textContent='Signed in as a Guest — this account has no email attached. Link it to Google to make sure you never lose access.';
+    if(statusEl)statusEl.textContent='Signed in as a Guest - this account has no email attached. Link it to Google to make sure you never lose access.';
     if(linkBtn)linkBtn.style.display='';
-    // Guests don't get the plain Sign Out button — signing out here is unrecoverable,
+    // Guests don't get the plain Sign Out button - signing out here is unrecoverable,
     // so it's tucked behind a smaller link that routes through a dedicated warning instead.
     if(outBtn)outBtn.style.display='none';
     if(guestSignoutWrap)guestSignoutWrap.style.display='block';
   }else{
-    if(statusEl)statusEl.textContent='Signed in as '+(cloudUser.email||cloudUser.displayName||'your account')+' — data syncs automatically across your devices.';
+    if(statusEl)statusEl.textContent='Signed in as '+(cloudUser.email||cloudUser.displayName||'your account')+' - data syncs automatically across your devices.';
     if(linkBtn)linkBtn.style.display='none';
     if(outBtn)outBtn.style.display='';
     if(guestSignoutWrap)guestSignoutWrap.style.display='none';
@@ -2651,7 +2651,7 @@ async function authLinkToGoogle(){
     await cloudUser.linkWithPopup(provider);
     updateAccountSettingsUI();
     renderGuestBanner();
-    toast('Linked to Google — your data is now backed by a real account ✓');
+    toast('Linked to Google - your data is now backed by a real account ✓');
   }catch(e){
     console.error(e);
     toast('Linking failed: '+authFriendlyError(e),'error');
@@ -2696,7 +2696,7 @@ async function handleAuthState(user){
 }
 
 if(window.firebaseInitFailed || typeof fbAuth==='undefined' || !fbAuth){
-  // Firebase never came up — show a clear, honest error instead of letting
+  // Firebase never came up - show a clear, honest error instead of letting
   // the rest of this script (150+ functions incl. render/show/toast) go
   // undefined and leaving a blank-looking dashboard on screen.
   document.addEventListener('DOMContentLoaded', showConnectionErrorScreen);
@@ -2739,7 +2739,7 @@ function uid(){return ++state.nextId;}
 function clamp(v,lo,hi){return Math.min(hi,Math.max(lo,v));}
 
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
-function escAttr(s){return esc(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;');} // esc() alone doesn't escape quotes — needed when inserting into an HTML attribute value
+function escAttr(s){return esc(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;');} // esc() alone doesn't escape quotes - needed when inserting into an HTML attribute value
 function toast(msg,type='ok'){
   const el=document.getElementById('toast');
   const icon=document.getElementById('toast-icon');
@@ -2825,7 +2825,7 @@ function renderGuestBanner(){
       <div style="font-size:20px;line-height:1;flex-shrink:0">⚠️</div>
       <div style="flex:1;min-width:0">
         <div style="font-size:13.5px;font-weight:600;color:var(--text);margin-bottom:3px">You're in Guest mode</div>
-        <div style="font-size:12.5px;color:var(--muted);line-height:1.5;margin-bottom:10px">${crossedThreshold?'You have real data building up here. ':''}This account has no email — if you lose this device or clear its storage, this data can\'t be recovered. Link it to Google to keep it safe.</div>
+        <div style="font-size:12.5px;color:var(--muted);line-height:1.5;margin-bottom:10px">${crossedThreshold?'You have real data building up here. ':''}This account has no email - if you lose this device or clear its storage, this data can\'t be recovered. Link it to Google to keep it safe.</div>
         <div style="display:flex;gap:8px">
           <button class="btn btn-primary btn-sm" onclick="authLinkToGoogle()">Link to Google</button>
           <button class="btn btn-ghost btn-sm" onclick="dismissGuestBanner()">Not now</button>
@@ -3255,7 +3255,7 @@ function renderIncome(){
     if(ya!==yb)return yb-ya;
     const ma=MONTH_ORDER.indexOf(a.month),mb=MONTH_ORDER.indexOf(b.month);
     if(ma!==mb)return mb-ma;
-    // Same month & year — tie-break by which was actually entered most recently
+    // Same month & year - tie-break by which was actually entered most recently
     const da=a.dateAdded||'',db=b.dateAdded||'';
     if(da!==db)return db.localeCompare(da);
     return (b.id||0)-(a.id||0);
@@ -3279,7 +3279,7 @@ function renderIncome(){
       const _isLatest=e.id===latestId;
       const _entryStyle=_isLatest?' style="background:var(--accent-bg);border-left:2px solid var(--accent);border-radius:8px;padding-left:10px;padding-right:10px;margin:0 -10px 0 -10px"':'';
       const _latestTag=_isLatest?'<span style="font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);font-weight:700;background:var(--accent-bg);border:1px solid rgba(var(--accent-rgb),.3);border-radius:20px;padding:2px 7px">Latest</span>':'';
-      html+=`<div class="entry"${_entryStyle}><div class="info"><div class="name">${esc(e.month)}${e.note?' — '+esc(e.note):''}</div><div class="meta"><span class="badge badge-${String(e.type).toLowerCase().replace(/[^a-z0-9]+/g,'-')}">${esc(e.type)}</span>${_latestTag}${_iw?`<span style="font-size:11px;color:var(--muted)">→ ${esc(_iw.label)}</span>`:''} ${_dateStr}</div></div><div class="right"><span class="amt ap">${fmt(e.amount)}</span><button class="btn btn-ghost btn-sm" onclick="openEditIncome(${e.id})">Edit</button><button class="btn btn-danger btn-sm" onclick="del('income',${e.id})">Remove</button></div></div>`;
+      html+=`<div class="entry"${_entryStyle}><div class="info"><div class="name">${esc(e.month)}${e.note?' - '+esc(e.note):''}</div><div class="meta"><span class="badge badge-${String(e.type).toLowerCase().replace(/[^a-z0-9]+/g,'-')}">${esc(e.type)}</span>${_latestTag}${_iw?`<span style="font-size:11px;color:var(--muted)">→ ${esc(_iw.label)}</span>`:''} ${_dateStr}</div></div><div class="right"><span class="amt ap">${fmt(e.amount)}</span><button class="btn btn-ghost btn-sm" onclick="openEditIncome(${e.id})">Edit</button><button class="btn btn-danger btn-sm" onclick="del('income',${e.id})">Remove</button></div></div>`;
     });
     html+='</div>';
   });
@@ -3303,7 +3303,7 @@ function renderBalances(){
         <button class="btn btn-ghost btn-sm" onclick="toggleWalletRename('${w.id}')">Cancel</button>
       </div>
       <div class="amount">${fmtBal(w.balance)}</div>
-      <div class="upd">Updated ${fmtDate(w.updated)||'—'}</div>
+      <div class="upd">Updated ${fmtDate(w.updated)||'-'}</div>
       <div class="upd-form">
         <input type="number" id="bal-input-${w.id}" placeholder="New balance" min="0">
         <button class="btn btn-primary btn-sm" onclick="updateBalance('${w.id}')">Save</button>
@@ -3333,7 +3333,7 @@ function renderBalances(){
   const loanWal=document.getElementById('loan-wallet');
   if(loanWal){
     const cur=loanWal.value;
-    loanWal.innerHTML='<option value="">— Not tracked in a wallet —</option>'+wallets.map(w=>`<option value="${w.id}">${esc(w.label)}</option>`).join('');
+    loanWal.innerHTML='<option value=""> - Not tracked in a wallet - </option>'+wallets.map(w=>`<option value="${w.id}">${esc(w.label)}</option>`).join('');
     if(cur==='' || wallets.find(w=>w.id===cur))loanWal.value=cur;
   }
 }
@@ -3493,7 +3493,7 @@ function addIncome(){
   }
   state.income.push({id:uid(),month,year,type,amount,note,wallet:walletId,dateAdded:today()});
   document.getElementById('inc-amount').value='';document.getElementById('inc-note').value='';
-  save();render();toast('Income added'+(wallet?' — '+wallet.label+' updated':'')+' ✓');
+  save();render();toast('Income added'+(wallet?' - '+wallet.label+' updated':'')+' ✓');
   window.dispatchEvent(new CustomEvent('fin:income-added',{detail:{amount,walletId}}));
 }
 function walletOptionsHTML(selectedId){
@@ -3549,7 +3549,7 @@ function onExpCatChange(){
     const sel=document.getElementById('exp-loan-id');
     const payable=state.loans.filter(l=>l.type==='payable'&&!l.settled);
     if(payable.length){
-      sel.innerHTML=payable.map(l=>`<option value="${l.id}">${esc(l.name)}${l.note?' ('+esc(l.note)+')':''} — ${fmt(l.amount)}</option>`).join('');
+      sel.innerHTML=payable.map(l=>`<option value="${l.id}">${esc(l.name)}${l.note?' ('+esc(l.note)+')':''} - ${fmt(l.amount)}</option>`).join('');
     } else {
       sel.innerHTML='<option value="">No outstanding payable loans</option>';
     }
@@ -3649,12 +3649,12 @@ async function addExpense(){
   document.getElementById('exp-date').value=today();document.getElementById('exp-note').value='';
   document.getElementById('exp-recurring').checked=false;
   rcHideBanner();
-  save();render();toast('Expense logged'+(wallet?' — '+wallet.label+' updated':'')+' ✓');
+  save();render();toast('Expense logged'+(wallet?' - '+wallet.label+' updated':'')+' ✓');
   window.dispatchEvent(new CustomEvent('fin:expense-logged',{detail:{desc,amount,cat,source}}));
 }
 /* ══ RECEIPT SCANNER (free, on-device OCR via Tesseract.js) ══
    The photo is read on the phone and never uploaded or stored. Only the reader software
-   is downloaded (once) from a public CDN. It is a free reader, so it can misread —
+   is downloaded (once) from a public CDN. It is a free reader, so it can misread - 
    the result always lands in the normal expense form to be checked before saving. */
 /*RC-PARSE-START*/
 const RC_MON={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,sept:9,oct:10,nov:11,dec:12};
@@ -3689,7 +3689,7 @@ function rcParseTotal(lines){
   });
   if(strong.length)return {amount:Math.max.apply(null,strong),conf:'high'};
   if(weak.length)return {amount:Math.max.apply(null,weak),conf:'high'};
-  // fallback: biggest plausible amount that isn't cash/change/etc — low confidence
+  // fallback: biggest plausible amount that isn't cash/change/etc - low confidence
   const BAD=/change|cash|tender|tel|phone|tin\b|vat\s*reg|acct|ref|invoice|terminal|serial|\d{1,2}:\d{2}|sub\s*-?\s*total/i;
   let best=0;lines.forEach(ln=>{if(BAD.test(ln))return;rcAmounts(ln).forEach(v=>{if(v>best)best=v;});});
   return best?{amount:best,conf:'low'}:{amount:0,conf:'none'};
@@ -3833,7 +3833,7 @@ async function scanReceiptFile(inp){
     if(!_rcCancel){
       rcCloseProgress();
       console.warn('Receipt scan failed',e);
-      toast(e&&e.message==='reader-download'?'The receipt reader needs internet the first time — please connect and try again':'Could not read this receipt. Try a clearer photo, or type it in.','error');
+      toast(e&&e.message==='reader-download'?'The receipt reader needs internet the first time - please connect and try again':'Could not read this receipt. Try a clearer photo, or type it in.','error');
     }
   }finally{
     if(_rcWorker){try{_rcWorker.terminate();}catch(e){}_rcWorker=null;}
@@ -3852,20 +3852,20 @@ function rcApply(r,rawText){
   catSel.value=cat;
   if(typeof onExpCatChange==='function')onExpCatChange();
   const warn=[];
-  if(r.amountConf==='none')warn.push('I couldn\'t find the total — please type the amount.');
-  else if(r.amountConf==='low')warn.push('I couldn\'t find a clear “TOTAL” line, so the amount is a guess — please check it.');
+  if(r.amountConf==='none')warn.push('I couldn\'t find the total - please type the amount.');
+  else if(r.amountConf==='low')warn.push('I couldn\'t find a clear “TOTAL” line, so the amount is a guess - please check it.');
   if(!r.date)warn.push('No date found, so today\'s date is used.');
-  if(!r.merchant)warn.push('Couldn\'t read the store name — please type it.');
+  if(!r.merchant)warn.push('Couldn\'t read the store name - please type it.');
   const b=rcEl('receipt-banner');
   if(b){
-    b.innerHTML='<div style="display:flex;gap:8px;align-items:flex-start"><div style="flex:1"><strong style="color:var(--text)">🧾 Receipt scanned</strong> — check the amount, date and store below, then tap <em>Add Expense</em>. This free on-device reader can misread blurry, faded or crumpled receipts.'
+    b.innerHTML='<div style="display:flex;gap:8px;align-items:flex-start"><div style="flex:1"><strong style="color:var(--text)">🧾 Receipt scanned</strong> - check the amount, date and store below, then tap <em>Add Expense</em>. This free on-device reader can misread blurry, faded or crumpled receipts.'
       +(warn.length?'<div style="color:var(--amber);margin-top:6px">'+warn.map(esc).join('<br>')+'</div>':'')
       +'</div><button class="btn btn-ghost btn-sm" style="padding:2px 9px" onclick="rcHideBanner()" aria-label="Dismiss">✕</button></div>';
     b.style.display='block';
   }
   ['exp-desc','exp-amount','exp-date'].forEach(id=>{const e=rcEl(id);if(e){e.style.transition='box-shadow .3s';e.style.boxShadow='0 0 0 2px var(--accent)';setTimeout(()=>{e.style.boxShadow='';},2400);}});
   try{rcEl('exp-desc').scrollIntoView({behavior:'smooth',block:'center'});}catch(e){}
-  toast(r.amount?'Receipt read — please double-check the details':'Receipt read — some details need your input');
+  toast(r.amount?'Receipt read - please double-check the details':'Receipt read - some details need your input');
 }
 
 async function addLoan(){
@@ -3890,7 +3890,7 @@ async function addLoan(){
       wallet.balance=Math.round((wallet.balance-amount)*100)/100;
       wallet.updated=today();
       loan.sourceWallet=walletId;
-      walletMsg=' — '+wallet.label+' updated';
+      walletMsg=' - '+wallet.label+' updated';
     }
   }
   state.loans.push(loan);
@@ -3907,7 +3907,7 @@ function openEditLoan(id){
   document.getElementById('edit-loan-type').value=l.type;
   document.getElementById('edit-loan-due').value=l.due||'';
   document.getElementById('edit-loan-note').value=l.note||'';
-  document.getElementById('edit-loan-wallet').innerHTML='<option value="">— Not tracked in a wallet —</option>'+walletOptionsHTML(l.sourceWallet||'');
+  document.getElementById('edit-loan-wallet').innerHTML='<option value=""> - Not tracked in a wallet - </option>'+walletOptionsHTML(l.sourceWallet||'');
   onEditLoanTypeChange();
   document.getElementById('edit-loan-modal').style.display='flex';
 }
@@ -3932,7 +3932,7 @@ async function saveEditLoan(){
   if(!name){toast('Enter a name','error');return;}
   if(!amount||amount<=0){toast('Enter a valid amount','error');return;}
 
-  // Revert the wallet deduction this loan originally had (if any — only ever set for "they owe me" loans)
+  // Revert the wallet deduction this loan originally had (if any - only ever set for "they owe me" loans)
   const oldWalletId=l.sourceWallet;
   const oldAmount=l.amount;
   if(oldWalletId){
@@ -3959,7 +3959,7 @@ async function saveEditLoan(){
       }
       newWallet.balance=Math.round((newWallet.balance-amount)*100)/100;
       newWallet.updated=today();
-      walletMsg=' — '+newWallet.label+' updated';
+      walletMsg=' - '+newWallet.label+' updated';
     }
   }
   l.name=name;l.amount=amount;l.type=type;l.due=due;l.note=note;
@@ -4039,7 +4039,7 @@ function openSettleLoan(id){
   if(!l)return;
   if(!(state.wallets||[]).length){toast('Add a wallet first','error');return;}
   document.getElementById('settle-loan-id').value=l.id;
-  document.getElementById('settle-loan-label').textContent=(l.type==='payable'?'Paying off ':'Receiving payment from ')+l.name+' — '+fmt(l.amount);
+  document.getElementById('settle-loan-label').textContent=(l.type==='payable'?'Paying off ':'Receiving payment from ')+l.name+' - '+fmt(l.amount);
   document.getElementById('settle-loan-wallet').innerHTML=walletOptionsHTML(state.wallets[0].id);
   document.getElementById('settle-loan-date').value=today();
   document.getElementById('settle-loan-note').value='';
@@ -4052,7 +4052,7 @@ async function confirmSettleLoan(){
   const id=parseInt(document.getElementById('settle-loan-id').value);
   const l=state.loans.find(x=>x.id===id);
   if(!l){closeSettleLoan();return;}
-  if(l.settled){closeSettleLoan();return;} // already settled elsewhere (e.g. two tabs) — avoid double-applying
+  if(l.settled){closeSettleLoan();return;} // already settled elsewhere (e.g. two tabs) - avoid double-applying
   const walletId=document.getElementById('settle-loan-wallet').value;
   const date=document.getElementById('settle-loan-date').value||today();
   const note=document.getElementById('settle-loan-note').value.trim();
@@ -4082,7 +4082,7 @@ async function confirmSettleLoan(){
   l.settled=true;
   closeSettleLoan();
   save();render();
-  toast('Loan settled — '+wallet.label+' updated ✓');
+  toast('Loan settled - '+wallet.label+' updated ✓');
   window.dispatchEvent(new CustomEvent('fin:loan-settled',{detail:{loan:l,wallet}}));
 }
 async function undoSettle(id){
@@ -4107,7 +4107,7 @@ async function undoSettle(id){
     delete l.settledTxn;delete l.settledWallet;delete l.settledDate;
     l.settled=false;
     save();render();
-    toast('Marked as outstanding — balance reverted');
+    toast('Marked as outstanding - balance reverted');
     return;
   }
   l.settled=false;
@@ -4242,12 +4242,12 @@ async function restoreData(){
   };
   reader.readAsText(file);
 }
-// Restoring a file overwrites whatever is currently loaded — including cloud-synced
+// Restoring a file overwrites whatever is currently loaded - including cloud-synced
 // data, since save() pushes to Firestore right after. Warn first if there's a cloud
 // account attached (guest or signed-in) so a stale local file can't silently clobber it.
 function confirmRestoreOverwrite(){
   if(!cloudUser)return Promise.resolve(true);
-  return mtConfirm('This will replace your current data — including anything already synced to the cloud — with the contents of this backup file. This can\'t be undone. Continue?','⚠️','Restore & Overwrite','var(--red)');
+  return mtConfirm('This will replace your current data - including anything already synced to the cloud - with the contents of this backup file. This can\'t be undone. Continue?','⚠️','Restore & Overwrite','var(--red)');
 }
 
 /* FORMAL REPORT */
@@ -4293,7 +4293,7 @@ function buildReportHTML(){
     const mTI=mInc.reduce((a,b)=>a+b.amount,0);
     const mTE=mExp.reduce((a,b)=>a+b.amount,0);
     const mNet=mTI-mTE;
-    const incRows=mInc.map(e=>`<tr><td>${esc(e.type)}</td><td>${esc(e.note)||'—'}</td><td class="num pos">${fp(e.amount)}</td></tr>`).join('');
+    const incRows=mInc.map(e=>`<tr><td>${esc(e.type)}</td><td>${esc(e.note)||'-'}</td><td class="num pos">${fp(e.amount)}</td></tr>`).join('');
     const expRows=mExp.map(e=>`<tr><td>${esc(e.desc)}</td><td>${CAT_LABELS[e.cat||'other-exp']||'Other'}</td><td>${esc(((state.wallets||[]).find(w=>w.id===e.source)||{label:e.source}).label)} · ${fmtDate(e.date)}</td><td class="num neg">${fp(e.amount)}</td></tr>`).join('');
     return `<div class="month-block">
       <div class="month-title">${m} ${year}</div>
@@ -4307,7 +4307,7 @@ function buildReportHTML(){
     </div>`;
   }).join('');
 
-  const loanRows=state.loans.map(l=>`<tr><td>${esc(l.name)}</td><td>${l.type==='payable'?'Payable (I Owe)':'Receivable (Owes Me)'}</td><td>${esc(l.note)||'—'}</td><td class="num ${l.type==='payable'?'neg':'pos'}">${fp(l.amount)}</td><td><span class="status-badge ${l.settled?'settled':'pending'}">${l.settled?'Settled':'Pending'}</span></td></tr>`).join('');
+  const loanRows=state.loans.map(l=>`<tr><td>${esc(l.name)}</td><td>${l.type==='payable'?'Payable (I Owe)':'Receivable (Owes Me)'}</td><td>${esc(l.note)||'-'}</td><td class="num ${l.type==='payable'?'neg':'pos'}">${fp(l.amount)}</td><td><span class="status-badge ${l.settled?'settled':'pending'}">${l.settled?'Settled':'Pending'}</span></td></tr>`).join('');
   const reportLabel=isAll?'All Time':isYear?`Year ${filterYear}`:sel;
 
   const reportHTML=`<!DOCTYPE html>
@@ -4315,7 +4315,7 @@ function buildReportHTML(){
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Financial Report — ${reportLabel}</title>
+<title>Financial Report - ${reportLabel}</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:'Helvetica Neue',Arial,sans-serif;font-size:12.5px;color:#1a1a1a;background:#fff;padding:48px 56px;max-width:860px;margin:0 auto;line-height:1.5}
@@ -4404,7 +4404,7 @@ function buildReportHTML(){
   ${payTotal>0?`<div style="text-align:right;margin-top:6px;font-size:11px;color:#999">Total outstanding payable: <strong style="color:#dc2626">${fp(payTotal)}</strong></div>`:''}
 
   <div class="report-footer">
-    <span>FINUITY v2.4 — Personal Finance Tracker</span>
+    <span>FINUITY v2.4 - Personal Finance Tracker</span>
     <span>Confidential · For personal use only</span>
   </div>
 
@@ -4680,7 +4680,7 @@ function updateInstallBanner(){
 
   if(deferredInstallPrompt){
     if(btn){btn.style.display='block';btn.textContent='Install FINUITY';}
-    if(sub)sub.textContent='Install FINUITY directly on your device — no browser menu needed.';
+    if(sub)sub.textContent='Install FINUITY directly on your device - no browser menu needed.';
   }else if(isIOSDevice()){
     if(btn){btn.style.display='block';btn.textContent='How to Install';}
     if(sub)sub.textContent='Add FINUITY to your Home Screen from Safari.';
@@ -4761,7 +4761,7 @@ function authFriendlyError(e){
     'auth/email-already-in-use':'That email is already registered. Try Sign In instead.',
     'auth/weak-password':'Password should be at least 6 characters.',
     'auth/too-many-requests':'Too many attempts. Please wait a bit and try again.',
-    'auth/network-request-failed':'Network error — check your connection.',
+    'auth/network-request-failed':'Network error - check your connection.',
     'auth/popup-closed-by-user':'Sign-in was cancelled.'
   };
   return map[e.code]||(e.message||'Something went wrong. Please try again.');
@@ -4801,7 +4801,7 @@ async function authForgotPassword(){
   try{
     await fbAuth.sendPasswordResetEmail(email);
     errEl.style.color='var(--accent)';
-    errEl.textContent='Password reset email sent — check your inbox.';
+    errEl.textContent='Password reset email sent - check your inbox.';
   }catch(e){
     errEl.style.color='';
     errEl.textContent=authFriendlyError(e);
@@ -4815,14 +4815,14 @@ async function authGoogleSignIn(){
   try{
     if(cloudUser&&cloudUser.isAnonymous){
       await cloudUser.linkWithPopup(provider);
-      toast('Account linked — your guest data is now saved to Google ✓');
+      toast('Account linked - your guest data is now saved to Google ✓');
     }else{
       await fbAuth.signInWithPopup(provider);
     }
   }catch(e){
     console.error(e);
     if(e.code==='auth/credential-already-in-use'){
-      // that Google account already has its own data — sign into it directly instead
+      // that Google account already has its own data - sign into it directly instead
       try{ await fbAuth.signInWithPopup(provider); }
       catch(e2){ errEl.textContent=authFriendlyError(e2); }
     }else{
@@ -4900,7 +4900,7 @@ function regConfirmKey(k){
   if(regConfirmBuf.length===4){
     setTimeout(()=>{
       if(regConfirmBuf===regPinFirst){
-        // PIN confirmed — hold username/pin, move to security question setup before finishing
+        // PIN confirmed - hold username/pin, move to security question setup before finishing
         pendingRegUsername=document.getElementById('reg-username').value.trim();
         pendingRegPin=regPinFirst;
         regPinBuf=''; regConfirmBuf=''; regPinFirst=''; regPinPhase='set';
@@ -4987,7 +4987,7 @@ function finishRegistrationWithSecurity(){
 }
 
 async function skipSecuritySetup(){
-  const ok=await mtConfirm('Without a recovery question, you will NOT be able to recover your PIN if you forget it — your only option would be Clear All Data, which erases everything. Skip anyway?','⚠️','Skip Anyway','var(--amber)');
+  const ok=await mtConfirm('Without a recovery question, you will NOT be able to recover your PIN if you forget it - your only option would be Clear All Data, which erases everything. Skip anyway?','⚠️','Skip Anyway','var(--amber)');
   if(!ok)return;
   finalizeRegistration('','');
 }
@@ -5057,7 +5057,7 @@ async function updateBioSettingsUI(){
     st.innerHTML='<span style="color:var(--accent);font-weight:600">✓ Biometric unlock is on</span> for this device. Your PIN still works as a backup.';
     btn.textContent='Turn Off';btn.className='btn btn-ghost btn-sm';
   }else{
-    st.textContent=state.pinHash?'Open the app with your face or fingerprint instead of typing your PIN. Your PIN always still works as a backup.':'Set a PIN first — biometrics are an add-on to your PIN.';
+    st.textContent=state.pinHash?'Open the app with your face or fingerprint instead of typing your PIN. Your PIN always still works as a backup.':'Set a PIN first - biometrics are an add-on to your PIN.';
     btn.textContent='Enable';btn.className='btn btn-primary btn-sm';
   }
 }
@@ -5070,7 +5070,7 @@ async function toggleBiometric(){
   await enableBiometric();
 }
 async function enableBiometric(){
-  if(!state.pinHash){toast('Set a PIN first — it stays as your backup','error');return;}
+  if(!state.pinHash){toast('Set a PIN first - it stays as your backup','error');return;}
   if(!(await bioSupported())){toast("This device or browser doesn't support biometric unlock",'error');return;}
   try{
     const cred=await navigator.credentials.create({publicKey:{
@@ -5085,7 +5085,7 @@ async function enableBiometric(){
     localStorage.setItem(BIO_KEY,JSON.stringify({id:bioToB64(cred.rawId),at:Date.now()}));
     toast('Biometric unlock enabled ✓');
   }catch(e){
-    if(e&&e.name==='NotAllowedError')toast('Cancelled — biometric unlock not enabled');
+    if(e&&e.name==='NotAllowedError')toast('Cancelled - biometric unlock not enabled');
     else{console.warn('Biometric setup failed',e);toast('Could not set up biometrics on this device','error');}
   }
   updateBioSettingsUI();
@@ -5110,7 +5110,7 @@ async function tryBiometricUnlock(auto){
       showSplash();
     }
   }catch(e){
-    if(!auto&&errEl)errEl.textContent=(e&&e.name==='NotAllowedError')?'Biometric cancelled — enter your PIN.':'Biometric unavailable — use your PIN.';
+    if(!auto&&errEl)errEl.textContent=(e&&e.name==='NotAllowedError')?'Biometric cancelled - enter your PIN.':'Biometric unavailable - use your PIN.';
   }
   _bioBusy=false;
 }
@@ -5206,7 +5206,7 @@ function setupPinKey(k){
             pinRecoveryActive=false;
             document.getElementById('auth-overlay').style.display='none';
             sessionStorage.setItem('mtUnlocked','1');
-            toast('PIN reset — welcome back! ✓');
+            toast('PIN reset - welcome back! ✓');
             showSplash();
           } else {
             render();
@@ -5230,7 +5230,7 @@ function cancelPinSetup(){
   const wasRecovery=pinRecoveryActive;
   pinRecoveryActive=false; setupPinBuf=''; setupPinPhase='set1'; setupPinFirst='';
   if(wasRecovery){
-    // Cancelling out of a PIN reset (recovery flow) must NOT grant access —
+    // Cancelling out of a PIN reset (recovery flow) must NOT grant access - 
     // send the user back to the locked PIN screen instead of hiding the overlay.
     showPinScreen();
     return;
@@ -5294,10 +5294,10 @@ function shakeDots(){shakeDotsEl('pin-dots');}
 function updateSidebarUsername(){
   const nm=state.username||'';
   const el=document.getElementById('sidebar-username');
-  if(el)el.textContent=nm||'—';
+  if(el)el.textContent=nm||'-';
   const sel=document.getElementById('settings-username');
-  if(sel)sel.textContent=nm||'—';
-  const pn=document.getElementById('set-panel-name');if(pn)pn.textContent=nm||'—';
+  if(sel)sel.textContent=nm||'-';
+  const pn=document.getElementById('set-panel-name');if(pn)pn.textContent=nm||'-';
   const av=document.getElementById('set-avatar');if(av)av.textContent=(nm.trim().charAt(0)||'?').toUpperCase();
 }
 
@@ -5327,11 +5327,11 @@ function renderSettings(){
       secqStatusEl.innerHTML='<span style="color:var(--accent);font-weight:600">✓ Recovery question set.</span> You can reset your PIN if you forget it.';
       if(secqSetBtn)secqSetBtn.textContent='Update Recovery Question';
     } else {
-      secqStatusEl.textContent='Not set — if you forget your PIN, you won\'t be able to recover this account.';
+      secqStatusEl.textContent='Not set - if you forget your PIN, you won\'t be able to recover this account.';
       if(secqSetBtn)secqSetBtn.textContent='Set Recovery Question';
     }
   }
-  // Data & Privacy notice — depends on account type
+  // Data & Privacy notice - depends on account type
   const pnBox=document.getElementById('privacy-notice-box');
   const pnIcon=document.getElementById('privacy-notice-icon');
   const pnTitle=document.getElementById('privacy-notice-title');
@@ -5351,7 +5351,7 @@ function renderSettings(){
       pnIcon.textContent='⚠️';
       pnTitle.style.color='var(--red)';
       pnTitle.textContent='Everything is stored only on this device';
-      pnBody.innerHTML='You\'re using a <strong>guest account</strong> — nothing is synced to the cloud. If you clear your browser\'s site data or cache, uninstall the app, or switch devices/browsers, <strong>all your data will be lost — permanently.</strong> Download a backup regularly, or link your account to Google (button on the Settings screen) so this stops being a risk.';
+      pnBody.innerHTML='You\'re using a <strong>guest account</strong> - nothing is synced to the cloud. If you clear your browser\'s site data or cache, uninstall the app, or switch devices/browsers, <strong>all your data will be lost - permanently.</strong> Download a backup regularly, or link your account to Google (button on the Settings screen) so this stops being a risk.';
     }
   }
   // Account
@@ -5487,7 +5487,7 @@ function utangMessage(l){
   const ref=l.note?` (${l.note})`:'';
   if(l.due){
     const diff=Math.round((new Date(l.due).setHours(0,0,0,0)-new Date().setHours(0,0,0,0))/86400000);
-    if(diff<-14)return `Hi ${name}, follow-up ko lang ulit yung ${amt}${ref} — ${-diff} araw na lampas sa due date. Kailangan ko na rin kasi siya. Pakibayaran na po as soon as possible, or sabihin mo kung kailan exactly mo maibabalik. Salamat sa pag-intindi! 🙏`;
+    if(diff<-14)return `Hi ${name}, follow-up ko lang ulit yung ${amt}${ref} - ${-diff} araw na lampas sa due date. Kailangan ko na rin kasi siya. Pakibayaran na po as soon as possible, or sabihin mo kung kailan exactly mo maibabalik. Salamat sa pag-intindi! 🙏`;
     if(diff<0)return `Hi ${name}, kumusta? Lampas na ng ${-diff} araw ang due date ng ${amt}${ref} (${fmtDate(l.due)}). Pwede na ba natin ayusin ngayong linggo? Pakisabi lang kung kailan mo maibabalik. Salamat!`;
     if(diff===0)return `Hi ${name}! Paalala lang, due na ngayong araw ang ${amt}${ref}. Pwede mo na ba i-send? Salamat! 🙏`;
     if(diff<=7)return `Hi ${name}! Friendly reminder lang, due na sa ${fmtDate(l.due)} (${diff} araw na lang) ang ${amt}${ref}. Paki-ready na po ha. Thank you!`;
@@ -5500,7 +5500,7 @@ function copyText(txt){
 }
 function copyReminder(id){
   const l=state.loans.find(x=>x.id===id);if(!l)return;
-  copyText(utangMessage(l)).then(()=>toast('Reminder copied — paste it in Messenger/SMS')).catch(()=>toast('Could not copy','error'));
+  copyText(utangMessage(l)).then(()=>toast('Reminder copied - paste it in Messenger/SMS')).catch(()=>toast('Could not copy','error'));
 }
 
 /* ── INCOME / LOAN SEARCH + FILTERS ── */
@@ -5593,10 +5593,10 @@ function initTheme(){
 function initSplash(){
   const v=getDailyVerse();
   const vEl=document.getElementById('splash-verse'),rEl=document.getElementById('splash-ref');
-  if(vEl&&rEl){vEl.textContent='"'+v.text+'"';rEl.textContent='— '+v.ref;}
+  if(vEl&&rEl){vEl.textContent='"'+v.text+'"';rEl.textContent=' - '+v.ref;}
   const h=new Date().getHours();
   const greet=h<12?'Good morning ☀️':h<17?'Good afternoon 🌤️':'Good evening 🌙';
-  const nm=state.username?', '+state.username:'';document.getElementById('splash-greeting').textContent=greet+nm+' — here\'s your finances for today.';
+  const nm=state.username?', '+state.username:'';document.getElementById('splash-greeting').textContent=greet+nm+' - here\'s your finances for today.';
   document.getElementById('splash-date').textContent=new Date().toLocaleDateString('en-PH',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 }
 
@@ -5634,7 +5634,7 @@ const TUTORIAL_SLIDES=[
   {
     icon:'💵',
     title:'Welcome to <span style="color:var(--accent)">FINUITY</span>',
-    desc:'Your personal finance tracker — track income, expenses, wallets, loans, and savings goals all in one place.',
+    desc:'Your personal finance tracker - track income, expenses, wallets, loans, and savings goals all in one place.',
     tip:null
   },
   {
@@ -5658,7 +5658,7 @@ const TUTORIAL_SLIDES=[
   {
     icon:'🤝',
     title:'Manage <span style="color:var(--accent)">Loans</span>',
-    desc:'Track money you owe or are owed in <b>Loans</b>. Mark them settled when paid — and even link a loan payment to an expense.',
+    desc:'Track money you owe or are owed in <b>Loans</b>. Mark them settled when paid - and even link a loan payment to an expense.',
     tip:null
   },
   {
@@ -5751,7 +5751,7 @@ function showMergeChoice(remote,remoteUpdatedAt){
     document.getElementById('merge-modal-detail').innerHTML=
       'This device has <strong>'+localCount+' entr'+(localCount===1?'y':'ies')+'</strong> saved locally. '+
       'This account\'s cloud copy has <strong>'+remoteCount+' entr'+(remoteCount===1?'y':'ies')+'</strong>, last synced '+esc(remoteDate)+'. '+
-      'Pick which one to keep — the other copy will be overwritten.';
+      'Pick which one to keep - the other copy will be overwritten.';
     document.getElementById('merge-modal').style.display='flex';
   });
 }
@@ -5803,7 +5803,7 @@ privacy:[
 function legalHTML(tab){
   const title=tab==='terms'?'Terms of Use':'Privacy Policy';
   const head=`<p style="color:var(--muted);margin-bottom:14px"><b style="color:var(--text)">${title}</b><br>Version ${LEGAL_VERSION} · Last updated ${LEGAL_UPDATED}</p>`;
-  return head+LEGAL_DOCS[tab].map((sec,i)=>`<p style="font-weight:700;margin-bottom:4px">${i+1}. ${sec[0]}</p><p style="margin-bottom:12px">${sec[1]}</p>`).join('')+`<p style="margin:16px 0 0;padding-top:12px;border-top:1px dashed var(--border2);color:var(--muted);font-size:11.5px;text-align:center">— End of ${title} —</p>`;
+  return head+LEGAL_DOCS[tab].map((sec,i)=>`<p style="font-weight:700;margin-bottom:4px">${i+1}. ${sec[0]}</p><p style="margin-bottom:12px">${sec[1]}</p>`).join('')+`<p style="margin:16px 0 0;padding-top:12px;border-top:1px dashed var(--border2);color:var(--muted);font-size:11.5px;text-align:center"> - End of ${title} - </p>`;
 }
 function legalTabStyle(btn,on,read){
   if(!btn)return;
@@ -5894,7 +5894,7 @@ document.getElementById('topbar-date').textContent=new Date().toLocaleDateString
 populateYearDropdown();
 initTheme();
 onLoanTypeChange();
-// Hide splash initially — auth flow controls when to show it
+// Hide splash initially - auth flow controls when to show it
 document.getElementById('welcome-splash').style.display='none';
 // Lock immediately from the local copy: don't wait for Firebase/cloud before asking for the PIN.
 if(state.pinHash&&!sessionStorage.getItem('mtUnlocked')){showPinScreen();}
@@ -5914,7 +5914,7 @@ setTimeout(()=>{
   }).map(e=>e.desc));
   const missing=recurringDescs.filter(desc=>!loggedDescs.has(desc));
   if(missing.length){
-    toast('↺ '+missing.length+' recurring expense'+(missing.length>1?'s':'')+' not yet logged — go to Expenses');
+    toast('↺ '+missing.length+' recurring expense'+(missing.length>1?'s':'')+' not yet logged - go to Expenses');
     // One template (most recent) per missing description, so Fin can offer a direct "Log it" action.
     const items=missing.map(desc=>{
       const matches=state.expenses.filter(e=>e.recurring&&e.desc===desc);
@@ -5935,8 +5935,8 @@ setTimeout(()=>{
   });
   const overdue=urgent.filter(l=>{const dueMs=new Date(l.due).setHours(0,0,0,0);return dueMs<nowMs;});
   const dueSoon=urgent.filter(l=>{const dueMs=new Date(l.due).setHours(0,0,0,0);return dueMs>=nowMs;});
-  if(overdue.length)toast('⚠ '+overdue.length+' loan'+(overdue.length>1?'s':'')+' overdue — check Loans','error');
-  else if(dueSoon.length)toast('⏰ '+dueSoon.length+' loan'+(dueSoon.length>1?'s':'')+' due soon — check Loans');
+  if(overdue.length)toast('⚠ '+overdue.length+' loan'+(overdue.length>1?'s':'')+' overdue - check Loans','error');
+  else if(dueSoon.length)toast('⏰ '+dueSoon.length+' loan'+(dueSoon.length>1?'s':'')+' due soon - check Loans');
 },2600);
 
 window.logRecurring = function(templateId){
@@ -5955,7 +5955,7 @@ window.logRecurring = function(templateId){
   var wallet=deductWalletBalance(template.source, template.amount);
   pushExpense({desc:template.desc, amount:template.amount, cat:template.cat, source:template.source, date:today(), note:template.note||'', recurring:true, recurringTemplateId:template.id});
   save(); render();
-  toast(template.desc+' logged ✓'+(wallet?' — '+wallet.label+' updated':''));
+  toast(template.desc+' logged ✓'+(wallet?' - '+wallet.label+' updated':''));
   window.dispatchEvent(new CustomEvent('fin:expense-logged',{detail:{desc:template.desc,amount:template.amount,cat:template.cat,source:template.source,recurring:true}}));
 };
 
@@ -5991,7 +5991,7 @@ window.logRecurring = function(templateId){
     </div>
     <div class="form-group" id="edit-loan-wallet-group" style="display:none">
       <label>Where's the money coming from?</label>
-      <select id="edit-loan-wallet"><option value="">— Not tracked in a wallet —</option></select>
+      <select id="edit-loan-wallet"><option value=""> - Not tracked in a wallet - </option></select>
     </div>
     <div class="form-group"><label>Note (optional)</label><input type="text" id="edit-loan-note" placeholder="What's it for?"></div>
     <div style="display:flex;gap:10px;margin-top:6px">
@@ -6108,7 +6108,7 @@ window.logRecurring = function(templateId){
   <div style="background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:30px 28px 24px;max-width:360px;width:100%;box-shadow:var(--shadow-lg)">
     <div style="font-size:32px;margin-bottom:12px;text-align:center">⚠️</div>
     <div style="font-size:15px;font-weight:700;color:var(--text);text-align:center;margin-bottom:8px">You're signed in as a Guest</div>
-    <div style="font-size:13px;color:var(--muted);text-align:center;line-height:1.6;margin-bottom:20px">This account has no email or password. If you sign out without linking first, there is no way to sign back in — all your data here will be permanently unreachable.</div>
+    <div style="font-size:13px;color:var(--muted);text-align:center;line-height:1.6;margin-bottom:20px">This account has no email or password. If you sign out without linking first, there is no way to sign back in - all your data here will be permanently unreachable.</div>
     <button class="btn btn-primary" style="width:100%;padding:12px;margin-bottom:12px" onclick="closeGuestSignoutWarning();authLinkToGoogle()">Link to Google (Keep My Data)</button>
     <div style="text-align:center">
       <span onclick="confirmGuestSignoutAnyway()" style="font-size:12px;color:var(--muted);text-decoration:underline;cursor:pointer">Sign Out Anyway</span>
@@ -6122,8 +6122,8 @@ window.logRecurring = function(templateId){
 <div id="receipt-info-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3000;align-items:safe center;justify-content:safe center;padding:20px;overflow-y:auto">
   <div style="background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:28px 24px 22px;max-width:380px;width:100%;box-shadow:var(--shadow-lg)">
     <div style="font-size:32px;margin-bottom:10px;text-align:center">🧾</div>
-    <div style="font-size:15px;font-weight:700;color:var(--text);text-align:center;margin-bottom:8px">Scan a receipt — free</div>
-    <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px">Take a photo and FINUITY reads the total, store and date for you. Your photo is read right on your phone — it is <b>never uploaded or saved</b>.</div>
+    <div style="font-size:15px;font-weight:700;color:var(--text);text-align:center;margin-bottom:8px">Scan a receipt - free</div>
+    <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px">Take a photo and FINUITY reads the total, store and date for you. Your photo is read right on your phone - it is <b>never uploaded or saved</b>.</div>
     <div style="font-size:12.5px;color:var(--muted);line-height:1.65;margin-bottom:16px;padding:10px 12px;background:var(--surface2);border:1px solid var(--border2);border-radius:10px">
       Because this reader is free, it has limits:<br>
       • Works best on flat, well-lit, printed receipts<br>
@@ -6131,7 +6131,7 @@ window.logRecurring = function(templateId){
       • The first scan downloads a small reader (~10 MB), so it needs internet once<br>
       • <b>Always check the amount, date and store</b> before you save
     </div>
-    <button class="btn btn-primary" style="width:100%;padding:12px;margin-bottom:8px" onclick="scanReceiptInfoOk()">Got it — take / choose photo</button>
+    <button class="btn btn-primary" style="width:100%;padding:12px;margin-bottom:8px" onclick="scanReceiptInfoOk()">Got it - take / choose photo</button>
     <button class="btn btn-ghost" style="width:100%;padding:10px" onclick="scanReceiptInfoClose()">Not now</button>
   </div>
 </div>
@@ -6151,7 +6151,7 @@ window.logRecurring = function(templateId){
     <div id="merge-modal-detail" style="font-size:13px;color:var(--muted);text-align:center;line-height:1.6;margin-bottom:20px"></div>
     <button class="btn btn-primary" style="width:100%;padding:12px;margin-bottom:10px" onclick="resolveMergeChoice(true)">Use Cloud Data</button>
     <button class="btn btn-ghost" style="width:100%;padding:12px" onclick="resolveMergeChoice(false)">Keep This Device's Data</button>
-    <div style="font-size:11px;color:var(--muted2);text-align:center;margin-top:14px;line-height:1.5">Whichever you pick, the other copy will be replaced — this can't be undone afterward.</div>
+    <div style="font-size:11px;color:var(--muted2);text-align:center;margin-top:14px;line-height:1.5">Whichever you pick, the other copy will be replaced - this can't be undone afterward.</div>
   </div>
 </div>
 
@@ -6256,7 +6256,7 @@ function loanDue(){const a=cfg(),t=today(),now=pd(t);
     .map(l=>({l,d:Math.round((pd(l.due)-now)/864e5)})).filter(x=>x.d<=3).sort((x,y)=>x.d-y.d)[0];
   if(!c)return false;a.loanAck[c.l.id]=t;save();
   const x=c.l,d=c.d;
-  snack(x.name+(d<0?' was due '+(-d)+'d ago':d===0?' is due today':' is due in '+d+'d')+' — '+fmt(x.amount),
+  snack(x.name+(d<0?' was due '+(-d)+'d ago':d===0?' is due today':' is due in '+d+'d')+' - '+fmt(x.amount),
     [['Log payment',()=>{show('expenses');const c2=document.getElementById('exp-cat');c2.value='loan-payment';onExpCatChange();
       document.getElementById('exp-loan-id').value=x.id;document.getElementById('exp-desc').value='Loan payment';
       const am=document.getElementById('exp-amount');am.value=x.amount;am.focus();}],['Later',()=>{}]],12000);return true;}
@@ -6317,7 +6317,7 @@ function quickPreview(){const q=document.getElementById('fa-quick'),p=q._p||{},r
   const amber=t=>'<span style="color:var(--amber)">'+t+'</span>';
   const cl=C.options[C.selectedIndex]?C.options[C.selectedIndex].textContent:'',wl=W.options[W.selectedIndex]?W.options[W.selectedIndex].textContent:'';
   el.innerHTML='<strong style="color:var(--text)">'+esc(p.desc||'Quick log')+'</strong> · '+(A>0?'<strong style="color:var(--accent)">'+fmt(A)+'</strong>':amber('amount?'))
-    +' · '+(q._guessed||q._t.cat?esc(cl):amber(esc(cl)+' (not sure — pick)'))+' · '+esc(wl)+(p.date!=null&&p.date<0?' · '+(p.date===-1?'yesterday':(-p.date)+' days ago'):'');}
+    +' · '+(q._guessed||q._t.cat?esc(cl):amber(esc(cl)+' (not sure - pick)'))+' · '+esc(wl)+(p.date!=null&&p.date<0?' · '+(p.date===-1?'yesterday':(-p.date)+' days ago'):'');}
 function quickSave(){const q=document.getElementById('fa-quick');
   const amount=parseFloat(q.querySelector('#fa-q-amt').value);if(!amount||amount<=0){toast('Add an amount, e.g. “burger 600”','error');return;}
   const p=parseQuick(q.querySelector('#fa-q-text').value);let date=today();
