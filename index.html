@@ -1665,7 +1665,9 @@ label.fa-row{cursor:pointer}
       <div class="page-sub">Log what you spend, categorise it, and track your sources</div>
     </div>
     <div class="card" data-tour="expense-form">
-      <div class="card-hd"><div class="card-title">Add Expense</div></div>
+      <div class="card-hd"><div class="card-title">Add Expense</div><button class="btn btn-ghost btn-sm" id="scan-receipt-btn" onclick="scanReceiptStart()">📷 Scan Receipt</button></div>
+      <input type="file" id="receipt-file" accept="image/*" style="display:none" onchange="scanReceiptFile(this)">
+      <div id="receipt-banner" style="display:none;font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:12px;padding:10px 12px;background:var(--accent-bg);border:1px solid rgba(var(--accent-rgb),.18);border-radius:var(--r-xs)"></div>
       <div class="form-row">
         <div class="form-group"><label>Description</label><input type="text" id="exp-desc" placeholder="e.g. Jollibee, Grab, Shopee..."></div>
         <div class="form-group"><label>Amount (₱)</label><input type="number" id="exp-amount" placeholder="0.00" min="0" step="0.01"></div>
@@ -3646,9 +3648,226 @@ async function addExpense(){
   document.getElementById('exp-desc').value='';document.getElementById('exp-amount').value='';
   document.getElementById('exp-date').value=today();document.getElementById('exp-note').value='';
   document.getElementById('exp-recurring').checked=false;
+  rcHideBanner();
   save();render();toast('Expense logged'+(wallet?' — '+wallet.label+' updated':'')+' ✓');
   window.dispatchEvent(new CustomEvent('fin:expense-logged',{detail:{desc,amount,cat,source}}));
 }
+/* ══ RECEIPT SCANNER (free, on-device OCR via Tesseract.js) ══
+   The photo is read on the phone and never uploaded or stored. Only the reader software
+   is downloaded (once) from a public CDN. It is a free reader, so it can misread —
+   the result always lands in the normal expense form to be checked before saving. */
+/*RC-PARSE-START*/
+const RC_MON={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,sept:9,oct:10,nov:11,dec:12};
+function rcAmounts(str){
+  const out=[],re=/(\d{1,3}(?:[,\s]\d{3})+|\d+)\s?[.,]\s?(\d{2})(?!\d)/g;let m;
+  while((m=re.exec(str))){const v=parseFloat(m[1].replace(/[,\s]/g,'')+'.'+m[2]);if(v>0&&v<10000000)out.push(v);}
+  return out;
+}
+function rcIntAmount(str){
+  const re=/(\d{1,3}(?:,\d{3})+|\d+)(?![\d.,]\d)/g;let m,last=null;
+  while((m=re.exec(str))){const v=parseFloat(m[1].replace(/,/g,''));if(v>0&&v<10000000)last=v;}
+  return last;
+}
+function rcParseTotal(lines){
+  const STRONG=/grand\s*total|amount\s*due|total\s*due|total\s*amount|amount\s*payable|balance\s*due|net\s*amount|amt\s*due|total\s*sales?/i;
+  const WEAK=/\bt[o0]tal\b/i;
+  const NOT_STRONG=/sub\s*-?\s*total/i;
+  const EXCL=/sub\s*-?\s*total|vat|tax|change|cash|tender|discount|exempt|zero\s*rated|service\s*charge|items?\b|qty|pcs|card|gcash|maya|points?|tip|saving/i;
+  const pick=(idx)=>{
+    let a=rcAmounts(lines[idx]);
+    if(a.length)return a[a.length-1];
+    let n=rcIntAmount(lines[idx].replace(/total|due|amount|payable|balance|net|grand|sales?/ig,''));
+    if(n)return n;
+    for(let j=idx+1;j<Math.min(lines.length,idx+3);j++){a=rcAmounts(lines[j]);if(a.length)return a[0];}
+    return null;
+  };
+  const strong=[],weak=[];
+  lines.forEach((ln,i)=>{
+    if(NOT_STRONG.test(ln))return;
+    if(STRONG.test(ln)){const v=pick(i);if(v)strong.push(v);}
+    else if(WEAK.test(ln)&&!EXCL.test(ln)){const v=pick(i);if(v)weak.push(v);}
+  });
+  if(strong.length)return {amount:Math.max.apply(null,strong),conf:'high'};
+  if(weak.length)return {amount:Math.max.apply(null,weak),conf:'high'};
+  // fallback: biggest plausible amount that isn't cash/change/etc — low confidence
+  const BAD=/change|cash|tender|tel|phone|tin\b|vat\s*reg|acct|ref|invoice|terminal|serial|\d{1,2}:\d{2}|sub\s*-?\s*total/i;
+  let best=0;lines.forEach(ln=>{if(BAD.test(ln))return;rcAmounts(ln).forEach(v=>{if(v>best)best=v;});});
+  return best?{amount:best,conf:'low'}:{amount:0,conf:'none'};
+}
+function rcParseDate(text,now){
+  now=now||new Date();
+  const cands=[];let m;
+  const r1=/(20\d{2})[\/\-.](\d{1,2})[\/\-.](\d{1,2})/g;
+  while((m=r1.exec(text)))cands.push([+m[1],+m[2],+m[3]]);
+  const r2=/(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4}|\d{2})(?!\d)/g;
+  while((m=r2.exec(text))){let a=+m[1],b=+m[2],y=+m[3],mo,d;if(y<100)y+=2000;
+    if(a>12){d=a;mo=b;}else if(b>12){mo=a;d=b;}else{mo=a;d=b;}   // PH receipts are usually MM/DD/YYYY
+    cands.push([y,mo,d]);}
+  const r3=/\b(jan|feb|mar|apr|may|jun|jul|aug|sept?|oct|nov|dec)[a-z]*\.?\s+(\d{1,2}),?\s+(20\d{2})/gi;
+  while((m=r3.exec(text)))cands.push([+m[3],RC_MON[m[1].toLowerCase()],+m[2]]);
+  const r4=/\b(\d{1,2})\s+(jan|feb|mar|apr|may|jun|jul|aug|sept?|oct|nov|dec)[a-z]*\.?,?\s+(20\d{2})/gi;
+  while((m=r4.exec(text)))cands.push([+m[3],RC_MON[m[2].toLowerCase()],+m[1]]);
+  const maxT=now.getTime()+86400000,minT=now.getTime()-400*86400000;
+  for(const [y,mo,d] of cands){
+    if(!(mo>=1&&mo<=12&&d>=1&&d<=31))continue;
+    const dt=new Date(y,mo-1,d);
+    if(dt.getMonth()!==mo-1)continue;
+    const t=dt.getTime();if(t>maxT||t<minT)continue;
+    return y+'-'+String(mo).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+  }
+  return '';
+}
+function rcParseMerchant(lines){
+  const SKIP=/receipt|invoice|official|\btin\b|vat\s*reg|non[\s-]?vat|\btel\b|phone|mobile|www\.|\.com|@|branch|\b(st|street|ave|avenue|blvd|brgy|barangay|road|rd|unit|floor|flr|bldg|bldg\.)\b|permit|serial|thank|welcome|cashier|terminal|\bpos\b|\bmin\b|date|time|total|qty|amount|subtotal|\bvat\b|cash\b|change/i;
+  for(let i=0;i<Math.min(lines.length,8);i++){
+    const ln=lines[i];
+    const letters=(ln.match(/[a-z]/gi)||[]).length;
+    if(letters<3||letters/ln.length<0.6||/\d{3,}/.test(ln)||SKIP.test(ln))continue;
+    let s=ln.replace(/[^A-Za-z0-9'&.\- ]+/g,' ').replace(/\s+/g,' ').trim();
+    if(s.length<3)continue;
+    if(s===s.toUpperCase())s=s.split(' ').map(w=>(w.length<=2||/\d/.test(w))?w:w.charAt(0)+w.slice(1).toLowerCase()).join(' ');
+    return s.slice(0,40);
+  }
+  return '';
+}
+function rcParse(text,now){
+  const lines=String(text||'').split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+  const t=rcParseTotal(lines);
+  const date=rcParseDate(text||'',now);
+  const merchant=rcParseMerchant(lines);
+  return {amount:t.amount,amountConf:t.conf,date:date,merchant:merchant};
+}
+/*RC-PARSE-END*/
+
+let _rcBusy=false,_rcCancel=false,_rcWorker=null,_rcLoading=null;
+function rcEl(id){return document.getElementById(id);}
+function rcProgress(msg,pct){
+  const s=rcEl('rc-status'),b=rcEl('rc-bar');
+  if(s)s.textContent=msg;
+  if(b&&pct!=null)b.style.width=Math.max(3,Math.min(100,pct))+'%';
+}
+function rcOpenProgress(){rcEl('receipt-progress-modal').style.display='flex';rcProgress('Preparing photo…',4);}
+function rcCloseProgress(){rcEl('receipt-progress-modal').style.display='none';}
+function scanReceiptStart(){
+  if(_rcBusy)return;
+  let seen=false;try{seen=!!localStorage.getItem('finScanInfoSeen');}catch(e){}
+  if(!seen){rcEl('receipt-info-modal').style.display='flex';return;}
+  rcEl('receipt-file').click();
+}
+function scanReceiptInfoOk(){
+  try{localStorage.setItem('finScanInfoSeen','1');}catch(e){}
+  rcEl('receipt-info-modal').style.display='none';
+  rcEl('receipt-file').click();
+}
+function scanReceiptInfoClose(){rcEl('receipt-info-modal').style.display='none';}
+function scanReceiptCancel(){
+  _rcCancel=true;
+  if(_rcWorker){try{_rcWorker.terminate();}catch(e){}_rcWorker=null;}
+  rcCloseProgress();
+}
+function rcLoadTesseract(){
+  if(window.Tesseract)return Promise.resolve();
+  if(_rcLoading)return _rcLoading;
+  _rcLoading=new Promise((res,rej)=>{
+    const s=document.createElement('script');
+    s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+    s.onload=()=>res();
+    s.onerror=()=>{_rcLoading=null;rej(new Error('reader-download'));};
+    document.head.appendChild(s);
+  });
+  return _rcLoading;
+}
+/* shrink big phone photos, grayscale and stretch contrast so the reader is faster and more accurate */
+async function rcPrepareImage(file){
+  let bmp;
+  try{bmp=await createImageBitmap(file,{imageOrientation:'from-image'});}
+  catch(e){
+    bmp=await new Promise((res,rej)=>{const u=URL.createObjectURL(file),im=new Image();im.onload=()=>{URL.revokeObjectURL(u);res(im);};im.onerror=()=>rej(new Error('bad-image'));im.src=u;});
+  }
+  const w0=bmp.width||bmp.naturalWidth,h0=bmp.height||bmp.naturalHeight;
+  const longest=Math.max(w0,h0);
+  const target=longest>2000?2000:(longest<1200?1400:longest);
+  const k=target/longest,w=Math.round(w0*k),h=Math.round(h0*k);
+  const c=document.createElement('canvas');c.width=w;c.height=h;
+  const ctx=c.getContext('2d',{willReadFrequently:true});
+  ctx.drawImage(bmp,0,0,w,h);
+  const img=ctx.getImageData(0,0,w,h),d=img.data,hist=new Uint32Array(256);
+  for(let i=0;i<d.length;i+=4){const g=(d[i]*0.299+d[i+1]*0.587+d[i+2]*0.114)|0;d[i]=g;hist[g]++;}
+  const total=w*h;let acc=0,lo=0,hi=255;
+  for(let v=0;v<256;v++){acc+=hist[v];if(acc>=total*0.02){lo=v;break;}}
+  acc=0;for(let v=255;v>=0;v--){acc+=hist[v];if(acc>=total*0.02){hi=v;break;}}
+  const span=Math.max(40,hi-lo);
+  for(let i=0;i<d.length;i+=4){let g=(d[i]-lo)*255/span;g=g<0?0:g>255?255:g;d[i]=d[i+1]=d[i+2]=g;}
+  ctx.putImageData(img,0,0);
+  return c;
+}
+async function scanReceiptFile(inp){
+  const f=inp.files&&inp.files[0];inp.value='';
+  if(!f)return;
+  if(!/^image\//.test(f.type||'')){toast('Please choose a photo of the receipt','error');return;}
+  if(_rcBusy)return;
+  _rcBusy=true;_rcCancel=false;rcOpenProgress();
+  try{
+    const canvas=await rcPrepareImage(f);
+    if(_rcCancel)return;
+    rcProgress('Loading the receipt reader… (first time needs internet)',10);
+    await rcLoadTesseract();
+    if(_rcCancel)return;
+    const worker=await Tesseract.createWorker('eng',1,{logger:m=>{
+      if(_rcCancel)return;
+      const p=m.progress||0;
+      if(m.status==='recognizing text')rcProgress('Reading the receipt…',45+p*50);
+      else if(/language/.test(m.status||''))rcProgress('Downloading reader data… (one time)',20+p*20);
+      else if(/loading tesseract core/.test(m.status||''))rcProgress('Loading the receipt reader…',12+p*8);
+      else rcProgress('Getting ready…',40);
+    }});
+    _rcWorker=worker;
+    try{await worker.setParameters({tessedit_pageseg_mode:'4',preserve_interword_spaces:'1'});}catch(e){}
+    const res=await worker.recognize(canvas);
+    try{await worker.terminate();}catch(e){}
+    _rcWorker=null;
+    if(_rcCancel)return;
+    rcCloseProgress();
+    rcApply(rcParse(res.data.text||''),res.data.text||'');
+  }catch(e){
+    if(!_rcCancel){
+      rcCloseProgress();
+      console.warn('Receipt scan failed',e);
+      toast(e&&e.message==='reader-download'?'The receipt reader needs internet the first time — please connect and try again':'Could not read this receipt. Try a clearer photo, or type it in.','error');
+    }
+  }finally{
+    if(_rcWorker){try{_rcWorker.terminate();}catch(e){}_rcWorker=null;}
+    _rcBusy=false;
+  }
+}
+function rcHideBanner(){const b=rcEl('receipt-banner');if(b)b.style.display='none';}
+function rcApply(r,rawText){
+  const gc=(typeof window.finGuessCat==='function')?window.finGuessCat:(()=>'');
+  const catSel=rcEl('exp-cat');
+  let cat=(r.merchant&&gc(r.merchant))||gc(String(rawText||'').split(/\r?\n/).slice(0,12).join(' '))||gc(rawText||'')||'other-exp';
+  if(![...catSel.options].some(o=>o.value===cat))cat='other-exp';
+  rcEl('exp-desc').value=r.merchant||'Receipt';
+  if(r.amount)rcEl('exp-amount').value=r.amount.toFixed(2);
+  rcEl('exp-date').value=r.date||today();
+  catSel.value=cat;
+  if(typeof onExpCatChange==='function')onExpCatChange();
+  const warn=[];
+  if(r.amountConf==='none')warn.push('I couldn\'t find the total — please type the amount.');
+  else if(r.amountConf==='low')warn.push('I couldn\'t find a clear “TOTAL” line, so the amount is a guess — please check it.');
+  if(!r.date)warn.push('No date found, so today\'s date is used.');
+  if(!r.merchant)warn.push('Couldn\'t read the store name — please type it.');
+  const b=rcEl('receipt-banner');
+  if(b){
+    b.innerHTML='<div style="display:flex;gap:8px;align-items:flex-start"><div style="flex:1"><strong style="color:var(--text)">🧾 Receipt scanned</strong> — check the amount, date and store below, then tap <em>Add Expense</em>. This free on-device reader can misread blurry, faded or crumpled receipts.'
+      +(warn.length?'<div style="color:var(--amber);margin-top:6px">'+warn.map(esc).join('<br>')+'</div>':'')
+      +'</div><button class="btn btn-ghost btn-sm" style="padding:2px 9px" onclick="rcHideBanner()" aria-label="Dismiss">✕</button></div>';
+    b.style.display='block';
+  }
+  ['exp-desc','exp-amount','exp-date'].forEach(id=>{const e=rcEl(id);if(e){e.style.transition='box-shadow .3s';e.style.boxShadow='0 0 0 2px var(--accent)';setTimeout(()=>{e.style.boxShadow='';},2400);}});
+  try{rcEl('exp-desc').scrollIntoView({behavior:'smooth',block:'center'});}catch(e){}
+  toast(r.amount?'Receipt read — please double-check the details':'Receipt read — some details need your input');
+}
+
 async function addLoan(){
   const name=document.getElementById('loan-name').value.trim();
   const amount=parseFloat(document.getElementById('loan-amount').value)||0;
@@ -5555,7 +5774,7 @@ terms:[
 ['Your Data and Content',`You own the information you enter. You give us a limited, non-exclusive licence to store, process and sync it solely to run the App for you. You are responsible for its accuracy and for having the right to enter information about other people (for example names in loan records) - keep it to what is necessary. Do not enter government ID numbers, card numbers, bank credentials or passwords.`],
 ['Acceptable Use',`You agree not to: use the App for anything unlawful, fraudulent or for money laundering; try to access another person's account or data; probe, attack, overload, scrape or reverse-engineer the App or its services; upload malware; or bypass any security or usage limit.`],
 ['Backups and Availability',`The App is provided as available and may be interrupted, changed or discontinued. Syncing can fail or conflict between devices. You are responsible for exporting your own backups (Settings and Export). Restoring a backup overwrites current data.`],
-['Third-Party Services',`The App relies on Google Firebase (authentication and database), Google Sign-In and Google Fonts. Their own terms and privacy policies apply, and we are not responsible for their outages or acts.`],
+['Third-Party Services',`The App relies on Google Firebase (authentication and database), Google Sign-In and Google Fonts, and, only if you use the optional receipt scanner, the jsDelivr content network to download the open-source Tesseract.js reader. Their own terms and privacy policies apply, and we are not responsible for their outages or acts.`],
 ['Intellectual Property',`The App, its design, code, name, logo and icons belong to us or our licensors. You receive a limited, revocable, non-exclusive, non-transferable licence to use it for personal purposes. Scripture excerpts remain the property of their respective translation rights holders and are shown for personal encouragement only.`],
 ['Devotional Content',`Any Bible verses or devotional content is for personal encouragement. It is not pastoral, financial or professional counsel.`],
 ['Disclaimer of Warranties',`To the extent permitted by law, the App is provided "as is" and "as available" without warranties of any kind, including accuracy, reliability, uninterrupted operation, or fitness for a particular purpose. Calculations may contain errors.`],
@@ -5571,7 +5790,7 @@ privacy:[
 ['Personal Data We Handle',`<b>Account data:</b> email address, sign-in method (Google, email/password or guest), display name, and a unique account ID.<br><b>Data you enter:</b> income, expenses, wallet names and balances, loans (including names of people and notes), savings goals, budget limit, notes, and app settings.<br><b>Security data:</b> a salted hash of your PIN, your recovery question, and a salted hash of your answer (we cannot read either).<br><b>Technical data:</b> authentication tokens and data your browser stores (localStorage/sessionStorage: theme, tutorial status, unlock state). Google may receive your IP address and device details when you sign in, sync, or load fonts.<br><b>We do not collect:</b> bank or e-wallet credentials, card numbers, precise location, contacts, photos, or microphone/camera data, and we do not run advertising or third-party analytics.`],
 ['Why We Use It and Our Legal Basis',`We process data to (1) create and secure your account, (2) store, sync and display your records across your devices, (3) provide backups, exports and reports you request, and (4) keep the service safe and fix problems. Our bases under Section 12 of the Data Privacy Act are your <b>consent</b> (given when you accept these documents), performance of the service you asked for, and our legitimate interest in security and reliability. We do not sell your data, use it for profiling or advertising, or make automated decisions about you.`],
 ['Where Your Data Is Kept',`A copy is stored in your browser on your device. If you use an account, a copy is also stored in Google Cloud Firestore under your account ID. Google servers may be located outside the Philippines, so your data may be transferred and processed abroad; Google acts as our processor under its own security and data-protection commitments, and we remain accountable for your data.`],
-['Who We Share It With',`Only with service providers needed to run the App: Google (Firebase Authentication, Firestore, Google Sign-In, Google Fonts). We disclose data to authorities only when required by law or lawful order. We do not otherwise share, rent or sell personal data. The developer does not routinely view your individual records.`],
+['Who We Share It With',`Only with service providers needed to run the App: Google (Firebase Authentication, Firestore, Google Sign-In, Google Fonts). We disclose data to authorities only when required by law or lawful order. The optional receipt scanner runs entirely on your device: your receipt photo is not uploaded or stored, and only the open-source reader software and its language data are downloaded from a public content network (jsDelivr) the first time you use it, which may see your IP address. We do not otherwise share, rent or sell personal data. The developer does not routinely view your individual records.`],
 ['How Long We Keep It',`Local data stays until you clear it or your browser storage. Cloud data stays until you delete it or your account, which you can do any time in Settings (Legal and Data). Backups you download are yours to manage. Inactive guest accounts may be removed after a long period. Deleted data may persist briefly in provider backups before being overwritten.`],
 ['Security',`We use HTTPS/TLS in transit, Google's access controls, and salted hashing (SHA-256) for your PIN and recovery answer. Your records are <b>not</b> end-to-end encrypted, and the PIN is a convenience lock: someone with access to your unlocked device may see your data. <b>Optional biometric unlock:</b> if you turn it on, your device's operating system checks your face or fingerprint through the browser's WebAuthn feature; the App never receives, stores or transmits your face or fingerprint data, and keeps only an on-device credential reference in this browser. Your PIN always still works. No system is perfectly secure; use a device passcode and keep backups.`],
 ['Your Rights as a Data Subject',`Under Section 16 of the Data Privacy Act you may: be informed; object to processing; access your data; correct it; request erasure or blocking; withdraw consent; receive your data in a portable format; and claim damages for violations. In-app: edit any entry, download a JSON/CSV backup, or permanently delete your account and cloud data in Settings. Otherwise email ${LEGAL_EMAIL}; we aim to respond within 30 days. You may also complain to the National Privacy Commission (privacy.gov.ph). Withdrawing consent or deleting your account means we can no longer provide cloud sync.`],
@@ -5900,6 +6119,31 @@ window.logRecurring = function(templateId){
   </div>
 </div>
 
+<div id="receipt-info-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3000;align-items:safe center;justify-content:safe center;padding:20px;overflow-y:auto">
+  <div style="background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:28px 24px 22px;max-width:380px;width:100%;box-shadow:var(--shadow-lg)">
+    <div style="font-size:32px;margin-bottom:10px;text-align:center">🧾</div>
+    <div style="font-size:15px;font-weight:700;color:var(--text);text-align:center;margin-bottom:8px">Scan a receipt — free</div>
+    <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px">Take a photo and FINUITY reads the total, store and date for you. Your photo is read right on your phone — it is <b>never uploaded or saved</b>.</div>
+    <div style="font-size:12.5px;color:var(--muted);line-height:1.65;margin-bottom:16px;padding:10px 12px;background:var(--surface2);border:1px solid var(--border2);border-radius:10px">
+      Because this reader is free, it has limits:<br>
+      • Works best on flat, well-lit, printed receipts<br>
+      • Blurry, faded, crumpled or handwritten ones may be misread<br>
+      • The first scan downloads a small reader (~10 MB), so it needs internet once<br>
+      • <b>Always check the amount, date and store</b> before you save
+    </div>
+    <button class="btn btn-primary" style="width:100%;padding:12px;margin-bottom:8px" onclick="scanReceiptInfoOk()">Got it — take / choose photo</button>
+    <button class="btn btn-ghost" style="width:100%;padding:10px" onclick="scanReceiptInfoClose()">Not now</button>
+  </div>
+</div>
+<div id="receipt-progress-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3100;align-items:safe center;justify-content:safe center;padding:20px">
+  <div style="background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:26px 24px 20px;max-width:340px;width:100%;box-shadow:var(--shadow-lg);text-align:center">
+    <div style="font-size:30px;margin-bottom:8px">🧾</div>
+    <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px">Reading your receipt…</div>
+    <div id="rc-status" style="font-size:12.5px;color:var(--muted);margin-bottom:14px;min-height:18px"></div>
+    <div style="height:6px;background:var(--surface2);border-radius:99px;overflow:hidden;margin-bottom:16px"><div id="rc-bar" style="height:100%;width:3%;background:var(--accent);border-radius:99px;transition:width .3s"></div></div>
+    <button class="btn btn-ghost btn-sm" onclick="scanReceiptCancel()">Cancel</button>
+  </div>
+</div>
 <div id="merge-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3000;align-items:safe center;justify-content:safe center;padding:20px;overflow-y:auto">
   <div style="background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:30px 28px 24px;max-width:380px;width:100%;box-shadow:var(--shadow-lg)">
     <div style="font-size:32px;margin-bottom:12px;text-align:center">☁️</div>
@@ -6250,6 +6494,7 @@ const fab=document.createElement('button');fab.id='fa-fab';fab.title='Quick log'
 setTimeout(()=>{window.render();tick();},3500);
 setInterval(()=>{const f=document.getElementById('fa-fab');if(f)f.style.display=blocked()?'none':'block';tick();},60000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(tick,800);});
+window.finGuessCat=guessCat;   // lets the receipt scanner reuse the keyword category engine
 })();
 </script>
 <script src="virtual-pet/pet-dialogue.js"></script>
