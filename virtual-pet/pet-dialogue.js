@@ -35,7 +35,7 @@
   /* Language preference ('taglish' | 'english' | 'bisaya'), set by pet.js
      from the saved settings. Default is simple, casual Taglish. */
   var curLang = 'taglish';
-  function setLang(l){ curLang = (l==='english' || l==='bisaya') ? l : 'taglish'; }
+  function setLang(l){ curLang = (l==='english' || l==='bisaya' || l==='tagalog') ? l : 'taglish'; }
   function getLang(){ return curLang; }
   var LOCAL_WORDS = /\b(uy|hoy|unsa|naa|kumusta|nagbalik|miss tika|pwede|tagalog|bisaya|kwarta|ako|ko|ka|nimo|nato|ta)\b/i;
 
@@ -986,19 +986,30 @@
     };
   }
 
+  const LANG_LABELS = { taglish:'Taglish', english:'English', tagalog:'Tagalog', bisaya:'Bisaya' };
   function getSettingsPersonalizeMessage(settings){
     settings = settings || {};
     const toneLabel = settings.tone==='businesslike' ? 'businesslike' : 'playful';
-    const langLabel = settings.lang==='english' ? 'English' : settings.lang==='bisaya' ? 'Bisaya' : 'Taglish';
+    const langLabel = LANG_LABELS[settings.lang] || 'Taglish';
     return {
       text: `I go by "${settings.name||'Fin'}" right now, ${toneLabel} tone, ${langLabel}.`,
       actions: [
         { label:'✏️ Rename me', kind:'settings-rename' },
         { label:'🎭 Tone: '+toneLabel, kind:'settings-toggle-tone' },
-        { label:'🌐 Language: '+langLabel, kind:'settings-toggle-lang' },
+        { label:'🌐 Language: '+langLabel, kind:'settings-language' },
         { label:'⬅ Back', kind:'settings' }
       ]
     };
+  }
+
+  function getSettingsLanguageMessage(settings){
+    settings = settings || {};
+    const cur = LANG_LABELS[settings.lang] ? settings.lang : 'taglish';
+    const actions = Object.keys(LANG_LABELS).map(function(k){
+      return { label:(k===cur?'✅ ':'')+LANG_LABELS[k], kind:'settings-lang-set', lang:k };
+    });
+    actions.push({ label:'⬅ Back', kind:'settings-personalize' });
+    return { text:'Which language should I use? Currently: '+LANG_LABELS[cur]+'.', actions:actions };
   }
 
   /* ---------- 12. pattern insights ----------
@@ -2036,6 +2047,27 @@
       cooldown: "Okay na ako, kalmado na. Ano'ng kailangan mo?",
       shaken: [ "Hoy! Nahihilo ako! 😵", "Dahan-dahan naman! Wag mo akong iuga-uga!", "Nahilo ako! Ibaba mo ako nang dahan-dahan, ha." ]
     },
+    tagalog: {
+      annoy: [
+        [ "Dahan-dahan naman sa pag-tap. Nakakakiliti na.",
+          "May kailangan ka ba? Kanina ka pa tap nang tap 😅",
+          "Sandali lang, ang sensitive ko.",
+          "Dahan-dahan lang po sa pag-tap." ],
+        [ "Naiinis na ako, ha 😠 Pakiusap, itigil mo na ang pag-tap.",
+          "Hindi ako laruan! Busy ako sa pagbabantay ng pera mo.",
+          "Seryoso, tama na. 😤",
+          "Isa pang tap, magtatampo na talaga ako." ],
+        [ "TAMA NA!! 😡 Galit na ako. Mag-sorry ka muna.",
+          "Aalis na ako. Mag-sorry ka muna bago tayo mag-usap.",
+          "Naiinis na talaga ako! 💢 Humingi ka muna ng sorry." ]
+      ],
+      sulk: [ "Hmp. Mag-sorry ka muna. 😤", "Nagtatampo pa ako. Huwag mo muna akong i-tap.",
+              "Ayoko munang makipag-usap ngayon.", "...", "Sorry muna, ha?" ],
+      apology: [ "Sige, okay na. Pero dahan-dahan na, ha! 🥺", "Okay na ako. Balik na tayo sa budget mo 💛",
+                 "Sige na nga, pinatawad na kita. Huwag nang uulitin, ha!" ],
+      cooldown: "Okay na ako, kalmado na. Ano ang kailangan mo?",
+      shaken: [ "Hoy! Nahihilo ako! 😵", "Dahan-dahan naman! Huwag mo akong yugyugin!", "Nahilo ako! Ibaba mo ako nang dahan-dahan, ha." ]
+    },
     english: {
       annoy: [
         [ "Hey, easy on the tapping, okay? That tickles.",
@@ -2152,6 +2184,7 @@
     getSettingsMessage,
     getSettingsNotificationsMessage,
     getSettingsPersonalizeMessage,
+    getSettingsLanguageMessage,
     getPatternInsight,
     getPersonalBestLine,
     getNewBestCelebration,
