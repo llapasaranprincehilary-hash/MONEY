@@ -361,12 +361,6 @@ body.light input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0
 #terms-scroll::-webkit-scrollbar{width:6px}
 #terms-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
 
-/* VERSE PROGRESS */
-.verse-progress-track{background:var(--border2);border-radius:99px;height:2px;overflow:hidden;margin-top:14px}
-.verse-progress-fill{height:100%;border-radius:99px;background:var(--accent);transition:width .3s linear}
-.verse-dots{display:flex;justify-content:center;gap:5px;margin-top:10px}
-.verse-dot{width:5px;height:5px;border-radius:50%;background:var(--muted2);cursor:pointer;transition:all .2s}
-.verse-dot.active{background:var(--accent);width:14px;border-radius:99px}
 
 /* BUDGET GOAL CARD */
 .snapshot-card{background:linear-gradient(145deg,#0d0d10 0%,#111a0b 50%,#0c160a 100%);border:1px solid rgba(var(--accent-rgb),.14);border-radius:var(--r);padding:22px 24px;margin-bottom:16px;box-shadow:var(--shadow-sm)}
@@ -1389,8 +1383,6 @@ label.fa-row{cursor:pointer}
       <div style="font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:rgba(var(--accent-rgb),.5);font-weight:600;margin-bottom:14px">✝ Word for Today</div>
       <div id="splash-verse" style="font-size:15px;color:var(--text);line-height:1.7;font-style:italic;margin-bottom:14px">"..."</div>
       <div id="splash-ref" style="font-size:12px;color:var(--accent);font-weight:600;font-family:var(--font-d)"></div>
-      <div class="verse-progress-track"><div class="verse-progress-fill" id="verse-prog" style="width:0%"></div></div>
-      <div class="verse-dots" id="verse-dots"></div>
     </div>
     <div id="splash-greeting" style="font-size:13px;color:var(--muted);margin-bottom:28px"></div>
     <button onclick="closeSplash()" style="background:var(--accent);color:#080808;border:none;padding:12px 36px;border-radius:10px;font-family:var(--font-d);font-size:14px;font-weight:700;cursor:pointer;transition:all .16s;letter-spacing:.02em" onmouseover="this.style.background='var(--accent-dim)'" onmouseout="this.style.background='var(--accent)'">
@@ -2151,7 +2143,6 @@ const VERSES=[
   {text:"The rich rules over the poor, and the borrower is the slave of the lender.",ref:"Proverbs 22:7"},
   {text:"For the love of money is a root of all kinds of evils.",ref:"1 Timothy 6:10"},
   {text:"Seek first the kingdom of God and his righteousness, and all these things will be added to you.",ref:"Matthew 6:33"},
-  {text:"Wealth gained hastily will dwindle, but whoever gathers little by little will increase it.",ref:"Proverbs 13:11"},
   {text:"Be not one of those who give pledges, who put up security for debts. If you have nothing with which to pay, why should your bed be taken from under you?",ref:"Proverbs 22:26-27"},
   {text:"I have learned, in whatever situation I am, to be content.",ref:"Philippians 4:11"},
   {text:"The plans of the diligent lead surely to abundance, but everyone who is hasty comes only to poverty.",ref:"Proverbs 21:5"},
@@ -2163,24 +2154,171 @@ const VERSES=[
   {text:"Lazy hands make for poverty, but diligent hands bring wealth.",ref:"Proverbs 10:4"},
   {text:"Suppose one of you wants to build a tower. Won't you first sit down and estimate the cost to see if you have enough money to complete it?",ref:"Luke 14:28"},
   {text:"Now godliness with contentment is great gain.",ref:"1 Timothy 6:6"},
+  /* w:[...] = optional "when" tags: weekday (sun..sat), am/pm/eve/night, start/end of month, payday, jan, dec */
+  {text:"This is the day that the Lord has made; let us rejoice and be glad in it.",ref:"Psalm 118:24",w:["am"]},
+  {text:"The steadfast love of the Lord never ceases; his mercies never come to an end; they are new every morning; great is your faithfulness.",ref:"Lamentations 3:22-23",w:["am", "jan"]},
+  {text:"Let me hear in the morning of your steadfast love, for in you I trust.",ref:"Psalm 143:8",w:["am"]},
+  {text:"Whatever you do, work heartily, as for the Lord and not for men.",ref:"Colossians 3:23",w:["am", "mon"]},
+  {text:"Whatever your hand finds to do, do it with all your might.",ref:"Ecclesiastes 9:10",w:["mon", "am"]},
+  {text:"Do you see someone skilled in their work? They will serve before kings; they will not serve before officials of low rank.",ref:"Proverbs 22:29",w:["mon"]},
+  {text:"Those who hope in the Lord will renew their strength. They will soar on wings like eagles; they will run and not grow weary.",ref:"Isaiah 40:31",w:["mon", "am"]},
+  {text:"Be strong and courageous. Do not be afraid or terrified because of them, for the Lord your God goes with you; he will never leave you nor forsake you.",ref:"Deuteronomy 31:6",w:["mon"]},
+  {text:"I can do all this through him who gives me strength.",ref:"Philippians 4:13",w:["mon", "tue"]},
+  {text:"The sluggard craves and gets nothing, but the desires of the diligent are fully satisfied.",ref:"Proverbs 13:4",w:["am", "mon"]},
+  {text:"Go to the ant, you sluggard; consider its ways and be wise!",ref:"Proverbs 6:6",w:["mon", "am"]},
+  {text:"Let us not become weary in doing good, for at the proper time we will reap a harvest if we do not give up.",ref:"Galatians 6:9",w:["tue", "wed", "thu"]},
+  {text:"Let us run with perseverance the race marked out for us.",ref:"Hebrews 12:1",w:["wed", "thu"]},
+  {text:"The Lord is my strength and my shield; my heart trusts in him, and he helps me.",ref:"Psalm 28:7",w:["wed"]},
+  {text:"Trust in the Lord with all your heart and lean not on your own understanding; in all your ways submit to him, and he will make your paths straight.",ref:"Proverbs 3:5-6",w:["wed", "tue"]},
+  {text:"Blessed is the one who trusts in the Lord, whose confidence is in him.",ref:"Jeremiah 17:7",w:["wed", "thu"]},
+  {text:"Two are better than one, because they have a good return for their labor.",ref:"Ecclesiastes 4:9",w:["tue", "thu"]},
+  {text:"Unless the Lord builds the house, the builders labor in vain.",ref:"Psalm 127:1",w:["tue", "wed"]},
+  {text:"May he give you the desire of your heart and make all your plans succeed.",ref:"Psalm 20:4",w:["thu"]},
+  {text:"Write down the vision; make it plain on tablets, so that a runner may read it.",ref:"Habakkuk 2:2",w:["tue", "start"]},
+  {text:"The laborer deserves his wages.",ref:"Luke 10:7",w:["fri", "payday"]},
+  {text:"Each of you should give what you have decided in your heart to give, not reluctantly or under compulsion, for God loves a cheerful giver.",ref:"2 Corinthians 9:7",w:["payday", "sun"]},
+  {text:"It is more blessed to give than to receive.",ref:"Acts 20:35",w:["payday", "sun"]},
+  {text:"A generous person will prosper; whoever refreshes others will be refreshed.",ref:"Proverbs 11:25",w:["payday", "fri"]},
+  {text:"Whoever is generous to the poor lends to the Lord, and he will reward them for what they have done.",ref:"Proverbs 19:17",w:["payday"]},
+  {text:"The generous will themselves be blessed, for they share their food with the poor.",ref:"Proverbs 22:9",w:["payday", "sun"]},
+  {text:"Do not withhold good from those to whom it is due, when it is in your power to act.",ref:"Proverbs 3:27",w:["payday"]},
+  {text:"Do not forget to do good and to share with others, for with such sacrifices God is pleased.",ref:"Hebrews 13:16",w:["payday", "sun"]},
+  {text:"Whoever gives to the poor will lack nothing, but those who close their eyes to them receive many curses.",ref:"Proverbs 28:27",w:["payday"]},
+  {text:"Anyone who has been stealing must steal no longer, but must work, doing something useful with their own hands, that they may have something to share with those in need.",ref:"Ephesians 4:28",w:["fri", "payday"]},
+  {text:"For everything comes from you, and we have given you only what comes from your hand.",ref:"1 Chronicles 29:14",w:["payday", "sun"]},
+  {text:"Command those who are rich in this present world... to do good, to be rich in good deeds, and to be generous and willing to share.",ref:"1 Timothy 6:17-18",w:["payday"]},
+  {text:"If anyone has material possessions and sees a brother or sister in need but has no pity on them, how can the love of God be in that person?",ref:"1 John 3:17",w:["payday"]},
+  {text:"Remember the Sabbath day by keeping it holy.",ref:"Exodus 20:8",w:["sun"]},
+  {text:"I rejoiced with those who said to me, \"Let us go to the house of the Lord.\"",ref:"Psalm 122:1",w:["sun"]},
+  {text:"Come, let us bow down in worship, let us kneel before the Lord our Maker.",ref:"Psalm 95:6",w:["sun"]},
+  {text:"Let us not give up meeting together, as some are in the habit of doing, but let us encourage one another.",ref:"Hebrews 10:25",w:["sun"]},
+  {text:"Be still, and know that I am God.",ref:"Psalm 46:10",w:["sun", "sat"]},
+  {text:"Give thanks to the Lord, for he is good; his love endures forever.",ref:"Psalm 107:1",w:["sun", "sat"]},
+  {text:"Taste and see that the Lord is good; blessed is the one who takes refuge in him.",ref:"Psalm 34:8",w:["sun", "sat"]},
+  {text:"Rejoice always, pray continually, give thanks in all circumstances; for this is God's will for you in Christ Jesus.",ref:"1 Thessalonians 5:16-18",w:["sun", "sat"]},
+  {text:"The earth is the Lord's, and everything in it, the world, and all who live in it.",ref:"Psalm 24:1",w:["sun", "sat"]},
+  {text:"Every good and perfect gift is from above, coming down from the Father of the heavenly lights.",ref:"James 1:17",w:["sun", "sat"]},
+  {text:"The Lord has done great things for us, and we are filled with joy.",ref:"Psalm 126:3",w:["sat", "sun"]},
+  {text:"Delight yourself in the Lord, and he will give you the desires of your heart.",ref:"Psalm 37:4",w:["sat"]},
+  {text:"In peace I will lie down and sleep, for you alone, Lord, make me dwell in safety.",ref:"Psalm 4:8",w:["night", "eve"]},
+  {text:"Come to me, all you who are weary and burdened, and I will give you rest.",ref:"Matthew 11:28",w:["eve", "night"]},
+  {text:"In vain you rise early and stay up late, toiling for food to eat — for he grants sleep to those he loves.",ref:"Psalm 127:2",w:["night", "eve"]},
+  {text:"When you lie down, you will not be afraid; when you lie down, your sleep will be sweet.",ref:"Proverbs 3:24",w:["night"]},
+  {text:"Weeping may stay for the night, but rejoicing comes in the morning.",ref:"Psalm 30:5",w:["night", "eve"]},
+  {text:"Cast all your anxiety on him because he cares for you.",ref:"1 Peter 5:7",w:["eve", "night"]},
+  {text:"Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God.",ref:"Philippians 4:6",w:["eve", "night"]},
+  {text:"Therefore do not worry about tomorrow, for tomorrow will worry about itself. Each day has enough trouble of its own.",ref:"Matthew 6:34",w:["night", "eve"]},
+  {text:"I lift up my eyes to the hills — where does my help come from? My help comes from the Lord, the Maker of heaven and earth.",ref:"Psalm 121:1-2",w:["night", "eve"]},
+  {text:"Cast your cares on the Lord and he will sustain you; he will never let the righteous be shaken.",ref:"Psalm 55:22",w:["night", "eve", "end"]},
+  {text:"The prudent see danger and take refuge, but the simple keep going and pay the penalty.",ref:"Proverbs 22:3",w:["start"]},
+  {text:"The wise store up choice food and olive oil, but fools gulp theirs down.",ref:"Proverbs 21:20",w:["start"]},
+  {text:"Be sure you know the condition of your flocks, give careful attention to your herds; for riches do not endure forever.",ref:"Proverbs 27:23-24",w:["start"]},
+  {text:"Put your outdoor work in order and get your fields ready; after that, build your house.",ref:"Proverbs 24:27",w:["start"]},
+  {text:"By wisdom a house is built, and through understanding it is established; through knowledge its rooms are filled with rare and beautiful treasures.",ref:"Proverbs 24:3-4",w:["start"]},
+  {text:"Ants are creatures of little strength, yet they store up their food in the summer.",ref:"Proverbs 30:25",w:["start"]},
+  {text:"But everything should be done in a fitting and orderly way.",ref:"1 Corinthians 14:40",w:["start", "mon"]},
+  {text:"The simple believe anything, but the prudent give thought to their steps.",ref:"Proverbs 14:15",w:["start"]},
+  {text:"The wise woman builds her house, but with her own hands the foolish one tears hers down.",ref:"Proverbs 14:1",w:["start"]},
+  {text:"A false balance is an abomination to the Lord, but a just weight is his delight.",ref:"Proverbs 11:1",w:["start"]},
+  {text:"Let the wise listen and add to their learning, and let the discerning get guidance.",ref:"Proverbs 1:5",w:["start", "mon"]},
+  {text:"Do not wear yourself out to get rich; do not trust your own cleverness. Cast but a glance at riches, and they are gone, for they will surely sprout wings and fly off to the sky.",ref:"Proverbs 23:4-5",w:["start", "end"]},
+  {text:"Give us today our daily bread.",ref:"Matthew 6:11",w:["end"]},
+  {text:"Look at the birds of the air; they do not sow or reap or store away in barns, and yet your heavenly Father feeds them. Are you not much more valuable than they?",ref:"Matthew 6:26",w:["end"]},
+  {text:"I was young and now I am old, yet I have never seen the righteous forsaken or their children begging bread.",ref:"Psalm 37:25",w:["end"]},
+  {text:"So Abraham called that place The Lord Will Provide.",ref:"Genesis 22:14",w:["end"]},
+  {text:"The eyes of all look to you, and you give them their food at the proper time.",ref:"Psalm 145:15",w:["end"]},
+  {text:"Better a little with the fear of the Lord than great wealth with turmoil.",ref:"Proverbs 15:16",w:["end"]},
+  {text:"Better a little with righteousness than much gain with injustice.",ref:"Proverbs 16:8",w:["end"]},
+  {text:"The Lord your God has blessed you in all the work of your hands... and you have lacked nothing.",ref:"Deuteronomy 2:7",w:["end"]},
+  {text:"God is our refuge and strength, an ever-present help in trouble.",ref:"Psalm 46:1",w:["end"]},
+  {text:"A little that the righteous have is better than the wealth of many wicked.",ref:"Psalm 37:16",w:["end"]},
+  {text:"Whoever trusts in his riches will fall, but the righteous will thrive like a green leaf.",ref:"Proverbs 11:28",w:["end"]},
+  {text:"Life is more than food, and the body more than clothes.",ref:"Luke 12:23",w:["end"]},
+  {text:"Watch out! Be on your guard against all kinds of greed; life does not consist in an abundance of possessions.",ref:"Luke 12:15",w:["end"]},
+  {text:"And we know that in all things God works for the good of those who love him, who have been called according to his purpose.",ref:"Romans 8:28",w:["end", "night"]},
+  {text:"Forgetting what is behind and straining toward what is ahead, I press on toward the goal.",ref:"Philippians 3:13-14",w:["jan"]},
+  {text:"See, I am doing a new thing! Now it springs up; do you not perceive it?",ref:"Isaiah 43:19",w:["jan"]},
+  {text:"Therefore, if anyone is in Christ, the new creation has come: The old has gone, the new is here!",ref:"2 Corinthians 5:17",w:["jan"]},
+  {text:"Teach us to number our days, that we may gain a heart of wisdom.",ref:"Psalm 90:12",w:["jan", "start"]},
+  {text:"Trust in the Lord and do good; dwell in the land and enjoy safe pasture.",ref:"Psalm 37:3",w:["jan", "mon"]},
+  {text:"Thanks be to God for his indescribable gift!",ref:"2 Corinthians 9:15",w:["dec"]},
+  {text:"For to us a child is born, to us a son is given.",ref:"Isaiah 9:6",w:["dec"]},
+  {text:"Glory to God in the highest heaven, and on earth peace to those on whom his favor rests.",ref:"Luke 2:14",w:["dec"]},
+  {text:"Remember the Lord your God, for it is he who gives you the ability to produce wealth.",ref:"Deuteronomy 8:18"},
+  {text:"Well done, good and faithful servant! You have been faithful with a few things; I will put you in charge of many things.",ref:"Matthew 25:21"},
+  {text:"For where your treasure is, there your heart will be also.",ref:"Matthew 6:21"},
+  {text:"What good will it be for someone to gain the whole world, yet forfeit their soul?",ref:"Matthew 16:26"},
+  {text:"Some trust in chariots and some in horses, but we trust in the name of the Lord our God.",ref:"Psalm 20:7"},
+  {text:"Be joyful in hope, patient in affliction, faithful in prayer.",ref:"Romans 12:12"},
+  {text:"The fear of the Lord is the beginning of wisdom, and knowledge of the Holy One is understanding.",ref:"Proverbs 9:10"},
+  {text:"How much better to get wisdom than gold, to get insight rather than silver!",ref:"Proverbs 16:16"},
+  {text:"For the Lord gives wisdom; from his mouth come knowledge and understanding.",ref:"Proverbs 2:6"},
+  {text:"Whoever loves pleasure will become poor; whoever loves wine and olive oil will never be rich.",ref:"Proverbs 21:17"},
+  {text:"The wicked borrow and do not repay, but the righteous give generously.",ref:"Psalm 37:21"},
+  {text:"The Lord is good to those whose hope is in him, to the one who seeks him.",ref:"Lamentations 3:25"},
+  {text:"A person who lacks judgment shakes hands in pledge and puts up security for a neighbor.",ref:"Proverbs 17:18"},
 ];
 
+// Which "moments" is it right now? Used to lean verses toward the day / time.
+function verseContext(d){
+  d=d||new Date();
+  const h=d.getHours(),dt=d.getDate(),m=d.getMonth();
+  const dim=new Date(d.getFullYear(),m+1,0).getDate();
+  const tags=[['sun','mon','tue','wed','thu','fri','sat'][d.getDay()], h<12?'am':h<18?'pm':'eve'];
+  if(h>=21||h<4)tags.push('night');
+  if(dt<=5)tags.push('start');
+  if(dt>=dim-4)tags.push('end');
+  if((dt>=14&&dt<=16)||dt>=dim-1||dt<=1)tags.push('payday');   // 15th / 30th pay cycle
+  if(m===0)tags.push('jan');
+  if(m===11)tags.push('dec');
+  return tags;
+}
+// No-repeat picker: remembers what was shown (per storeKey) and only starts over once
+// EVERY verse has been seen. `bias` = chance to prefer verses that fit today/right now.
+function pickVerse(storeKey,bias){
+  const tags=verseContext();
+  let seen=[];
+  try{seen=JSON.parse(localStorage.getItem(storeKey)||'[]');if(!Array.isArray(seen))seen=[];}catch(e){seen=[];}
+  let pool=VERSES.filter(v=>seen.indexOf(v.ref)===-1);
+  if(!pool.length){                       // whole list read -> new round, but skip the last few
+    seen=seen.slice(-Math.min(5,VERSES.length-1));
+    pool=VERSES.filter(v=>seen.indexOf(v.ref)===-1);
+  }
+  const fit=pool.filter(v=>v.w&&v.w.some(x=>tags.indexOf(x)!==-1));
+  const from=(fit.length&&Math.random()<bias)?fit:pool;
+  const v=from[Math.floor(Math.random()*from.length)];
+  seen.push(v.ref);
+  try{localStorage.setItem(storeKey,JSON.stringify(seen));}catch(e){}
+  return v;
+}
+// One verse per calendar day (stable all day), never repeating until the whole list
+// has been shown, and leaning toward verses that suit the day (Sunday, payday, month start...).
 function getDailyVerse(){
-  const dayOfYear=Math.floor((new Date()-new Date(new Date().getFullYear(),0,0))/(1000*60*60*24));
-  return VERSES[dayOfYear%VERSES.length];
+  const today=new Date().toDateString();
+  try{
+    const s=JSON.parse(localStorage.getItem('finDailyVerse')||'null');
+    if(s&&s.d===today){const f=VERSES.find(v=>v.ref===s.ref);if(f)return f;}
+  }catch(e){}
+  const v=pickVerse('finSeenDailyVerses',0.85);
+  try{localStorage.setItem('finDailyVerse',JSON.stringify({d:today,ref:v.ref}));}catch(e){}
+  return v;
 }
 
 function closeSplash(){
   const el=document.getElementById('welcome-splash');
   el.style.transition='opacity .4s ease, transform .4s ease';
   el.style.opacity='0';el.style.transform='scale(.97)';
-  setTimeout(()=>{el.style.display='none';clearInterval(verseTimer);clearInterval(verseProgTimer);},400);
+  setTimeout(()=>{el.style.display='none';},400);
   sessionStorage.setItem('mtUnlocked','1');
 }
 function showSplash(){
+  // "Word for Today" only appears the FIRST time the user gets in on a given day.
+  // Later logins the same day skip straight to the app (closeSplash() still runs so Fin greets as usual).
+  try{
+    if(localStorage.getItem('finSplashDay')===today()){closeSplash();return;}
+    localStorage.setItem('finSplashDay',today());
+  }catch(e){}
   // show welcome splash for returning user after unlock or no-pin scenario
-  clearInterval(verseTimer);clearInterval(verseProgTimer);
-  verseIdx=0;verseProgVal=0;
   const el=document.getElementById('welcome-splash');
   if(el){el.style.display='flex';el.style.opacity='1';el.style.transform='';}
   initSplash();
@@ -5099,52 +5237,16 @@ function initTheme(){
   applyAccent(a);
 }
 
-/* ── VERSE CYCLING ── */
-let verseIdx=0,verseTimer,verseProgTimer,verseProgVal=0;
-const VERSE_INTERVAL=30000;
+/* ── WORD FOR TODAY (one verse per day) ── */
 function initSplash(){
-  buildVerseDots();
-  showVerse(verseIdx);
-  startVerseTimer();
+  const v=getDailyVerse();
+  const vEl=document.getElementById('splash-verse'),rEl=document.getElementById('splash-ref');
+  if(vEl&&rEl){vEl.textContent='"'+v.text+'"';rEl.textContent='— '+v.ref;}
   const h=new Date().getHours();
   const greet=h<12?'Good morning ☀️':h<17?'Good afternoon 🌤️':'Good evening 🌙';
   const nm=state.username?', '+state.username:'';document.getElementById('splash-greeting').textContent=greet+nm+' — here\'s your finances for today.';
   document.getElementById('splash-date').textContent=new Date().toLocaleDateString('en-PH',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 }
-function buildVerseDots(){
-  const container=document.getElementById('verse-dots');
-  if(!container)return;
-  container.innerHTML=VERSES.map((_,i)=>`<div class="verse-dot${i===0?' active':''}" onclick="jumpVerse(${i})"></div>`).join('');
-}
-function showVerse(idx){
-  const v=VERSES[idx];
-  const vEl=document.getElementById('splash-verse');
-  const rEl=document.getElementById('splash-ref');
-  if(!vEl||!rEl)return;
-  vEl.style.transition='opacity .4s';vEl.style.opacity='0';
-  rEl.style.transition='opacity .4s';rEl.style.opacity='0';
-  setTimeout(()=>{
-    vEl.textContent='"'+v.text+'"';rEl.textContent='— '+v.ref;
-    vEl.style.opacity='1';rEl.style.opacity='1';
-  },350);
-  document.querySelectorAll('.verse-dot').forEach((d,i)=>d.classList.toggle('active',i===idx));
-  verseProgVal=0;document.getElementById('verse-prog').style.width='0%';
-}
-function jumpVerse(idx){verseIdx=idx;showVerse(idx);resetVerseTimer();}
-function startVerseTimer(){
-  clearInterval(verseTimer);clearInterval(verseProgTimer);
-  verseProgVal=0;
-  verseProgTimer=setInterval(()=>{
-    verseProgVal+=100/(VERSE_INTERVAL/100);
-    const el=document.getElementById('verse-prog');
-    if(el)el.style.width=Math.min(verseProgVal,100)+'%';
-  },100);
-  verseTimer=setTimeout(()=>{
-    verseIdx=(verseIdx+1)%VERSES.length;
-    showVerse(verseIdx);startVerseTimer();
-  },VERSE_INTERVAL);
-}
-function resetVerseTimer(){startVerseTimer();}
 
 /* ── SWIPE TO DELETE (mobile) ── */
 let swipeStart=null,swipeEl=null,swipeY=0;
