@@ -1062,7 +1062,7 @@ label.fa-row{cursor:pointer}
 .fa-row .fa-n{min-width:120px}
 
 /* ── In-page description suggestions (replaces the native datalist popup) ── */
-.fa-suggest{position:absolute;left:0;right:0;top:100%;margin-top:4px;z-index:60;background:var(--surface);border:1px solid var(--border2);border-radius:12px;box-shadow:var(--shadow-lg);max-height:220px;overflow-y:auto;padding:4px}
+.fa-suggest{position:absolute;left:0;right:0;top:100%;margin-top:4px;z-index:60;background:var(--surface);border:1px solid var(--border2);border-radius:12px;box-shadow:var(--shadow-lg);max-height:220px;overflow-y:auto;padding:4px;touch-action:pan-y;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .fa-sg{padding:10px 12px;border-radius:8px;font-size:13.5px;color:var(--text);cursor:pointer}
 .fa-sg:hover,.fa-sg.on{background:var(--accent-bg);color:var(--accent)}
 </style>
@@ -6519,10 +6519,13 @@ function descSuggest(d){
     box.innerHTML=out.map(t=>'<div class="fa-sg">'+esc(t)+'</div>').join('');
     box.style.display=out.length?'block':'none';
   };
-  box.addEventListener('pointerdown',e=>{const el=e.target.closest('.fa-sg');if(el){e.preventDefault();pick(el.textContent);}});
+  // Mouse: pick on press (keeps input focus). Touch: pick on tap only (click), so dragging the list scrolls it instead of selecting.
+  box.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse')return;const el=e.target.closest('.fa-sg');if(el){e.preventDefault();pick(el.textContent);}});
+  box.addEventListener('mousedown',e=>e.preventDefault());
+  box.addEventListener('click',e=>{const el=e.target.closest('.fa-sg');if(el){e.preventDefault();pick(el.textContent);}});
   d.addEventListener('focus',build);
   d.addEventListener('input',build);
-  d.addEventListener('blur',()=>setTimeout(hide,120));
+  d.addEventListener('blur',()=>setTimeout(hide,250));
   d.addEventListener('keydown',e=>{
     const n=box.children.length;
     if(e.key==='Escape'){hide();return;}
