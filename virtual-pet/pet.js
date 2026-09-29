@@ -53,6 +53,7 @@
     MODULE_REPEAT_MS: 70000,    // don't repeat the same module's message sooner than this
     IDLE_NUDGE_MS: 5*60*1000,   // inactivity nudge after 5 min
     SLEEP_MS: 12*60*1000,       // falls asleep after 12 min of no interaction
+    VERSE_CHANCE: 0.5,          // chance an idle moment is a Bible verse (0-1)
     BUBBLE_MS: 9000,            // auto-hide plain messages
     BUBBLE_MS_ACTION: 15000     // auto-hide messages that have action button(s)
   };
@@ -1663,7 +1664,10 @@
       // Mix in a financial tip some of the time instead of plain small talk —
       // idle moments are a low-friction place to surface a bit of knowledge —
       // unless the person's muted idle tips specifically.
-      if(!s.muteTips && Math.random()<0.5){
+      if(Math.random()<CFG.VERSE_CHANCE){
+        // a random Bible verse (same pool as the "Word for Today" splash)
+        showBubble(window.FinPetDialogue.getVerseMessage());
+      } else if(!s.muteTips && Math.random()<0.5){
         showBubble(window.FinPetDialogue.getTipMessage(pet.shownTips, safeCtx()));
       } else {
         showBubble(window.FinPetDialogue.getIdleNudge(safeCtx(), s.tone));
