@@ -166,10 +166,9 @@
     var d = window.FinPetDialogue;
     if(d && d.setLang) d.setLang((s||getSettings()).lang);
   }
-  function cycleLang(){
+  function setLangSetting(l){
     var s = getSettings();
-    var order = ['taglish','english','bisaya'];
-    s.lang = order[(order.indexOf(s.lang)+1)%order.length];
+    s.lang = (l==='english' || l==='bisaya' || l==='tagalog') ? l : 'taglish';
     saveSettings(s);
     syncLang(s);
     return s;
@@ -770,8 +769,11 @@
       case 'settings-toggle-tone':
         showBubble(dlg.getSettingsPersonalizeMessage(cycleTone()));
         break;
-      case 'settings-toggle-lang':
-        showBubble(dlg.getSettingsPersonalizeMessage(cycleLang()));
+      case 'settings-language':
+        showBubble(dlg.getSettingsLanguageMessage(getSettings()));
+        break;
+      case 'settings-lang-set':
+        showBubble(dlg.getSettingsLanguageMessage(setLangSetting(action.lang)));
         break;
       case 'settings-rename':
         renamePet();
