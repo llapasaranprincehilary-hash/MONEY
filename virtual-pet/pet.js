@@ -1,9 +1,9 @@
 /* ============================================================
-   FINUITY Virtual Pet — "Fin"
+   FINUITY Virtual Pet - "Fin"
    Mounts a small interactive companion into the existing page
    and hooks into the app's own functions (show, toast, addGoal,
    addToGoal, and the add-entry functions) rather than creating
-   a parallel system. No fake pages, no separate navigation —
+   a parallel system. No fake pages, no separate navigation - 
    every action button the pet shows calls a real function that
    already exists in index.html.
 
@@ -73,12 +73,12 @@
   var LS_BESTS = 'finPetBests';                   // {bestSavingsRatePct, longestStreakEver}
   var LS_PATTERN_LAST = 'finPetPatternInsightAt';  // ms timestamp of last pattern insight shown
   var LS_PRIVACY_SHOWN = 'finPetPrivacyShown';
-  var LS_SPIKE_WARNED = 'finPetSpikeWarned';        // {category: msTimestamp} — once-per-week-ish per category
+  var LS_SPIKE_WARNED = 'finPetSpikeWarned';        // {category: msTimestamp} - once-per-week-ish per category
   var LS_GOAL_PCT_SHOWN = 'finPetGoalPctShown';     // {goalId: [25,50,75,90]} thresholds already celebrated
-  var LS_GOAL_SAVED_SNAP = 'finPetGoalSavedSnap';   // {goalId: lastKnownSavedAmount} — to diff top-ups
-  var LS_LOAN_AMOUNT_SNAP = 'finPetLoanAmountSnap'; // {loanId: lastKnownOutstandingAmount} — to diff paydowns
+  var LS_GOAL_SAVED_SNAP = 'finPetGoalSavedSnap';   // {goalId: lastKnownSavedAmount} - to diff top-ups
+  var LS_LOAN_AMOUNT_SNAP = 'finPetLoanAmountSnap'; // {loanId: lastKnownOutstandingAmount} - to diff paydowns
 
-  var SPIKE_COOLDOWN_MS = 6*24*60*60*1000; // matches the pattern-insight cadence — real observation, not chatter
+  var SPIKE_COOLDOWN_MS = 6*24*60*60*1000; // matches the pattern-insight cadence - real observation, not chatter
   var SPIKE_MIN_SAMPLE = 3;   // need at least this many prior expenses in a category before "usual" means anything
   var SPIKE_RATIO = 1.75;     // at least 75% above the category's own average
   var SPIKE_MIN_ABS = 300;    // and at least this many pesos above it, so small categories don't trip on tiny variance
@@ -112,7 +112,7 @@
 
   // Toast copy that genuinely represents good financial news, used to
   // gate the pet's happy-mood reaction. Whitelisted rather than
-  // "anything that isn't type:'error'" — several non-error toasts (a
+  // "anything that isn't type:'error'" - several non-error toasts (a
   // recurring expense not yet logged, a loan due soon) are cautionary,
   // not celebratory, and shouldn't make Fin bounce with joy over them.
   var GOOD_NEWS_PREFIXES = [
@@ -459,7 +459,7 @@
       isBlinking:function(){ return current==='blink'; } };
   })();
 
-  // Blink is layered on top of idle only — it never interrupts talking,
+  // Blink is layered on top of idle only - it never interrupts talking,
   // thinking, happy, sad or sleepy, and it's on its own timer so it
   // doesn't add a second loop fighting the main one. Each trigger plays
   // two short blinks back-to-back (a natural double-blink) instead of one -
@@ -524,7 +524,7 @@
   /* ---------- optional: walking / greeting API ----------
      Not currently called from anywhere in Fin's own logic (Fin doesn't
      walk around today), but wired up in case you want to hook it to
-     something later — e.g. pet.walkTo(200) or FinPet.wave(). */
+     something later - e.g. pet.walkTo(200) or FinPet.wave(). */
   var walkRAF = null;
   function stopWalking(){
     if(walkRAF) cancelAnimationFrame(walkRAF);
@@ -578,7 +578,7 @@
     }
     hideInlineInput();
     pet.reactionShowing = false;
-    els.bubbleText.textContent = msg.text;
+    els.bubbleText.textContent = String(msg.text).replace(/\s*[\u2014\u2013]\s*/g,' - ');
     els.bubbleActions.innerHTML = '';
 
     var actionList = normalizeActions(msg);
@@ -618,7 +618,7 @@
   // insights, staleness nudges...) can all decide to speak up around the
   // same time, each on its own setTimeout. Left uncoordinated, whichever
   // timer resolves last silently overwrites whatever bubble was already
-  // showing — the person never even sees the earlier message. Routing all
+  // showing - the person never even sees the earlier message. Routing all
   // of them through this queue instead means they show one at a time, in
   // the order they were requested, and nothing gets silently dropped.
   var BUBBLE_QUEUE_MAX = 5;
@@ -636,7 +636,7 @@
     setTimeout(function(){
       showBubble(next.msg);
       if(els.root.classList.contains('fin-minimized') || pet.tour){
-        // showBubble no-op'd (minimized / touring) — nothing will ever call hideBubble
+        // showBubble no-op'd (minimized / touring) - nothing will ever call hideBubble
         // for it, so release the queue ourselves instead of stalling on it.
         releaseQueue();
       }
@@ -649,7 +649,7 @@
   }
 
   // Inline text-entry inside the bubble itself, used instead of
-  // window.prompt() — prompt()/alert()/confirm() are unreliable (often
+  // window.prompt() - prompt()/alert()/confirm() are unreliable (often
   // silently do nothing) once FINUITY is installed as a standalone PWA,
   // since there's no browser chrome to host the native dialog.
   function showInlineInput(promptText, placeholder, onSubmit){
@@ -904,7 +904,7 @@
       if(drag.moved){
         var r = els.root.getBoundingClientRect();
         try{ localStorage.setItem(LS_POS, JSON.stringify({x:r.left, y:r.top})); }catch(err){}
-        pet.suppressClick = true; // this was a drag, not a tap — swallow the click that follows
+        pet.suppressClick = true; // this was a drag, not a tap - swallow the click that follows
       }
     }
     els.avatarWrap.addEventListener('pointerup', endDrag);
@@ -1006,7 +1006,7 @@
   }
 
   /* ---------- data-pattern insights (weekday concentration, category
-     streaks, same-time-last-year spikes) — spaced out to roughly weekly
+     streaks, same-time-last-year spikes) - spaced out to roughly weekly
      so they read as genuine observations, not constant chatter. ---------- */
   function checkPatternInsight(){
     if(getSettings().muteInsights) return;
@@ -1023,7 +1023,7 @@
 
   /* ---------- visual trend cue ----------
      A subtle, lasting cue (not a toast) tied to the trailing 3-month
-     savings rate rather than any single day — see pet.css for what each
+     savings rate rather than any single day - see pet.css for what each
      class actually looks like. */
   function applyTrendClass(ctx){
     if(!els.root) return;
@@ -1137,11 +1137,11 @@
     }catch(e){}
   }
 
-  // "Here's a sensible next step" after a specific, first-time-ish action —
+  // "Here's a sensible next step" after a specific, first-time-ish action - 
   // each one only ever shown once (tracked by dialogue.js's msg.key), so it
   // reads as a helpful nudge rather than nagging on every repeat action.
   // Driven by the app's own custom events (eventName + detail) instead of
-  // matching substrings of the toast copy — see wireFinEvents().
+  // matching substrings of the toast copy - see wireFinEvents().
   function checkPostAction(eventName, detail){
     if(!canShowAuto('milestone')) return;
     var ctx = safeCtx();
@@ -1206,7 +1206,7 @@
     var last = getLastWeeklyRecapKey();
     if(ctx.weekKey===last) return false;
     markWeeklyRecapKey(ctx.weekKey);
-    if(!last) return false; // first time we've ever tracked a week — nothing to recap yet
+    if(!last) return false; // first time we've ever tracked a week - nothing to recap yet
     var msg = window.FinPetDialogue.getWeeklyRecapMessage(ctx);
     if(!msg) return false;
     markShown('dashboard');
@@ -1220,7 +1220,7 @@
   /* ---------- goal-progress tracking + stale-goal nudges ----------
      state.goals doesn't carry a "last added to" timestamp, so pet.js
      tracks one itself (keyed by goal id) by wrapping the app's own
-     addGoal/addToGoal functions — no changes to index.html needed. */
+     addGoal/addToGoal functions - no changes to index.html needed. */
   function getAppState(){
     try{ return (typeof state!=='undefined' ? state : null) || {}; }catch(e){ return {}; }
   }
@@ -1259,7 +1259,7 @@
       if(!g || g.saved>=g.target) return; // don't nudge goals that are done
       var last = progressMap[g.id];
       if(last===undefined){
-        // Never tracked before (goal predates this feature) — start
+        // Never tracked before (goal predates this feature) - start
         // tracking from now rather than assuming it's stale already.
         recordGoalProgress(g.id);
         return;
@@ -1281,7 +1281,7 @@
 
   /* ---------- loan-progress tracking + idle-loan nudges (item 20) ----------
      Loans carry no "last touched" timestamp of their own, so pet.js tracks
-     one itself, the same way it already does for goals — updated whenever
+     one itself, the same way it already does for goals - updated whenever
      fin:loan-added / fin:loan-adjusted / fin:loan-settled fires. */
   var LS_LOAN_PROGRESS = 'finPetLoanProgress';
   var LS_LOAN_IDLE_WARNED = 'finPetLoanIdleWarned';
@@ -1313,7 +1313,7 @@
       var last = map[l.id];
       if(last===undefined){
         // Never tracked before (loan predates this feature, or was added
-        // before this session) — start tracking from now rather than
+        // before this session) - start tracking from now rather than
         // assuming it's already been sitting idle.
         recordLoanProgress(l.id);
         return;
@@ -1397,7 +1397,7 @@
     if(getSettings().muteInsights) return;
     if(!ctx.budgetLimit || !ctx.curExp) return;
     var rec = getBudgetSetRecord();
-    if(!rec || rec.amount!==ctx.budgetLimit) return; // never tracked, or changed since — nothing stale to flag yet
+    if(!rec || rec.amount!==ctx.budgetLimit) return; // never tracked, or changed since - nothing stale to flag yet
     var monthsSince = (Date.now()-rec.setAt) / (30*86400000);
     if(monthsSince<3) return;
     var diffPct = Math.abs(ctx.curExp-ctx.budgetLimit)/ctx.budgetLimit;
@@ -1427,7 +1427,7 @@
     queueBubble(window.FinPetDialogue.getWalletStaleMessage(ctx.staleWallet), 500);
   }
 
-  // Start-of-month "carry over last time's budget?" — the app doesn't
+  // Start-of-month "carry over last time's budget?" - the app doesn't
   // reset the budget figure automatically between months, so this only
   // has something to offer when the current figure is 0 but a previous
   // nonzero figure was tracked (e.g. it was manually cleared).
@@ -1446,7 +1446,7 @@
     queueBubble(window.FinPetDialogue.getCarryoverMessage(rec.amount), 500);
   }
 
-  // A lighter, more frequent cousin of the weekly recap — checked once per
+  // A lighter, more frequent cousin of the weekly recap - checked once per
   // session on the first dashboard visit, comparing to the last time the
   // app was actually opened rather than waiting for a new calendar week.
   var LS_LAST_SEEN = 'finPetLastSeenAt';
@@ -1459,7 +1459,7 @@
     try{ prev = parseInt(localStorage.getItem(LS_LAST_SEEN)||'0',10)||0; }catch(e){}
     var now = Date.now();
     try{ localStorage.setItem(LS_LAST_SEEN, String(now)); }catch(e){}
-    if(!prev) return; // first time we've tracked this — nothing to compare yet
+    if(!prev) return; // first time we've tracked this - nothing to compare yet
     var gapDays = Math.floor((now-prev)/86400000);
     if(gapDays<1 || gapDays>30) return; // too soon, or too long for a "since last here" delta to still be the right format
     var msg = safe(function(){ return window.FinPetDialogue.getSinceLastHereMessage(gapDays, safeCtx()); }, null);
@@ -1489,8 +1489,8 @@
      either nothing (a partial goal top-up, a partial loan payment) or the
      same wordless happy-bounce as everything else on the GOOD_NEWS_PREFIXES
      list (an outsized expense). Each of these reads the app's own state
-     directly — via getAppState(), the same accessor recordGoalProgress/
-     checkStaleGoals already use — rather than assuming an event's `detail`
+     directly - via getAppState(), the same accessor recordGoalProgress/
+     checkStaleGoals already use - rather than assuming an event's `detail`
      carries a field this file can't verify from here (no index.html to
      check against). Each keeps its own small snapshot in localStorage so it
      can diff "before" vs "after" without needing the event payload to
@@ -1547,7 +1547,7 @@
     var prevSaved = snap[goal.id];
     snap[goal.id] = goal.saved;
     try{ localStorage.setItem(LS_GOAL_SAVED_SNAP, JSON.stringify(snap)); }catch(e){}
-    if(prevSaved===undefined) return; // first time tracking this goal — nothing to diff against yet
+    if(prevSaved===undefined) return; // first time tracking this goal - nothing to diff against yet
     var added = goal.saved - prevSaved;
     if(!(added>0)) return;
     var pct = Math.round((goal.saved/goal.target)*100);
@@ -1563,7 +1563,7 @@
     queueBubble(window.FinPetDialogue.getGoalProgressMessage(goal, added, level), 900);
   }
 
-  // Loans: react to a partial payment (not settled — that's its own event)
+  // Loans: react to a partial payment (not settled - that's its own event)
   // with the actual amount just paid down. Same snapshot approach as goals,
   // since state.loans carries no "amount before this change" of its own.
   function getLoanAmountSnapMap(){
@@ -1595,7 +1595,7 @@
   /* ---------- streak-at-risk evening nudge + Notification API (item 13, 16) ----------
      Best-effort only: without a push server, a Notification can only be
      shown while this tab's process is still alive somewhere (open but
-     backgrounded) — not after the browser/app has actually been closed.
+     backgrounded) - not after the browser/app has actually been closed.
      True "reaches you even when FINUITY isn't open" delivery needs a
      server-side Push API integration, which is out of scope without a
      backend. This still covers the common case (tab open, phone locked or
@@ -1626,7 +1626,7 @@
     var todayKey = safe(function(){ return window.today(); }, new Date().toDateString());
     if(localStorage.getItem(LS_STREAK_RISK)===todayKey) return;
     try{ localStorage.setItem(LS_STREAK_RISK, todayKey); }catch(e){}
-    notifyIfHidden("Don't break the streak", "Your "+ctx.streakDays+"-day logging streak is still alive — log today's expenses before it resets.", 'streak-risk');
+    notifyIfHidden("Don't break the streak", "Your "+ctx.streakDays+"-day logging streak is still alive - log today's expenses before it resets.", 'streak-risk');
     if(!canShowAuto('milestone')) return;
     markShown('milestone');
     queueBubble(window.FinPetDialogue.getStreakRiskMessage(ctx), 500);
@@ -1645,7 +1645,7 @@
   }
 
   // Runs the checks that need to fire even if the person never leaves the
-  // dashboard open — evening streak risk and a next-day loan due date —
+  // dashboard open - evening streak risk and a next-day loan due date - 
   // on a light interval plus whenever the tab becomes visible again.
   function runPeriodicChecks(){
     var ctx = safeCtx();
@@ -1661,8 +1661,8 @@
     pet.idleTimer = setTimeout(function(){
       if(document.visibilityState!=='visible') return;
       var s = getSettings();
-      // Mix in a financial tip some of the time instead of plain small talk —
-      // idle moments are a low-friction place to surface a bit of knowledge —
+      // Mix in a financial tip some of the time instead of plain small talk - 
+      // idle moments are a low-friction place to surface a bit of knowledge - 
       // unless the person's muted idle tips specifically.
       if(Math.random()<CFG.VERSE_CHANCE){
         // a random Bible verse (same pool as the "Word for Today" splash)
@@ -1756,7 +1756,7 @@
             reactToToast(msg, type);
             return;
           }
-          // Whitelist-gated, not "anything that isn't an error" — see
+          // Whitelist-gated, not "anything that isn't an error" - see
           // GOOD_NEWS_PREFIXES above. A few non-error toasts (a recurring
           // expense not yet logged, a loan due soon) are cautionary, not
           // something to bounce happily about.
@@ -1781,7 +1781,7 @@
     }
 
     // Track goal-progress timestamps (for stale-goal nudges) by wrapping
-    // the app's own goal functions — no index.html changes required.
+    // the app's own goal functions - no index.html changes required.
     if(typeof window.addToGoal === 'function' && !window.addToGoal.__finWrapped){
       var origAddToGoal = window.addToGoal;
       var wrapped4 = function(id){
@@ -1811,7 +1811,7 @@
 
   // Listens for the custom events index.html dispatches from the handful
   // of places that matter (see the fin:* CustomEvent calls there) instead
-  // of parsing toast copy for substrings — a toast string can be reworded
+  // of parsing toast copy for substrings - a toast string can be reworded
   // freely now without silently breaking any of this.
   function wireFinEvents(){
     if(window.__finEventsWired) return;
@@ -1877,7 +1877,7 @@
           markShown('milestone');
           // A loan paid down to exactly zero via the deduct flow reads
           // slightly differently ("fully paid off") than one settled
-          // through the modal ("settled") — detail.wallet is only present
+          // through the modal ("settled") - detail.wallet is only present
           // on the modal path, which is the cue used to pick the phrasing.
           queueBubble(window.FinPetDialogue.getLoanSettledMessage(d.loan, !d.wallet), 900);
         }
@@ -1897,7 +1897,7 @@
   }
 
   function runFirstAppearance(){
-    // The very first bubble is just the dashboard's onboarding step —
+    // The very first bubble is just the dashboard's onboarding step - 
     // onModuleEnter handles showing it and tracking that it's been shown.
     onModuleEnter('dashboard');
   }
@@ -1928,7 +1928,7 @@
       var isErr = kind.indexOf('err-')===0;
       var now = Date.now();
       // An error toast and a follow-up "opened" reaction can land together
-      // (e.g. Settle with no wallets) — let the error win.
+      // (e.g. Settle with no wallets) - let the error win.
       if(!isErr && pet.reactErrAt && now-pet.reactErrAt<400) return;
       var r = dlg.getReaction(kind, data||{}, safeCtx(), s.tone);
       if(!r) return;
@@ -2068,7 +2068,7 @@
     setTimeout(function(){ applyTrendClass(safeCtx()); }, 300);
 
     // Streak-risk / loan-due-tomorrow checks need to run even if the
-    // person never revisits the dashboard today — a light interval plus a
+    // person never revisits the dashboard today - a light interval plus a
     // check on regaining visibility covers that without any server.
     setTimeout(runPeriodicChecks, 4000);
     setInterval(function(){
