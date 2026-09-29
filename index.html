@@ -2722,6 +2722,44 @@ function showConnectionErrorScreen(){
   </div>`;
 }
 const state=loadState();
+function finStock(el){finDrawStock(el);if(!el._ro&&window.ResizeObserver){el._ro=new ResizeObserver(function(){var w=el.clientWidth;if(w&&w!==el._w)finDrawStock(el)});el._ro.observe(el)}}
+function finBuckets(tf){var iso=function(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')},ev=[],ok=/^\d{4}-\d\d-\d\d$/;
+ (state.income||[]).forEach(function(e){var d=String(e.dateAdded||'').slice(0,10);if(!ok.test(d)){var m=new Date(e.month+' 1, '+e.year);if(isNaN(m))return;d=iso(m)}ev.push([d,1,+e.amount||0])});
+ (state.expenses||[]).forEach(function(e){var d=String(e.date||'').slice(0,10);if(ok.test(d))ev.push([d,0,+e.amount||0])});
+ if(!ev.length)return{b:[],tf:'D'};ev.sort(function(a,b){return a[0]<b[0]?-1:1});
+ var span=(new Date(ev[ev.length-1][0])-new Date(ev[0][0]))/864e5;tf=tf||(span<=45?'D':span<=250?'W':'M');
+ var key=function(d){if(tf==='D')return d;if(tf==='M')return d.slice(0,7)+'-01';var t=new Date(d+'T00:00:00');t.setDate(t.getDate()-(t.getDay()+6)%7);return iso(t)},map={};
+ ev.forEach(function(e){var k=key(e[0]),b=map[k]||(map[k]={k:k,i:0,x:0});if(e[1])b.i+=e[2];else b.x+=e[2]});
+ var out=[],t=new Date(key(ev[0][0])+'T00:00:00'),end=key(ev[ev.length-1][0]),g=0;
+ while(iso(t)<=end&&g++<800){var k=iso(t);out.push(map[k]||{k:k,i:0,x:0});if(tf==='D')t.setDate(t.getDate()+1);else if(tf==='W')t.setDate(t.getDate()+7);else t.setMonth(t.getMonth()+1)}
+ return{b:out,tf:tf}}
+function finDrawStock(el){var D=finBuckets(el._tf),tf=D.tf,W=el._w=el.clientWidth||320,H=210,L=46,R=20,T=14,B=22,sy=window.FinX?FinX.sym():'₱',BL='#5b7be0',RD='#f04848';
+ if(!D.b.length){el.innerHTML='<div class="empty"><div class="empty-sub">Add income and expenses to see your chart.</div></div>';return}
+ var pw=W-L-R,bs=D.b.slice(-Math.max(7,Math.floor(pw/12))),n=bs.length,mx=Math.max.apply(null,[1].concat(bs.map(function(c){return Math.max(c.i,c.x)}))),top=mx*1.1;
+ var x=function(i){return n<2?L+pw/2:L+i*pw/(n-1)},y=function(v){return T+(H-T-B)*(1-v/top)},cp=function(v){return sy+(v>=1e6?(v/1e6).toFixed(1)+'M':v>=1e4?Math.round(v/1e3)+'k':v>=1e3?(v/1e3).toFixed(1)+'k':Math.round(v))};
+ var lab=function(k,long){var t=new Date(k+'T00:00:00');return tf==='M'?t.toLocaleDateString(undefined,long?{month:'long',year:'numeric'}:{month:'short',year:'2-digit'}):(tf==='W'&&long?'Week of ':'')+t.toLocaleDateString(undefined,{month:'short',day:'numeric'})};
+ var g='<defs><pattern id="fsg" width="16" height="16" patternUnits="userSpaceOnUse"><path d="M16 0H0V16" fill="none" stroke="rgba(120,160,220,.13)"/></pattern></defs><rect x="0" y="0" width="'+W+'" height="'+H+'" fill="url(#fsg)"/>',i,every=Math.max(1,Math.ceil(n/Math.max(2,Math.floor(pw/56))));
+ for(i=0;i<=4;i++){var v=top*i/4,yy=y(v).toFixed(1);g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+yy+'" y2="'+yy+'" stroke="rgba(120,160,220,.22)"/><text x="'+(L-6)+'" y="'+(+yy+3)+'" text-anchor="end" font-size="9" fill="var(--muted)">'+cp(v)+'</text>'}
+ bs.forEach(function(c,j){if((n-1-j)%every===0)g+='<text x="'+x(j).toFixed(1)+'" y="'+(H-7)+'" text-anchor="middle" font-size="9" fill="var(--muted)">'+lab(c.k)+'</text>'});
+ var ln=function(f,col){var p=bs.map(function(c,j){return x(j).toFixed(1)+','+y(c[f]).toFixed(1)}),s='';
+  if(n<2)return '<circle cx="'+x(0)+'" cy="'+y(bs[0][f])+'" r="5" fill="'+col+'"/>';
+  var ax=x(n-1),ay=y(bs[n-1][f]),bx=x(n-2),by=y(bs[n-2][f]),a=Math.atan2(ay-by,ax-bx),tx=ax+7*Math.cos(a),ty=ay+7*Math.sin(a);
+  return '<polyline points="'+p.join(' ')+'" fill="none" stroke="'+col+'" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/><polygon points="'+tx.toFixed(1)+','+ty.toFixed(1)+' '+(tx-13*Math.cos(a-.5)).toFixed(1)+','+(ty-13*Math.sin(a-.5)).toFixed(1)+' '+(tx-13*Math.cos(a+.5)).toFixed(1)+','+(ty-13*Math.sin(a+.5)).toFixed(1)+'" fill="'+col+'"/>'};
+ var bt=[['D','Day'],['W','Week'],['M','Month']].map(function(b){var on=tf===b[0];return '<button data-t="'+b[0]+'" title="'+b[1]+'s" style="border:1px solid '+(on?'var(--accent)':'var(--border2)')+';background:'+(on?'var(--accent-bg)':'transparent')+';color:'+(on?'var(--accent)':'var(--muted)')+';font:700 10px var(--font-b);padding:3px 9px;border-radius:6px;cursor:pointer">'+b[0]+'</button>'}).join('');
+ var sum=function(f){return bs.reduce(function(s,c){return s+c[f]},0)},head=function(c){var I=c?c.i:sum('i'),X=c?c.x:sum('x');return '<span style="font-size:11px;color:var(--muted)">'+(c?lab(c.k,1):'Whole chart')+'</span><div style="display:flex;gap:14px;flex-wrap:wrap"><span style="font:700 15px var(--font-d);color:'+BL+'">&#9650; '+fmt(I)+'</span><span style="font:700 15px var(--font-d);color:'+RD+'">&#9660; '+fmt(X)+'</span></div>'};
+ el.innerHTML='<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;flex-wrap:wrap"><div id="fs-head" style="min-height:38px">'+head()+'</div><span style="margin-left:auto;display:flex;gap:4px">'+bt+'</span></div><div style="display:flex;gap:14px;font-size:11px;color:var(--muted);margin-bottom:6px"><span><b style="color:'+BL+'">&#9472;&#9472;</b> Income</span><span><b style="color:'+RD+'">&#9472;&#9472;</b> Expenses</span></div>'
+ +'<div style="position:relative;background:var(--surface2);border:1px solid var(--border);border-radius:10px;overflow:hidden"><svg width="'+W+'" height="'+H+'" style="display:block;touch-action:pan-y;user-select:none">'+g+ln('x',RD)+ln('i',BL)
+ +'<line id="fs-x" y1="'+T+'" y2="'+(H-B)+'" stroke="var(--muted)" stroke-dasharray="3 3" style="display:none"/><circle id="fs-di" r="5" fill="'+BL+'" stroke="var(--surface2)" stroke-width="2" style="display:none"/><circle id="fs-de" r="5" fill="'+RD+'" stroke="var(--surface2)" stroke-width="2" style="display:none"/><rect id="fs-hit" x="'+L+'" y="0" width="'+pw+'" height="'+H+'" fill="transparent"/></svg><div id="fs-tip" style="display:none;position:absolute;top:6px;pointer-events:none;background:var(--surface3);border:1px solid var(--border2);border-radius:10px;padding:8px 10px;font-size:11.5px;line-height:1.6;box-shadow:var(--shadow);white-space:nowrap;z-index:3"></div></div>';
+ el.querySelectorAll('button[data-t]').forEach(function(b){b.onclick=function(){el._tf=b.dataset.t;finDrawStock(el)}});
+ var q=function(s){return el.querySelector(s)},hit=q('#fs-hit'),tip=q('#fs-tip'),hd=q('#fs-head');
+ var show=function(e){var bx=hit.getBoundingClientRect(),j=n<2?0:Math.max(0,Math.min(n-1,Math.round((e.clientX-bx.left)/bx.width*(n-1)))),c=bs[j],px=x(j),net=c.i-c.x;
+  q('#fs-x').setAttribute('x1',px);q('#fs-x').setAttribute('x2',px);q('#fs-x').style.display='';hd.innerHTML=head(c);
+  [['#fs-di',c.i],['#fs-de',c.x]].forEach(function(a){var d=q(a[0]);d.setAttribute('cx',px);d.setAttribute('cy',y(a[1]));d.style.display=''});
+  var row=function(a,b,col){return '<div>'+a+' <b style="float:right;margin-left:14px;color:'+col+'">'+b+'</b></div>'};
+  tip.innerHTML='<div style="font-weight:700;margin-bottom:2px">'+lab(c.k,1)+'</div>'+row('Income',fmt(c.i),BL)+row('Expenses',fmt(c.x),RD)+'<div style="border-top:1px solid var(--border2);margin-top:3px;padding-top:2px">'+row('Net',fmt(net),net>=0?BL:RD)+'</div>';
+  tip.style.display='block';var tw=tip.offsetWidth;tip.style.left=(px+tw+18>W?Math.max(0,px-tw-10):px+12)+'px'};
+ var hide=function(){['#fs-x','#fs-di','#fs-de','#fs-tip'].forEach(function(s){q(s).style.display='none'});hd.innerHTML=head()};
+ hit.addEventListener('pointermove',show);hit.addEventListener('pointerdown',show);hit.addEventListener('pointerleave',function(e){if(e.pointerType==='mouse')hide()})}
 function fmt(n){return window.FinX?FinX.money(n):'₱'+Number(n).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});}
 const EYE_ON_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
 const EYE_OFF_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0112 20c-7 0-11-8-11-8a21.8 21.8 0 015.06-6.06M9.9 4.24A10.94 10.94 0 0112 4c7 0 11 8 11 8a21.77 21.77 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
@@ -2957,39 +2995,7 @@ function renderDash(){
   const allKeys=[...new Set([...Object.keys(incByKey),...Object.keys(expByKey)])].sort();
   const curKey=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
   if(allKeys.length){
-    const allVals=[...Object.values(incByKey),...Object.values(expByKey)];
-    const maxV=Math.max(...allVals,1);
-    const bars=allKeys.map(k=>{
-      const meta=keyMeta[k];
-      const iv=incByKey[k]||0,ev=expByKey[k]||0;
-      const ih=Math.max(Math.round((iv/maxV)*80),2);
-      const eh=Math.max(Math.round((ev/maxV)*80),2);
-      const isCur=k===curKey;
-      const shortMo=meta.month.slice(0,3);
-      const lbl=allKeys.length>8?shortMo:`${shortMo} '${String(meta.year).slice(2)}`;
-      return `<div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:0" class="chart-col">
-        <div style="display:flex;align-items:flex-end;gap:2px;height:80px;width:100%;justify-content:center">
-          <div class="bc-bar inc${isCur?' cur':''}" style="height:${ih}px;flex:1;position:relative;cursor:default" title="Income ${meta.month} ${meta.year}: ${fmt(iv)}">
-            ${isCur&&iv>0?`<div style="position:absolute;bottom:100%;left:50%;transform:translateX(-50%);font-size:8.5px;color:var(--accent);white-space:nowrap;margin-bottom:2px;font-weight:600">${fmt(iv)}</div>`:''}
-          </div>
-          <div class="bc-bar exp${isCur?' cur':''}" style="height:${eh}px;flex:1;position:relative;cursor:default" title="Expenses ${meta.month} ${meta.year}: ${fmt(ev)}">
-            ${isCur&&ev>0?`<div style="position:absolute;bottom:100%;left:50%;transform:translateX(-50%);font-size:8.5px;color:var(--red);white-space:nowrap;margin-bottom:2px;font-weight:600">${fmt(ev)}</div>`:''}
-          </div>
-        </div>
-        <div style="font-size:9px;color:${isCur?'var(--accent)':'var(--muted2)'};text-align:center;margin-top:5px;font-weight:${isCur?'700':'400'};white-space:nowrap;overflow:hidden;width:100%;text-overflow:clip">${lbl}</div>
-      </div>`;
-    }).join('');
-    const yLabels=[0,0.25,0.5,0.75,1].reverse().map(p=>`<div style="font-size:9px;color:var(--muted2);line-height:1;text-align:right">${fmt(maxV*p)}</div>`).join('');
-    document.getElementById('dash-chart').innerHTML=`
-      <div style="display:flex;gap:14px;margin-bottom:12px;flex-wrap:wrap">
-        <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:2px;background:rgba(var(--accent-rgb),.35)"></div>Income</div>
-        <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:2px;background:rgba(255,95,95,.35)"></div>Expenses</div>
-        <div style="margin-left:auto;font-size:11px;color:var(--muted2)">${allKeys.length} month${allKeys.length!==1?'s':''}</div>
-      </div>
-      <div style="display:flex;gap:8px;align-items:stretch">
-        <div style="display:flex;flex-direction:column;justify-content:space-between;height:80px;padding-right:4px">${yLabels}</div>
-        <div style="flex:1;display:flex;gap:3px;align-items:flex-end;overflow-x:auto;padding-bottom:2px" id="chart-bars-inner">${bars}</div>
-      </div>`;
+    finStock(document.getElementById('dash-chart'));
   } else {
     document.getElementById('dash-chart').innerHTML='<div class="empty"><div class="empty-icon">📊</div><div class="empty-title">No data yet</div><div class="empty-sub">Add income and expenses to see your chart.</div></div>';
   }
