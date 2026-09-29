@@ -1665,7 +1665,7 @@ label.fa-row{cursor:pointer}
       <div class="page-sub">Log what you spend, categorise it, and track your sources</div>
     </div>
     <div class="card" data-tour="expense-form">
-      <div class="card-hd"><div class="card-title">Add Expense</div><button class="btn btn-ghost btn-sm" id="scan-receipt-btn" onclick="scanReceiptStart()">📷 Scan Receipt</button></div>
+      <div class="card-hd"><div class="card-title">Add Expense</div><button class="btn btn-ghost btn-sm" id="scan-receipt-btn" data-tour="scan-receipt" onclick="scanReceiptStart()">📷 Scan Receipt</button></div>
       <input type="file" id="receipt-file" accept="image/*" style="display:none" onchange="scanReceiptFile(this)">
       <div id="receipt-banner" style="display:none;font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:12px;padding:10px 12px;background:var(--accent-bg);border:1px solid rgba(var(--accent-rgb),.18);border-radius:var(--r-xs)"></div>
       <div class="form-row">
@@ -6264,7 +6264,7 @@ function nudge(){const a=cfg(),t=today();if(a.ack===t||a.nudged===t||state.expen
   const last=state.expenses.reduce((m,e)=>e.date>m?e.date:m,'');if(!last)return false;
   const days=Math.floor((pd(t)-pd(last))/864e5);if(days<3)return false;
   a.nudged=t;save();
-  snack('Nothing logged for '+days+' days. Anything to add?',[['Quick log',openQuick],['Nothing new',()=>{a.ack=t;save();}]],12000);return true;}
+  snack('Nothing logged for '+days+' days. Anything to add?',[['Quick Log Expense',openQuick],['Nothing new',()=>{a.ack=t;save();}]],12000);return true;}
 function tick(){if(blocked()||!state||!state.expenses)return;autoRun()||loanDue()||nudge();}
 
 /* ── Frequent chips, repeat, quick-log ── */
@@ -6285,7 +6285,7 @@ function openQuick(){let q=document.getElementById('fa-quick');
     q.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3000;display:none;align-items:safe center;justify-content:safe center;padding:20px;overflow-y:auto';
     const cats=[...document.getElementById('exp-cat').options].filter(o=>o.value!=='loan-payment').map(o=>'<option value="'+o.value+'">'+o.textContent+'</option>').join('');
     q.innerHTML='<div style="background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:22px;max-width:380px;width:100%;box-shadow:var(--shadow-lg)">'
-      +'<div class="card-title" style="margin-bottom:10px">⚡ Quick log</div><div id="fa-qchips" class="fa-chips"></div>'
+      +'<div class="card-title" style="margin-bottom:10px">⚡ Quick Log Expense</div><div id="fa-qchips" class="fa-chips"></div>'
       +'<input type="text" id="fa-q-text" autocomplete="off" placeholder="burger 600 gcash" style="width:100%;font-size:16px;padding:12px 14px">'
       +'<div style="font-size:11px;color:var(--muted2);margin:6px 2px 0">Just type it like a text: “taxi 500 cash on hand”, “rode a taxi worth 500 using my gcash”, “milk tea 120 kahapon”.</div>'
       +'<div id="fa-q-prev" style="margin:12px 2px;font-size:13px;min-height:20px;color:var(--muted)"></div>'
@@ -6490,7 +6490,7 @@ window.render=function(){_render.apply(this,arguments);
     dl.innerHTML=[...new Set(state.expenses.slice(-200).map(e=>e.desc.trim()).filter(x=>x&&!/→/.test(x)))].slice(-60).map(x=>'<option value="'+escAttr(x)+'">').join('');
     const f=document.getElementById('fa-fab');if(f)f.style.display=blocked()?'none':'block';
   }catch(e){console.error('automation render',e);}};
-const fab=document.createElement('button');fab.id='fa-fab';fab.title='Quick log';fab.textContent='+';fab.onclick=openQuick;fab.style.display='none';document.body.appendChild(fab);
+const fab=document.createElement('button');fab.id='fa-fab';fab.title='Quick Log Expense';fab.setAttribute('aria-label','Quick Log Expense');fab.setAttribute('data-tour','quick-log');fab.textContent='+';fab.onclick=openQuick;fab.style.display='none';document.body.appendChild(fab);
 setTimeout(()=>{window.render();tick();},3500);
 setInterval(()=>{const f=document.getElementById('fa-fab');if(f)f.style.display=blocked()?'none':'block';tick();},60000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(tick,800);});
@@ -6529,10 +6529,10 @@ function pop(btn,items,now,pickFn){var old=document.getElementById('fx-pop');if(
  items.forEach(function(it){var b=document.createElement('button');b.textContent=(it[0]===now?'> ':'   ')+it[1];b.style.cssText='display:block;width:100%;text-align:left;background:'+(it[0]===now?'var(--accent-bg)':'transparent')+';color:var(--text);border:0;padding:7px 9px;cursor:pointer;font:inherit;white-space:pre';b.onclick=function(){p.remove();pickFn(it[0])};p.appendChild(b)});
  document.body.appendChild(p);setTimeout(function(){document.addEventListener('click',function h(e){if(!p.contains(e.target)&&!btn.contains(e.target)){p.remove();document.removeEventListener('click',h)}})},0)}
 function mount(){var bar=document.querySelector('.tb-right');if(!bar||document.getElementById('fx-lang'))return;
- var g=document.createElement('button');g.id='fx-lang';g.className='btn btn-ghost btn-sm';g.title='Language';g.setAttribute('aria-label','Language');
+ var g=document.createElement('button');g.id='fx-lang';g.setAttribute('data-tour','language-switch');g.className='btn btn-ghost btn-sm';g.title='Language';g.setAttribute('aria-label','Language');
  g.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>';
  g.onclick=function(){pop(g,Object.keys(LG).map(function(k){return[k,LG[k]]}),lang,function(k){lang=k;L('finLang',k);apply(document.body)})};
- var c=document.createElement('button');c.id='fx-cur';c.className='btn btn-ghost btn-sm';c.title='Currency';c.setAttribute('aria-label','Currency');c.style.fontWeight='700';c.textContent=sym();
+ var c=document.createElement('button');c.id='fx-cur';c.setAttribute('data-tour','currency-switch');c.className='btn btn-ghost btn-sm';c.title='Currency';c.setAttribute('aria-label','Currency');c.style.fontWeight='700';c.textContent=sym();
  c.onclick=function(){pop(c,Object.keys(CUR).map(function(k){return[k,CUR[k][0]+'  '+k+' · '+CUR[k][3]]}),cur,function(k){cur=k;L('finCur',k);c.textContent=sym();rerender();try{toast('Currency set to '+k+'. Only the symbol changes, your numbers stay the same.')}catch(e){}})};
  bar.insertBefore(c,bar.firstChild);bar.insertBefore(g,bar.firstChild);apply(document.body)}
 /* ---------- Fin's Data Bank ---------- */
