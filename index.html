@@ -1529,7 +1529,7 @@ label.fa-row{cursor:pointer}
         <div class="hero-label">Total Balance</div>
         <button type="button" class="eye-btn" id="eye-hero" onclick="toggleHideBalances()" title="Show/hide balances" aria-label="Show or hide balances"></button>
       </div>
-      <div class="hero-amount"><span class="hero-peso">₱</span><span id="hero-bal">0.00</span></div>
+      <div class="hero-amount"><span class="hero-peso cur-sym">₱</span><span id="hero-bal">0.00</span></div>
       <div class="hero-sub">Across all wallets · updated today</div>
       <div class="hero-wallets" id="hero-wallets-inner"></div>
     </div>
@@ -1590,7 +1590,7 @@ label.fa-row{cursor:pointer}
         <div class="form-group"><label>Type</label>
           <select id="inc-type"><option>Salary</option><option>Bonus</option><option>Loan Repayment</option><option>Other</option></select>
         </div>
-        <div class="form-group"><label>Amount (₱)</label><input type="number" id="inc-amount" placeholder="0.00" min="0" step="0.01"></div>
+        <div class="form-group"><label>Amount (<span class="cur-sym">₱</span>)</label><input type="number" id="inc-amount" placeholder="0.00" min="0" step="0.01"></div>
       </div>
       <div class="form-row">
         <div class="form-group"><label>Deposit to Wallet</label><select id="inc-wallet"></select></div>
@@ -1637,7 +1637,7 @@ label.fa-row{cursor:pointer}
           <input type="text" id="new-wallet-name" placeholder="e.g. Bank, Savings, Palengke..." maxlength="24">
         </div>
         <div class="form-group">
-          <label>Starting Balance (₱)</label>
+          <label>Starting Balance (<span class="cur-sym">₱</span>)</label>
           <input type="number" id="new-wallet-bal" placeholder="0.00" min="0" step="0.01">
         </div>
         <div class="form-group" style="display:flex;align-items:flex-end">
@@ -1670,7 +1670,7 @@ label.fa-row{cursor:pointer}
       <div id="receipt-banner" style="display:none;font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:12px;padding:10px 12px;background:var(--accent-bg);border:1px solid rgba(var(--accent-rgb),.18);border-radius:var(--r-xs)"></div>
       <div class="form-row">
         <div class="form-group"><label>Description</label><input type="text" id="exp-desc" placeholder="e.g. Jollibee, Grab, Shopee..."></div>
-        <div class="form-group"><label>Amount (₱)</label><input type="number" id="exp-amount" placeholder="0.00" min="0" step="0.01"></div>
+        <div class="form-group"><label>Amount (<span class="cur-sym">₱</span>)</label><input type="number" id="exp-amount" placeholder="0.00" min="0" step="0.01"></div>
       </div>
       <div class="form-row-3">
         <div class="form-group"><label>Category</label>
@@ -1752,7 +1752,7 @@ label.fa-row{cursor:pointer}
       <div class="card-hd"><div class="card-title">Add Loan</div></div>
       <div class="form-row">
         <div class="form-group"><label>Person</label><input type="text" id="loan-name" placeholder="Name"></div>
-        <div class="form-group"><label>Amount (₱)</label><input type="number" id="loan-amount" placeholder="0.00" min="0" step="0.01"></div>
+        <div class="form-group"><label>Amount (<span class="cur-sym">₱</span>)</label><input type="number" id="loan-amount" placeholder="0.00" min="0" step="0.01"></div>
       </div>
       <div class="form-row">
         <div class="form-group"><label>Type</label>
@@ -1791,7 +1791,7 @@ label.fa-row{cursor:pointer}
     <div class="card" data-tour="budget-card">
       <div class="card-hd"><div class="card-title">Monthly Spend Limit</div></div>
       <div class="form-row">
-        <div class="form-group"><label>Budget Limit (₱ / month)</label><input type="number" id="budget-input" placeholder="e.g. 15000" min="0"></div>
+        <div class="form-group"><label>Budget Limit (<span class="cur-sym">₱</span> / month)</label><input type="number" id="budget-input" placeholder="e.g. 15000" min="0"></div>
         <div class="form-group" style="display:flex;align-items:flex-end">
           <button class="btn btn-primary" style="width:100%" onclick="saveBudget()">Save Budget</button>
         </div>
@@ -1804,10 +1804,10 @@ label.fa-row{cursor:pointer}
       <div class="card-hd"><div class="card-title">Add Savings Goal</div></div>
       <div class="form-row">
         <div class="form-group"><label>Goal Name</label><input type="text" id="goal-name" placeholder="e.g. New Laptop, Emergency Fund..."></div>
-        <div class="form-group"><label>Target Amount (₱)</label><input type="number" id="goal-target" placeholder="0.00" min="0" step="0.01"></div>
+        <div class="form-group"><label>Target Amount (<span class="cur-sym">₱</span>)</label><input type="number" id="goal-target" placeholder="0.00" min="0" step="0.01"></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>Amount Saved So Far (₱)</label><input type="number" id="goal-saved" placeholder="0.00" min="0" step="0.01"></div>
+        <div class="form-group"><label>Amount Saved So Far (<span class="cur-sym">₱</span>)</label><input type="number" id="goal-saved" placeholder="0.00" min="0" step="0.01"></div>
         <div class="form-group"><label>Note (optional)</label><input type="text" id="goal-note" placeholder="Why this goal?"></div>
       </div>
       <button class="btn btn-primary" style="width:100%;padding:13px 20px;font-size:14.5px;margin-top:4px" onclick="addGoal()">
@@ -2720,10 +2720,10 @@ function showConnectionErrorScreen(){
   </div>`;
 }
 const state=loadState();
-function fmt(n){return '₱'+Number(n).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmt(n){return window.FinX?FinX.money(n):'₱'+Number(n).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});}
 const EYE_ON_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
 const EYE_OFF_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0112 20c-7 0-11-8-11-8a21.8 21.8 0 015.06-6.06M9.9 4.24A10.94 10.94 0 0112 4c7 0 11 8 11 8a21.77 21.77 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
-function fmtBal(n){return state.hideBalances?'₱ ••••••':fmt(n);}
+function fmtBal(n){return state.hideBalances?((window.FinX?FinX.sym():'₱')+' ••••••'):fmt(n);}
 function toggleHideBalances(){state.hideBalances=!state.hideBalances;save();render();}
 function syncEyeButtons(){
   const hidden=!!state.hideBalances;
@@ -3314,7 +3314,7 @@ function renderBalances(){
   if(nwRows){
     nwRows.innerHTML=wallets.map(w=>`<div class="row"><span class="lbl">${esc(w.label)}</span><span class="val ap">${fmtBal(w.balance)}</span></div>`).join('');
   }
-  document.getElementById('nw-total').textContent=state.hideBalances?'₱ ••••••':fmt(total);
+  document.getElementById('nw-total').textContent=state.hideBalances?((window.FinX?FinX.sym():'₱')+' ••••••'):fmt(total);
   // update expense source dropdown
   const expSrc=document.getElementById('exp-source');
   if(expSrc){
@@ -4285,7 +4285,7 @@ function buildReportHTML(){
   filteredExp.forEach(e=>{const d=new Date(e.date);if(isNaN(d))return;const month=MONTH_ORDER[d.getMonth()];const year=d.getFullYear();const k=`${year}-${month}`;if(!seen.has(k)){seen.add(k);monthYearKeys.push({year,month});}});
   monthYearKeys.sort((a,b)=>a.year!==b.year?a.year-b.year:MONTH_ORDER.indexOf(a.month)-MONTH_ORDER.indexOf(b.month));
 
-  const fp=n=>'₱'+Number(n).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const fp=n=>fmt(n);
 
   const monthBlocks=monthYearKeys.map(({year,month:m})=>{
     const mInc=filteredIncome.filter(i=>i.month===m&&(i.year||2026)===year);
@@ -5472,7 +5472,7 @@ function safeToSpendHTML(curExp){
   const left=allowance-spentToday;
   const over=left<0;
   const clr=over?'var(--red)':left<allowance*0.25?'var(--amber)':'var(--accent)';
-  const big=state.hideBalances?'₱ ••••••':fmt(Math.abs(left));
+  const big=state.hideBalances?((window.FinX?FinX.sym():'₱')+' ••••••'):fmt(Math.abs(left));
   return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;margin-bottom:12px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r-sm)">
     <div><div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600">${over?'Over today\'s limit by':'Safe to spend today'}</div>
     <div style="font-family:var(--font-d);font-size:22px;font-weight:700;color:${clr}">${big}</div></div>
@@ -5981,7 +5981,7 @@ window.logRecurring = function(templateId){
     <input type="hidden" id="edit-loan-id">
     <div class="form-row">
       <div class="form-group"><label>Person</label><input type="text" id="edit-loan-name" placeholder="Name"></div>
-      <div class="form-group"><label>Amount (₱)</label><input type="number" id="edit-loan-amount" placeholder="0.00" min="0" step="0.01"></div>
+      <div class="form-group"><label>Amount (<span class="cur-sym">₱</span>)</label><input type="number" id="edit-loan-amount" placeholder="0.00" min="0" step="0.01"></div>
     </div>
     <div class="form-row">
       <div class="form-group"><label>Type</label>
@@ -6034,7 +6034,7 @@ window.logRecurring = function(templateId){
       <div class="form-group"><label>Type</label>
         <select id="edit-inc-type"><option>Salary</option><option>Bonus</option><option>Loan Repayment</option><option>Other</option></select>
       </div>
-      <div class="form-group"><label>Amount (₱)</label><input type="number" id="edit-inc-amount" placeholder="0.00" min="0" step="0.01"></div>
+      <div class="form-group"><label>Amount (<span class="cur-sym">₱</span>)</label><input type="number" id="edit-inc-amount" placeholder="0.00" min="0" step="0.01"></div>
     </div>
     <div class="form-row">
       <div class="form-group"><label>Deposit to Wallet</label><select id="edit-inc-wallet"></select></div>
@@ -6054,7 +6054,7 @@ window.logRecurring = function(templateId){
     <input type="hidden" id="edit-exp-id">
     <div class="form-row">
       <div class="form-group"><label>Description</label><input type="text" id="edit-exp-desc" placeholder="Description"></div>
-      <div class="form-group"><label>Amount (₱)</label><input type="number" id="edit-exp-amount" placeholder="0.00" min="0" step="0.01"></div>
+      <div class="form-group"><label>Amount (<span class="cur-sym">₱</span>)</label><input type="number" id="edit-exp-amount" placeholder="0.00" min="0" step="0.01"></div>
     </div>
     <div class="form-row">
       <div class="form-group"><label>Category</label>
@@ -6081,8 +6081,8 @@ window.logRecurring = function(templateId){
     <input type="hidden" id="edit-goal-id">
     <div class="form-group"><label>Goal Name</label><input type="text" id="edit-goal-name" placeholder="Goal name"></div>
     <div class="form-row">
-      <div class="form-group"><label>Target Amount (₱)</label><input type="number" id="edit-goal-target" placeholder="0.00" min="0" step="0.01"></div>
-      <div class="form-group"><label>Amount Saved (₱)</label><input type="number" id="edit-goal-saved" placeholder="0.00" min="0" step="0.01"></div>
+      <div class="form-group"><label>Target Amount (<span class="cur-sym">₱</span>)</label><input type="number" id="edit-goal-target" placeholder="0.00" min="0" step="0.01"></div>
+      <div class="form-group"><label>Amount Saved (<span class="cur-sym">₱</span>)</label><input type="number" id="edit-goal-saved" placeholder="0.00" min="0" step="0.01"></div>
     </div>
     <div class="form-group"><label>Note (optional)</label><input type="text" id="edit-goal-note" placeholder="Note"></div>
     <div style="display:flex;gap:10px;margin-top:6px">
@@ -6499,6 +6499,94 @@ window.finGuessCat=guessCat;   // lets the receipt scanner reuse the keyword cat
 </script>
 <script src="virtual-pet/pet-dialogue.js"></script>
 <script src="virtual-pet/pet.js"></script>
+<script>
+(function(){
+var W=window,L=function(k,v){try{return v===undefined?localStorage.getItem(k):localStorage.setItem(k,v)}catch(e){}};
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+/* ---------- currency ---------- */
+var CUR={PHP:['₱','en-PH',2,'Philippine Peso'],USD:['$','en-US',2,'US Dollar'],EUR:['€','de-DE',2,'Euro'],GBP:['£','en-GB',2,'British Pound'],JPY:['¥','ja-JP',0,'Japanese Yen'],KRW:['₩','ko-KR',0,'Korean Won'],CNY:['CN¥','zh-CN',2,'Chinese Yuan'],INR:['₹','en-IN',2,'Indian Rupee'],AUD:['A$','en-AU',2,'Australian Dollar'],SGD:['S$','en-SG',2,'Singapore Dollar']};
+var cur=L('finCur');if(!CUR[cur])cur='PHP';
+function sym(){return CUR[cur][0]}
+function money(n){var c=CUR[cur];return c[0]+Number(n).toLocaleString(c[1],{minimumFractionDigits:c[2],maximumFractionDigits:c[2]})}
+function syms(){document.querySelectorAll('.cur-sym').forEach(function(e){e.textContent=sym()})}
+function rerender(){syms();try{render()}catch(e){}}
+W.FinX={money:money,sym:sym};
+/* ---------- language (text + placeholder/title swap) ---------- */
+var LG={en:'English',fil:'Filipino',ja:'日本語',ko:'한국어',es:'Español'},LI={fil:0,ja:1,ko:2,es:3},lang=L('finLang')||'en';
+var D={'Dashboard':['Dashboard','ダッシュボード','대시보드','Panel'],'Income':['Kita','収入','수입','Ingresos'],'Expenses':['Gastos','支出','지출','Gastos'],'Balances':['Mga Balanse','残高','잔액','Saldos'],'Loans':['Mga Utang','ローン','대출','Préstamos'],'Goals & Budget':['Mga Layunin at Badyet','目標と予算','목표 및 예산','Metas y presupuesto'],'Export & Backup':['I-export at Backup','エクスポートとバックアップ','내보내기 및 백업','Exportar y respaldo'],'Menu':['Menu','メニュー','메뉴','Menú'],'Settings':['Mga Setting','設定','설정','Ajustes'],'Total Earned':['Kabuuang Kinita','総収入','총 수입','Total ganado'],'Total Spent':['Kabuuang Nagastos','総支出','총 지출','Total gastado'],'Net Income':['Netong Kita','純収入','순수입','Ingreso neto'],'I Owe':['Utang Ko','借入','내가 빌린 돈','Yo debo'],'Owed to Me':['Utang sa Akin','貸出','받을 돈','Me deben'],'Remaining':['Natitira','残り','남은 금액','Restante'],'Spent':['Nagastos','支出済み','지출','Gastado'],'Edit':['I-edit','編集','편집','Editar'],'Remove':['Alisin','削除','삭제','Quitar'],'Cancel':['Kanselahin','キャンセル','취소','Cancelar'],'Save':['I-save','保存','저장','Guardar'],'Add':['Idagdag','追加','추가','Añadir'],'Amount':['Halaga','金額','금액','Monto'],'Note':['Tala','メモ','메모','Nota'],'Date':['Petsa','日付','날짜','Fecha']};
+var orig=new WeakMap(),busy=false;
+function trText(n){var b=orig.has(n)?orig.get(n):n.nodeValue,t=b.trim(),e=D[t],v=lang==='en'?null:e&&e[LI[lang]];
+ if(v){orig.set(n,b);n.nodeValue=b.replace(t,v)}else if(orig.has(n)){n.nodeValue=orig.get(n);orig.delete(n)}}
+function trAttrs(el){['placeholder','title'].forEach(function(a){var k='data-o-'+a,b=el.getAttribute(k)||el.getAttribute(a);if(!b)return;var e=D[b.trim()],v=lang!=='en'&&e&&e[LI[lang]];
+ if(v){el.setAttribute(k,b);el.setAttribute(a,v)}else if(el.hasAttribute(k)){el.setAttribute(a,el.getAttribute(k));el.removeAttribute(k)}})}
+function apply(root){busy=true;try{var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),n;while(n=w.nextNode())trText(n);
+ if(root.querySelectorAll)root.querySelectorAll('[placeholder],[title]').forEach(trAttrs);document.documentElement.lang=lang==='fil'?'fil':lang}finally{busy=false}}
+new MutationObserver(function(ms){if(busy)return;ms.forEach(function(m){m.addedNodes.forEach(function(n){if(n.nodeType===1)apply(n);else if(n.nodeType===3){busy=true;trText(n);busy=false}})})}).observe(document.body,{childList:true,subtree:true});
+/* ---------- pixel popover + topbar buttons ---------- */
+function pop(btn,items,now,pickFn){var old=document.getElementById('fx-pop');if(old){old.remove();if(old._b===btn)return}
+ var p=document.createElement('div');p.id='fx-pop';p._b=btn;var r=btn.getBoundingClientRect();
+ p.style.cssText='position:fixed;top:'+(r.bottom+6)+'px;right:'+Math.max(8,innerWidth-r.right)+'px;z-index:9999;background:var(--surface);border:2px solid var(--accent);box-shadow:4px 4px 0 rgba(0,0,0,.45);padding:4px;min-width:180px;max-height:60vh;overflow:auto;font-size:12.5px';
+ items.forEach(function(it){var b=document.createElement('button');b.textContent=(it[0]===now?'> ':'   ')+it[1];b.style.cssText='display:block;width:100%;text-align:left;background:'+(it[0]===now?'var(--accent-bg)':'transparent')+';color:var(--text);border:0;padding:7px 9px;cursor:pointer;font:inherit;white-space:pre';b.onclick=function(){p.remove();pickFn(it[0])};p.appendChild(b)});
+ document.body.appendChild(p);setTimeout(function(){document.addEventListener('click',function h(e){if(!p.contains(e.target)&&!btn.contains(e.target)){p.remove();document.removeEventListener('click',h)}})},0)}
+function mount(){var bar=document.querySelector('.tb-right');if(!bar||document.getElementById('fx-lang'))return;
+ var g=document.createElement('button');g.id='fx-lang';g.className='btn btn-ghost btn-sm';g.title='Language';g.setAttribute('aria-label','Language');
+ g.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>';
+ g.onclick=function(){pop(g,Object.keys(LG).map(function(k){return[k,LG[k]]}),lang,function(k){lang=k;L('finLang',k);apply(document.body)})};
+ var c=document.createElement('button');c.id='fx-cur';c.className='btn btn-ghost btn-sm';c.title='Currency';c.setAttribute('aria-label','Currency');c.style.fontWeight='700';c.textContent=sym();
+ c.onclick=function(){pop(c,Object.keys(CUR).map(function(k){return[k,CUR[k][0]+'  '+k+' · '+CUR[k][3]]}),cur,function(k){cur=k;L('finCur',k);c.textContent=sym();rerender();try{toast('Currency set to '+k+'. Only the symbol changes, your numbers stay the same.')}catch(e){}})};
+ bar.insertBefore(c,bar.firstChild);bar.insertBefore(g,bar.firstChild);apply(document.body)}
+/* ---------- Fin's Data Bank ---------- */
+function S(){try{return state}catch(e){return{}}}
+function td(){try{return today()}catch(e){return new Date().toISOString().slice(0,10)}}
+function pm(){var d=new Date();d.setDate(1);d.setMonth(d.getMonth()-1);return d.toISOString().slice(0,7)}
+function inP(x,p){var d=String(x.date||x.dateStr||'').slice(0,10),t=td();if(p==='all')return true;if(!d)return false;
+ if(p==='today')return d===t;if(p==='week'){var a=new Date(t);a.setDate(a.getDate()-6);return d>=a.toISOString().slice(0,10)&&d<=t}
+ if(p==='last')return d.slice(0,7)===pm();if(p==='year')return d.slice(0,4)===t.slice(0,4);return d.slice(0,7)===t.slice(0,7)}
+function per(q){return/today|ngayon|karon/.test(q)?'today':/last month|nakaraang buwan/.test(q)?'last':/week|linggo/.test(q)?'week':/year|taon/.test(q)?'year':/all time|overall|lahat|so far/.test(q)?'all':'month'}
+var PN={today:'today',week:'in the last 7 days',month:'this month',last:'last month',year:'this year',all:'so far'};
+var SYN={food:/food|eat|kain|pagkain|grocer|restaurant|coffee|meal/,transport:/transport|jeep|grab|gas|fare|commute|taxi|bus/,shopping:/shop|bili|mall|clothes/,utilities:/utilit|bill|kuryente|water|internet|rent/,health:/health|medic|gamot|doctor/,entertainment:/entertain|movie|game|netflix|fun/};
+function findCat(q){var CL={};try{CL=CAT_LABELS}catch(e){}for(var k in SYN)if(k in CL&&SYN[k].test(q))return k;
+ for(var c in CL){var lb=String(CL[c]).toLowerCase().replace(/[^a-z ]/g,'').trim().split(' ')[0];if(lb.length>3&&q.indexOf(lb)>-1)return c}return null}
+function sum(a){return a.reduce(function(s,x){return s+(+x.amount||0)},0)}
+function A(t,m,extra){return{text:t,mood:m,actions:(extra||[]).concat([{label:'Menu',kind:'menu'}])}}
+function hum(t){return Math.random()<.3?pick(['Okay, ','Alright, ','Let me see... ','Ooh, '])+t.charAt(0).toLowerCase()+t.slice(1):t}
+var JOKES=['Why did the budget go to therapy? Too many issues with spending.','My savings and I have a lot in common. We both disappear when I go to the mall.','I tried to save money once. It felt weird, like trying to hold water with pixel hands.'];
+var HELP='Try me on: spending (today, this week, by category), income, total balance, biggest expense, daily average, loans, goals, budget left, streaks, or money tips. Taglish works too.';
+function smart(q,ctx){q=q.toLowerCase();var s=S(),ex=s.expenses||[],p=per(q),cat=findCat(q),m;
+ if(/^(hi|hello|hey|yo|kumusta|musta|hola)\b|good (morning|afternoon|evening)/.test(q))return A(pick(['Hey you! What are we checking today?','Hi hi! Money questions? I got you.','Yo! Ask away.']));
+ if(/thank|salamat|thx|ty\b/.test(q))return A(pick(['Anytime!','No problem, that is what I am here for.','Aww, salamat! Keep logging.']));
+ if(/who are you|your name|sino ka|what are you/.test(q))return A('I am Fin, the little pixel guy in the corner. I read your numbers so you do not have to squint.');
+ if(/joke|funny|patawa/.test(q))return A(pick(JOKES));
+ if(/what time|what day|date today|anong petsa/.test(q))return A('It is '+new Date().toLocaleString(undefined,{weekday:'long',month:'long',day:'numeric',hour:'numeric',minute:'2-digit'})+'.');
+ if(/help|what can you|pwede|commands/.test(q))return A(HELP);
+ if(/net worth|total (balance|money)|all my (money|wallets)|how much (money )?do i have|magkano.*(pera|ipon)|money do i have/.test(q)){var w=s.wallets||[];if(!w.length)return A('No wallets yet, so I cannot see any money. Add one in Balances?',0,[{label:'Add Wallet',kind:'navigate',module:'balances'}]);return A(hum('You have '+money(sum(w.map(function(x){return{amount:x.balance}})))+' across '+w.length+' wallet'+(w.length>1?'s':'')+'.'))}
+ if(/biggest|largest|highest|most expensive|pinakamalaki/.test(q)){var l=ex.filter(function(e){return inP(e,p)&&(!cat||e.cat===cat)}).sort(function(a,b){return b.amount-a.amount})[0];return l?A(hum('Biggest one '+PN[p]+' is '+(l.desc||'something')+' at '+money(l.amount)+'.')):A('Nothing logged '+PN[p]+' yet.')}
+ if(/average|avg|per day|daily|kada araw/.test(q)){var t=td(),d=+t.slice(8,10),tot=sum(ex.filter(function(e){return inP(e,'month')}));return d?A(hum('About '+money(tot/d)+' a day so far this month.')):null}
+ if(/top categor|most .*(spend|categor)|where .*(money|go)|saan.*napunta/.test(q)){var ct=ctx.catTotals||{},k=Object.keys(ct).sort(function(a,b){return ct[b]-ct[a]})[0];return k?A(hum('Most of it went to '+String(k).replace('-',' ')+' this month, '+money(ct[k])+'.')):A('Not enough spending this month to tell yet.')}
+ if(/how many (expenses|transactions|entries)|ilang (gastos|transaction)/.test(q)){var n=ex.filter(function(e){return inP(e,p)}).length;return A('You logged '+n+' expense'+(n===1?'':'s')+' '+PN[p]+'.')}
+ if(/spen|gastos|nagastos|gastusin|expens|gumastos|ginastos/.test(q)){var arr=ex.filter(function(e){return inP(e,p)&&(!cat||e.cat===cat)});var tt=sum(arr);return A(tt>0?hum(money(tt)+(cat?' on '+String(cat).replace('-',' '):'')+' '+PN[p]+', across '+arr.length+' entr'+(arr.length===1?'y':'ies')+'.'):'Nothing logged'+(cat?' for '+String(cat).replace('-',' '):'')+' '+PN[p]+'. Either you are being good or you forgot to log. No judgement.')}
+ if(/income|earn|kinita|sweldo|salary|sahod/.test(q)){var inc=s.income||[],ti=p==='month'?(ctx.curIncome||0):sum(inc);return A(ti>0?hum(money(ti)+' earned '+(p==='month'?'this month':'in total')+'.'):'No income logged yet.',0,[{label:'Add Income',kind:'navigate',module:'income'}])}
+ if(/owe|utang|payable|receivable|owed|nangutang/.test(q)){var ln=(s.loans||[]).filter(function(x){return!x.settled}),pay=sum(ln.filter(function(x){return x.type==='payable'})),rec=sum(ln.filter(function(x){return x.type==='receivable'}));return A(ln.length?hum('You owe '+money(pay)+' and people owe you '+money(rec)+'.'):'No open loans. Nice and clean.',0,[{label:'View Loans',kind:'navigate',module:'loans'}])}
+ if(/goal|target|ipon|saving.*for|layunin/.test(q)){var gs=(s.goals||[]).filter(function(g){return g.target>0}).sort(function(a,b){return b.saved/b.target-a.saved/a.target});if(!gs.length)return A('No goals yet. Want to set one?',0,[{label:'Set Goal',kind:'navigate',module:'goals'}]);var g=gs[0],pc=Math.min(100,Math.round(g.saved/g.target*100));return A('"'+g.name+'" is your closest goal at '+pc+'%, '+money(g.saved)+' of '+money(g.target)+'. '+(pc>=100?'You did it!':pc>=50?'Past halfway!':'Keep chipping at it.'),pc>=100?'happy':0,[{label:'View Goals',kind:'navigate',module:'goals'}])}
+ if(/how (do|can) i save|save more|tips?|advice|payo|paano.*mag-?ipon/.test(q)){var c2=ctx.catTotals||{},kk=Object.keys(c2).sort(function(a,b){return c2[b]-c2[a]})[0];return A((kk?'Your biggest spend lately is '+String(kk).replace('-',' ')+', so trim there first. ':'')+'Also try paying yourself first: move a slice of income into savings the day it lands, then spend what is left.')}
+ if(/what is|ano ang|meaning of|explain/.test(q)){var GL={budget:'A budget is a monthly spending limit you set, so you can see early if you are drifting over.','net income':'Net income is what you earned minus what you spent.','emergency fund':'An emergency fund is money set aside for surprises, ideally 3 to 6 months of basic costs.',recurring:'Recurring expenses repeat every month, like rent or subscriptions.',interest:'Interest is the cost of borrowing, or the reward for saving.',streak:'Your streak counts the days in a row you logged an expense.'};for(var t2 in GL)if(q.indexOf(t2)>-1)return A(GL[t2])}
+ return null}
+function boot(){var d=W.FinPetDialogue;if(!d||d._fx)return false;d._fx=1;var o=d.answerQuestion;
+ d.answerQuestion=function(q,ctx){var r=null;try{r=smart(String(q||''),ctx||{})}catch(e){}if(r)return r;var b=o(q,ctx);
+  if(b&&/not sure about that one/.test(b.text))return{text:pick(['Hmm, that one is not in my head yet. ','Ooh, you got me on that. '])+HELP,actions:[{label:'Ask again',kind:'ask-custom'},{label:'Menu',kind:'menu'}]};return b};return true}
+/* ---------- alive: greetings, chatter, wandering ---------- */
+function HR(){var h=new Date().getHours();return h<5?'night':h<12?'morning':h<18?'day':h<22?'eve':'night'}
+var CH={morning:['Morning! Coffee first, then money stuff.','Fresh day, fresh page. Anything from yesterday to log?'],day:['Lunch break? Do not forget to log it.','Just checking in. All good over there?'],eve:['Evening! Anything to log before you clock out?','Winding down. Want a peek at today\'s spending?'],night:['Still up? Same. I never sleep, I just stand here.','Late night money thoughts? Log it and get some rest.'],any:['*stretches pixel arms*','Psst. Your streak likes company.','I was just thinking about savings. Riveting stuff.','Tap me if you want to ask something. I am bored.']};
+function life(){var P=W.FinPet;setTimeout(life,60000+Math.random()*90000);
+ if(!P||document.hidden||document.querySelector('.fin-minimized')||document.querySelector('.fin-show'))return;var r=Math.random();
+ if(r<.4)P.say({text:pick(CH[HR()].concat(CH.any)),actions:[{label:'Ask a question',kind:'ask-custom'}]});
+ else if(r<.7)(Math.random()<.5?P.walkLeft:P.walkRight)(40+Math.random()*90);else P.wave()}
+function start(){mount();var t=0,iv=setInterval(function(){if(boot()||++t>40)clearInterval(iv)},500);setTimeout(life,45000);
+ if(cur!=='PHP')setTimeout(rerender,300);
+ if(!sessionStorage.getItem('finHi')){try{sessionStorage.setItem('finHi',1)}catch(e){}setTimeout(function(){W.FinPet&&W.FinPet.say({text:pick(CH[HR()]),actions:[{label:'Ask a question',kind:'ask-custom'}]})},7000)}}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+</script>
 <script src="virtual-pet/tour-steps.js"></script>
 <script src="virtual-pet/tour.js"></script>
 </body>
