@@ -603,6 +603,40 @@
     return { text: pick(toneSet(tone).idle) };
   }
 
+  /* ---------- Bible verse (idle moments) ---------- */
+  // Reads the same VERSES list the "Word for Today" splash uses (declared with
+  // `const` in index.html, so it's reachable by bare identifier, not via window).
+  var FALLBACK_VERSES = [
+    {text:"The Lord is my shepherd; I shall not want.",ref:"Psalm 23:1"},
+    {text:"Now godliness with contentment is great gain.",ref:"1 Timothy 6:6"}
+  ];
+  var recentVerseRefs = [];
+  function appVerses(){
+    var v = safe(()=> (typeof VERSES!=='undefined' ? VERSES : null), null);
+    return (v && v.length) ? v : FALLBACK_VERSES;
+  }
+  // Random verse, skipping the last few shown so it never repeats back-to-back.
+  function getVerseMessage(){
+    var list = appVerses();
+    // Preferred: the app's no-repeat, day-aware picker (index.html). Falls back to the local logic below.
+    var picked = safe(function(){ return (typeof pickVerse==='function' && list===VERSES) ? pickVerse('finSeenPetVerses', 0.6) : null; }, null);
+    if(picked){
+      return {
+        text: '\u201C'+picked.text+'\u201D \u2014 '+picked.ref,
+        stayMs: Math.max(9000, Math.min(20000, picked.text.length*90))
+      };
+    }
+    var pool = list.filter(function(v){ return recentVerseRefs.indexOf(v.ref)===-1; });
+    if(!pool.length) pool = list;
+    var v = pick(pool);
+    recentVerseRefs.push(v.ref);
+    if(recentVerseRefs.length > Math.min(8, list.length-1)) recentVerseRefs.shift();
+    return {
+      text: '\u201C'+v.text+'\u201D \u2014 '+v.ref,
+      stayMs: Math.max(9000, Math.min(20000, v.text.length*90))   // long verses stay up longer
+    };
+  }
+
   function getWakeLine(tone){
     return { text: pick(toneSet(tone).wake) };
   }
@@ -1578,6 +1612,7 @@
     getClickLine: getSmallTalkMessage, // kept for backward compatibility
     getSmallTalkMessage,
     getIdleNudge,
+    getVerseMessage,
     getWakeLine,
     getTipMessage,
     getGlossaryMessage,
