@@ -1122,6 +1122,7 @@ label.fa-row{cursor:pointer}
 <style>html.finlock body>*:not(#auth-overlay){visibility:hidden!important}</style>
 <style>@media(max-width:600px){.tb-left{display:none !important}.tb-right{width:100%;justify-content:space-between}}</style>
 <style>@media(max-width:900px){.fx-h{cursor:pointer;-webkit-tap-highlight-color:transparent}.fx-h::after{content:'\25BE';margin-left:10px;color:var(--muted);font-size:14px;transition:transform .15s}.card.fx-c>.fx-h::after{transform:rotate(-90deg)}.card.fx-c>.fx-h{margin-bottom:0;padding-bottom:0;border-bottom:0}.card.fx-c>*:not(.fx-h){display:none !important}}</style>
+<style>.verse-progress-track{background:var(--border2);border-radius:99px;height:2px;overflow:hidden;margin-top:14px}.verse-progress-fill{height:100%;border-radius:99px;background:var(--accent);transition:width .3s linear}.verse-dots{display:flex;justify-content:center;gap:5px;margin-top:10px;flex-wrap:wrap}.verse-dot{width:5px;height:5px;border-radius:50%;background:var(--muted2);cursor:pointer;transition:all .2s}.verse-dot.active{background:var(--accent);width:14px;border-radius:99px}</style>
 </head>
 <body>
 <div class="shell">
@@ -1398,6 +1399,8 @@ label.fa-row{cursor:pointer}
       <div style="font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:rgba(var(--accent-rgb),.5);font-weight:600;margin-bottom:14px">✝ Word for Today</div>
       <div id="splash-verse" style="font-size:15px;color:var(--text);line-height:1.7;font-style:italic;margin-bottom:14px">"..."</div>
       <div id="splash-ref" style="font-size:12px;color:var(--accent);font-weight:600;font-family:var(--font-d)"></div>
+      <div class="verse-progress-track"><div class="verse-progress-fill" id="verse-prog" style="width:0%"></div></div>
+      <div class="verse-dots" id="verse-dots"></div>
     </div>
     <div id="splash-greeting" style="font-size:13px;color:var(--muted);margin-bottom:28px"></div>
     <button onclick="closeSplash()" style="background:var(--accent);color:#080808;border:none;padding:12px 36px;border-radius:10px;font-family:var(--font-d);font-size:14px;font-weight:700;cursor:pointer;transition:all .16s;letter-spacing:.02em" onmouseover="this.style.background='var(--accent-dim)'" onmouseout="this.style.background='var(--accent)'">
@@ -2330,7 +2333,7 @@ function closeSplash(){
   const el=document.getElementById('welcome-splash');
   el.style.transition='opacity .4s ease, transform .4s ease';
   el.style.opacity='0';el.style.transform='scale(.97)';
-  setTimeout(()=>{el.style.display='none';},400);
+  setTimeout(()=>{el.style.display='none';clearInterval(verseTimer);clearInterval(verseProgTimer);},400);
   sessionStorage.setItem('mtUnlocked','1');
 }
 function showSplash(){
@@ -5598,14 +5601,34 @@ function initTheme(){
 }
 
 /* ── WORD FOR TODAY (one verse per day) ── */
+let verseIdx=0,verseTimer,verseProgTimer,verseProgVal=0;
+const VERSE_INTERVAL=30000;
 function initSplash(){
-  const v=getDailyVerse();
-  const vEl=document.getElementById('splash-verse'),rEl=document.getElementById('splash-ref');
-  if(vEl&&rEl){vEl.textContent='"'+v.text+'"';rEl.textContent=' - '+v.ref;}
+  const dv=getDailyVerse();verseIdx=Math.max(0,VERSES.findIndex(v=>v.ref===dv.ref));
+  buildVerseDots();showVerse(verseIdx,true);startVerseTimer();
   const h=new Date().getHours();
   const greet=h<12?'Good morning ☀️':h<17?'Good afternoon 🌤️':'Good evening 🌙';
   const nm=state.username?', '+state.username:'';document.getElementById('splash-greeting').textContent=greet+nm+' - here\'s your finances for today.';
   document.getElementById('splash-date').textContent=new Date().toLocaleDateString('en-PH',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+}
+
+function buildVerseDots(){
+  const c=document.getElementById('verse-dots');if(!c)return;
+  c.innerHTML=VERSES.map((_,i)=>`<div class="verse-dot" onclick="jumpVerse(${i})"></div>`).join('');
+}
+function showVerse(idx,instant){
+  const v=VERSES[idx],vEl=document.getElementById('splash-verse'),rEl=document.getElementById('splash-ref');
+  if(!vEl||!rEl||!v)return;
+  const set=()=>{vEl.textContent='"'+v.text+'"';rEl.textContent=' - '+v.ref;vEl.style.opacity='1';rEl.style.opacity='1'};
+  if(instant)set();else{vEl.style.transition=rEl.style.transition='opacity .4s';vEl.style.opacity='0';rEl.style.opacity='0';setTimeout(set,350)}
+  document.querySelectorAll('.verse-dot').forEach((d,i)=>d.classList.toggle('active',i===idx));
+  verseProgVal=0;const p=document.getElementById('verse-prog');if(p)p.style.width='0%';
+}
+function jumpVerse(idx){verseIdx=idx;showVerse(idx);startVerseTimer();}
+function startVerseTimer(){
+  clearInterval(verseTimer);clearInterval(verseProgTimer);verseProgVal=0;
+  verseProgTimer=setInterval(()=>{verseProgVal+=100/(VERSE_INTERVAL/100);const el=document.getElementById('verse-prog');if(el)el.style.width=Math.min(verseProgVal,100)+'%'},100);
+  verseTimer=setTimeout(()=>{verseIdx=(verseIdx+1)%VERSES.length;showVerse(verseIdx);startVerseTimer()},VERSE_INTERVAL);
 }
 
 /* ── SWIPE TO DELETE (mobile) ── */
@@ -6580,8 +6603,7 @@ function smart(q,ctx){q=q.toLowerCase();var s=S(),ex=s.expenses||[],p=per(q),cat
  if(/what is|ano ang|meaning of|explain/.test(q)){var GL={budget:'A budget is a monthly spending limit you set, so you can see early if you are drifting over.','net income':'Net income is what you earned minus what you spent.','emergency fund':'An emergency fund is money set aside for surprises, ideally 3 to 6 months of basic costs.',recurring:'Recurring expenses repeat every month, like rent or subscriptions.',interest:'Interest is the cost of borrowing, or the reward for saving.',streak:'Your streak counts the days in a row you logged an expense.'};for(var t2 in GL)if(q.indexOf(t2)>-1)return A(GL[t2])}
  return null}
 function boot(){var d=W.FinPetDialogue;if(!d||d._fx)return false;d._fx=1;var o=d.answerQuestion;
- d.answerQuestion=function(q,ctx){var r=null;try{r=smart(String(q||''),ctx||{})}catch(e){}if(r)return r;var b=o(q,ctx);
-  if(b&&/not sure about that one/.test(b.text))return{text:pick(['Hmm, that one is not in my head yet. ','Ooh, you got me on that. '])+HELP,actions:[{label:'Ask again',kind:'ask-custom'},{label:'Menu',kind:'menu'}]};return b};return true}
+ d.answerQuestion=function(q,ctx){var b=o(q,ctx);if(!(b&&/not sure I understood|not sure about that one/.test(b.text||'')))return b;var r=null;try{r=smart(String(q||''),ctx||{})}catch(e){}return r||b};return true}
 /* ---------- alive: greetings, chatter, wandering ---------- */
 function HR(){var h=new Date().getHours();return h<5?'night':h<12?'morning':h<18?'day':h<22?'eve':'night'}
 var CH={morning:['Morning! Coffee first, then money stuff.','Fresh day, fresh page. Anything from yesterday to log?'],day:['Lunch break? Do not forget to log it.','Just checking in. All good over there?'],eve:['Evening! Anything to log before you clock out?','Winding down. Want a peek at today\'s spending?'],night:['Still up? Same. I never sleep, I just stand here.','Late night money thoughts? Log it and get some rest.'],any:['*stretches pixel arms*','Psst. Your streak likes company.','I was just thinking about savings. Riveting stuff.','Tap me if you want to ask something. I am bored.']};
