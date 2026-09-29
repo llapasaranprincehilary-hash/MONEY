@@ -1020,6 +1020,12 @@ body.light .auth-bg::after{display:none}
 .set-wrap{max-width:560px;margin:0 auto}
 .set-profile{display:flex;align-items:center;gap:16px;padding:4px 2px 18px}
 .set-avatar{width:64px;height:64px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:26px;font-weight:700;color:#0a0a0c;background:linear-gradient(145deg,var(--accent),var(--accent-dim));box-shadow:0 0 0 4px var(--accent-bg)}
+.set-avatar{position:relative;overflow:hidden;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.set-avatar img,.sb-avatar img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
+.set-avatar-cam{position:absolute;left:0;right:0;bottom:0;height:24px;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s}
+.set-avatar:hover .set-avatar-cam,.set-avatar:focus-visible .set-avatar-cam{opacity:1}
+@media (hover:none){.set-avatar-cam{opacity:1}}
+.set-avatar-cam svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .set-pname{font-family:var(--font-d);font-size:20px;font-weight:700;letter-spacing:-.02em;line-height:1.2;word-break:break-word}
 .set-pmail{font-size:13px;color:var(--muted);margin-top:3px;word-break:break-all}
 .set-sync{display:flex;align-items:center;gap:12px;background:var(--accent-bg);border:1px solid rgba(var(--accent-rgb),.28);border-radius:16px;padding:14px 16px;margin-bottom:16px}
@@ -1478,7 +1484,7 @@ label.fa-row{cursor:pointer}
   </div>
   <div class="sb-bottom">
     <div style="display:flex;align-items:center;gap:10px;padding:10px;margin-bottom:8px;background:var(--surface2);border-radius:10px;border:1px solid var(--border);box-shadow:var(--shadow-sm)">
-      <div style="width:30px;height:30px;border-radius:50%;background:var(--accent-bg);border:1px solid rgba(var(--accent-rgb),.2);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">👤</div>
+      <div class="sb-avatar" id="sidebar-avatar" style="width:30px;height:30px;border-radius:50%;background:var(--accent-bg);border:1px solid rgba(var(--accent-rgb),.2);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;overflow:hidden">👤</div>
       <div style="min-width:0;flex:1">
         <div id="sidebar-username" style="font-size:12.5px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">-</div>
         <div style="font-size:10px;color:var(--muted2)">my account</div>
@@ -1831,7 +1837,8 @@ label.fa-row{cursor:pointer}
       <!-- HOME: profile + menu (compact) -->
       <div id="set-home">
         <div class="set-profile">
-          <div class="set-avatar" id="set-avatar">?</div>
+          <div class="set-avatar" id="set-avatar" role="button" tabindex="0" title="Change profile picture" onclick="pickAvatar()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();pickAvatar();}"><span id="set-avatar-txt">?</span><span class="set-avatar-cam"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg></span></div>
+          <input type="file" id="avatar-file" accept="image/*" style="display:none" onchange="handleAvatarFile(this)">
           <div style="min-width:0">
             <div class="set-pname" id="settings-username">-</div>
             <div class="set-pmail" id="set-pmail"></div>
@@ -1870,6 +1877,13 @@ label.fa-row{cursor:pointer}
       <div class="set-panel single" data-panel="personal">
     <!-- ACCOUNT -->
     <div class="card" style="margin-bottom:14px">
+      <div class="row">
+        <div><div style="font-size:13px;font-weight:500">Profile Picture</div><div style="font-size:11px;color:var(--muted)">Shown in Settings and the sidebar</div></div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="btn btn-ghost btn-sm" onclick="pickAvatar()">Change</button>
+          <button class="btn btn-ghost btn-sm" id="avatar-remove-btn" onclick="removeAvatar()" style="display:none">Remove</button>
+        </div>
+      </div>
       <div class="row"><span class="lbl">Name</span><span id="set-panel-name" style="font-size:13px;font-weight:600;color:var(--text)">-</span></div>
       <div class="row" style="border-bottom:none">
         <div><div style="font-size:13px;font-weight:500">Change Name</div><div style="font-size:11px;color:var(--muted)">Update your display name</div></div>
@@ -2401,6 +2415,7 @@ async function migratePlaintextSecrets(){
 function defaultState(){
   return {
     username:'',
+    avatar:'',
     wallets:[
       {id:'maya',label:'Maya',balance:0,updated:today()},
       {id:'gcash',label:'GCash',balance:0,updated:today()},
@@ -5309,7 +5324,63 @@ function updateSidebarUsername(){
   const sel=document.getElementById('settings-username');
   if(sel)sel.textContent=nm||'-';
   const pn=document.getElementById('set-panel-name');if(pn)pn.textContent=nm||'-';
-  const av=document.getElementById('set-avatar');if(av)av.textContent=(nm.trim().charAt(0)||'?').toUpperCase();
+  renderAvatar();
+}
+/* ── Profile picture ── */
+function renderAvatar(){
+  const nm=(state.username||'').trim(),img=state.avatar||'';
+  const txt=document.getElementById('set-avatar-txt');
+  const av=document.getElementById('set-avatar');
+  if(av){
+    const old=av.querySelector('img');if(old)old.remove();
+    if(img){
+      const i=document.createElement('img');i.src=img;i.alt='Profile picture';
+      av.insertBefore(i,av.firstChild);
+      if(txt)txt.style.display='none';
+      av.style.background='transparent';
+    }else{
+      if(txt){txt.style.display='';txt.textContent=(nm.charAt(0)||'?').toUpperCase();}
+      av.style.background='';
+    }
+  }
+  const sb=document.getElementById('sidebar-avatar');
+  if(sb){
+    if(img){sb.innerHTML='';const i=document.createElement('img');i.src=img;i.alt='';sb.appendChild(i);}
+    else sb.textContent='👤';
+  }
+  const rb=document.getElementById('avatar-remove-btn');if(rb)rb.style.display=img?'':'none';
+}
+function pickAvatar(){const f=document.getElementById('avatar-file');if(f){f.value='';f.click();}}
+function handleAvatarFile(input){
+  const file=input.files&&input.files[0];
+  if(!file)return;
+  if(!/^image\//.test(file.type)){toast('Please choose an image file','error');return;}
+  const reader=new FileReader();
+  reader.onerror=()=>toast('Could not read that image','error');
+  reader.onload=()=>{
+    const img=new Image();
+    img.onerror=()=>toast('Could not open that image','error');
+    img.onload=()=>{
+      try{
+        // centre-crop to a square and shrink to 256px so it stays small for backup + cloud sync
+        const N=256,side=Math.min(img.width,img.height);
+        const sx=(img.width-side)/2,sy=(img.height-side)/2;
+        const c=document.createElement('canvas');c.width=N;c.height=N;
+        const ctx=c.getContext('2d');
+        ctx.fillStyle='#fff';ctx.fillRect(0,0,N,N);
+        ctx.drawImage(img,sx,sy,side,side,0,0,N,N);
+        state.avatar=c.toDataURL('image/jpeg',0.85);
+        save();renderAvatar();toast('Profile picture updated ✓');
+      }catch(e){toast('Could not process that image','error');}
+    };
+    img.src=reader.result;
+  };
+  reader.readAsDataURL(file);
+}
+async function removeAvatar(){
+  const ok=await mtConfirm('Remove your profile picture?','🖼️','Remove','var(--amber)');
+  if(!ok)return;
+  state.avatar='';save();renderAvatar();toast('Profile picture removed');
 }
 
 /* ── SETTINGS ── */
