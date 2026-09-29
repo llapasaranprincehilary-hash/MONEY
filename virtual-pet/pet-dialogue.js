@@ -32,6 +32,13 @@
 
   function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
+  /* Language preference ('taglish' | 'english' | 'bisaya'), set by pet.js
+     from the saved settings. Default is simple, casual Taglish. */
+  var curLang = 'taglish';
+  function setLang(l){ curLang = (l==='english' || l==='bisaya') ? l : 'taglish'; }
+  function getLang(){ return curLang; }
+  var LOCAL_WORDS = /\b(uy|hoy|unsa|naa|kumusta|nagbalik|miss tika|pwede|tagalog|bisaya|kwarta|ako|ko|ka|nimo|nato|ta)\b/i;
+
   // Weighted random index: given a list of positive weights, picks an
   // index with probability proportional to its weight. Falls back to a
   // plain uniform pick if the weights are degenerate.
@@ -496,7 +503,13 @@
       menu: "How can I help?"
     }
   };
-  function toneSet(tone){ return TONE_LINES[tone] || TONE_LINES.playful; }
+  function toneSet(tone){
+    var set = TONE_LINES[tone] || TONE_LINES.playful;
+    if(curLang!=='english' || set===TONE_LINES.businesslike) return set;
+    // English mode: drop the lines that use Tagalog/Bisaya words
+    var ok = function(l){ return !LOCAL_WORDS.test(l); };
+    return { click:set.click.filter(ok), idle:set.idle.filter(ok), wake:set.wake.filter(ok), menu:set.menu };
+  }
 
   function getMenuMessage(ctx, tone){
     return {
@@ -976,11 +989,13 @@
   function getSettingsPersonalizeMessage(settings){
     settings = settings || {};
     const toneLabel = settings.tone==='businesslike' ? 'businesslike' : 'playful';
+    const langLabel = settings.lang==='english' ? 'English' : settings.lang==='bisaya' ? 'Bisaya' : 'Taglish';
     return {
-      text: `I go by "${settings.name||'Fin'}" right now, ${toneLabel} tone.`,
+      text: `I go by "${settings.name||'Fin'}" right now, ${toneLabel} tone, ${langLabel}.`,
       actions: [
         { label:'✏️ Rename me', kind:'settings-rename' },
         { label:'🎭 Tone: '+toneLabel, kind:'settings-toggle-tone' },
+        { label:'🌐 Language: '+langLabel, kind:'settings-toggle-lang' },
         { label:'⬅ Back', kind:'settings' }
       ]
     };
@@ -1323,7 +1338,8 @@
     var biz = tone==='businesslike';
     var q = normQ(qRaw);
     var st = appState();
-    function T(fun, bz){ return (biz && bz) ? bz : fun; }
+    var plainEn = biz || curLang==='english';
+    function T(fun, bz){ return (plainEn && bz) ? bz : fun; }
     function done(text, mood, follow, extra){
       var actions = (extra||[]).slice();
       (follow||[]).slice(0,2).forEach(function(f){ actions.push({ label:f[0], kind:'ask', query:f[1] }); });
@@ -1996,31 +2012,85 @@
      casual Taglish/Bisaya in the playful tone, calm English when the
      person picked the businesslike tone. */
 
-  var ANNOY_LINES = {
-    playful: [
-      [ "Uy, hinay-hinay lang sa pag-tap, ha? Sensitibo ko.",
-        "Naa ka bay kinahanglan? Kay kung wala, ayaw sige'g hikap nako, uy.",
-        "Hoy, kanina ka pa tap nang tap. Ano bang kailangan mo? 😒",
-        "Ayaw sige'g hikap nako, uy! Nakakakiliti na." ],
-      [ "Nasuko na ko, ha! Ayaw na ko'g hilabti, palihug. 😠",
-        "Sobra ka na! Hindi ako laruan - pera ang binabantayan ko dito!",
-        "Wala ba kay lain buhaton? Busy ko nagbantay sa imong kwarta! 😤",
-        "Isa pang tap, magtatampo na talaga ako." ],
-      [ "TAMA NA!! 😡 Nagmugtok na ko. Mag-sorry ka una.",
-        "Ambot nimo! Nag-walk out na ko. Mag-sorry ka una bago ta mag-istorya.",
-        "Nasuko na jud ko nimo! 💢 Mag-sorry ka, kung dili, dili ko mo-istorya." ]
-    ],
-    businesslike: [
-      [ "Please tap gently - I'm here whenever you need me.",
-        "If you need something, just let me know instead of tapping repeatedly." ],
-      [ "I'm getting frustrated with the repeated tapping. Please stop.",
-        "This is becoming disruptive. Please give me a moment." ],
-      [ "That's enough. I'm pausing for a while - an apology would be appreciated." ]
-    ]
+  /* Simple, everyday wording only - no deep/old words. Three languages,
+     picked by the Language setting. Businesslike tone stays calm English. */
+  var EMO = {
+    taglish: {
+      annoy: [
+        [ "Hey, dahan-dahan sa pag-tap, ha? Nakakakiliti na.",
+          "May kailangan ka ba? Kanina ka pa tap nang tap 😅",
+          "Uy, easy lang sa pag-tap!",
+          "Sensitive ako, ha. Dahan-dahan lang." ],
+        [ "Okay, naiinis na ako, ha 😠 Please stop tapping.",
+          "Hindi ako laruan! Busy ako sa pagbantay ng pera mo.",
+          "Seryoso, tama na. 😤",
+          "Isa pang tap, magtatampo na talaga ako." ],
+        [ "TAMA NA!! 😡 Galit na ako. Mag-sorry ka muna.",
+          "Okay, aalis na ako. Mag-sorry ka muna bago tayo mag-usap.",
+          "Naiinis na talaga ako! 💢 Sorry ka muna." ]
+      ],
+      sulk: [ "Hmp. Mag-sorry ka muna. 😤", "Nagtatampo pa ako. Wag mo muna akong i-tap.",
+              "Ayoko munang makipag-usap ngayon.", "...", "Sorry muna, ha?" ],
+      apology: [ "Sige, okay na. Pero dahan-dahan na, ha! 🥺", "Okay na ako. Balik na tayo sa budget mo 💛",
+                 "Sige na nga, pinatawad na kita. Wag na ulit, ha!" ],
+      cooldown: "Okay na ako, kalmado na. Ano'ng kailangan mo?",
+      shaken: [ "Hoy! Nahihilo ako! 😵", "Dahan-dahan naman! Wag mo akong iuga-uga!", "Nahilo ako! Ibaba mo ako nang dahan-dahan, ha." ]
+    },
+    english: {
+      annoy: [
+        [ "Hey, easy on the tapping, okay? That tickles.",
+          "Need something? You've been tapping a lot 😅",
+          "Easy there! I'm a little sensitive.",
+          "Gentle taps, please!" ],
+        [ "Okay, I'm getting annoyed now 😠 Please stop tapping.",
+          "I'm not a toy! I'm busy watching your money.",
+          "Seriously, that's enough. 😤",
+          "One more tap and I'm going to sulk." ],
+        [ "ENOUGH!! 😡 I'm mad now. Say sorry first.",
+          "Okay, I'm walking out. Say sorry before we talk again.",
+          "I'm really upset now! 💢 Sorry first, please." ]
+      ],
+      sulk: [ "Hmph. Say sorry first. 😤", "I'm still upset. Don't tap me yet.",
+              "I don't feel like talking right now.", "...", "Sorry first, okay?" ],
+      apology: [ "Okay, I forgive you. But be gentle next time, okay? 🥺", "I'm good now. Back to your budget? 💛",
+                 "Fine, all forgiven. Just don't do it again!" ],
+      cooldown: "Okay, I've calmed down. What do you need?",
+      shaken: [ "Hey! I'm getting dizzy! 😵", "Easy! Don't shake me!", "So dizzy! Put me down gently, okay." ]
+    },
+    bisaya: {
+      annoy: [
+        [ "Uy, hinay-hinay sa pag-tap, ha? Makiliti ko.",
+          "Naa ka bay kinahanglan? Kanina ka pa tap ug tap 😅",
+          "Hinay lang, uy! Sensitive ko.",
+          "Hinay-hinay lang sa pag-tap, palihug." ],
+        [ "Naiinis na ko, ha 😠 Palihug, ayaw na pag-tap.",
+          "Dili ko dula-dulaan! Busy ko nagbantay sa imong kwarta.",
+          "Seryoso, tama na. 😤",
+          "Kung mo-tap pa ka, masuko na jud ko." ],
+        [ "TAMA NA!! 😡 Nasuko na ko. Mag-sorry ka una.",
+          "Sige, mopahawa na ko. Mag-sorry ka una before ta mag-istorya.",
+          "Nasuko na jud ko! 💢 Sorry una, palihug." ]
+      ],
+      sulk: [ "Hmp. Mag-sorry ka una. 😤", "Nasuko pa ko. Ayaw una ko'g tap.",
+              "Wala ko'y gana mag-istorya karon.", "...", "Sorry una, ha?" ],
+      apology: [ "Sige, okay na. Pero hinay-hinay na, ha! 🥺", "Okay na ko. Balik ta sa budget nimo 💛",
+                 "Sige na, okay na ta. Ayaw na balik, ha!" ],
+      cooldown: "Okay na ko, kalma na. Unsa imong kinahanglan?",
+      shaken: [ "Uy! Nahilo ko! 😵", "Hinay-hinay, uy! Ayaw ko'g uyog-uyoga!", "Nahilo ko! Ibaba ko hinay-hinay, ha." ]
+    }
   };
+  function emo(){ return EMO[curLang] || EMO.taglish; }
+
+  var ANNOY_BIZ = [
+    [ "Please tap gently - I'm here whenever you need me.",
+      "If you need something, just let me know instead of tapping repeatedly." ],
+    [ "I'm getting frustrated with the repeated tapping. Please stop.",
+      "This is becoming disruptive. Please give me a moment." ],
+    [ "That's enough. I'm pausing for a while - an apology would be appreciated." ]
+  ];
 
   function getAnnoyedMessage(stage, tone){
-    var set = ANNOY_LINES[tone==='businesslike' ? 'businesslike' : 'playful'];
+    var set = tone==='businesslike' ? ANNOY_BIZ : emo().annoy;
     var lines = set[Math.max(0, Math.min(stage, set.length-1))];
     return { text: pick(lines), mood:'angry' };
   }
@@ -2028,8 +2098,7 @@
   function getSulkMessage(tone){
     return { text: pick(tone==='businesslike'
       ? [ "I'm pausing for now. An apology would help.", "Not right now, please." ]
-      : [ "Hmp. Mag-sorry ka una. 😤", "Nagmugtok pa ko. Ayaw ko'g hilabti.",
-          "Wala ko'y gana mag-istorya karon. Ambot nimo.", "...", "Sorry una, ha?" ]),
+      : emo().sulk),
       mood:'angry',
       actions:[ { label:'Sorry na 🙏', kind:'apologize' }, { label:'Ignore', kind:'dismiss' } ] };
   }
@@ -2037,9 +2106,7 @@
   function getApologyMessage(tone){
     return { text: pick(tone==='businesslike'
       ? [ "Apology accepted. Thank you - how can I help?" ]
-      : [ "Sige, gipasaylo na tika. Pero hinay-hinay na, ha! 🥺",
-          "Okay na ko. Balik ta sa budget nato, ha? 💛",
-          "Hay, sige na nga. Pinatawad na kita. Pero ayaw na balik-balik, ha!" ]),
+      : emo().apology),
       mood:'happy',
       actions:[ { label:'Menu', kind:'menu' } ] };
   }
@@ -2047,7 +2114,7 @@
   function getCooldownMessage(tone){
     return { text: tone==='businesslike'
       ? "I'm back to normal. How can I help?"
-      : "Okay na ko. Nag-cool down na. Unsa may kinahanglan nimo?",
+      : emo().cooldown,
       mood:'idle',
       actions:[ { label:'Menu', kind:'menu' } ] };
   }
@@ -2055,11 +2122,13 @@
   function getShakenMessage(tone){
     return { text: pick(tone==='businesslike'
       ? [ "Please don't shake me." ]
-      : [ "Hoy! Nahilo ko sa pag-uyog nimo! 😵", "Hinay-hinay, uy! Ayaw ko'g uyog-uyoga!", "Nahilo ko! Ibaba mo ako nang dahan-dahan, ha." ]),
+      : emo().shaken),
       mood:'angry' };
   }
 
   global.FinPetDialogue = {
+    setLang,
+    getLang,
     buildContext,
     getModuleMessage,
     getMenuMessage,
