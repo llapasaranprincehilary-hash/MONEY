@@ -1121,6 +1121,7 @@ label.fa-row{cursor:pointer}
 </script>
 <style>html.finlock body>*:not(#auth-overlay){visibility:hidden!important}</style>
 <style>@media(max-width:600px){.tb-left{display:none !important}.tb-right{width:100%;justify-content:space-between}}</style>
+<style>@media(max-width:900px){.fx-h{cursor:pointer;-webkit-tap-highlight-color:transparent}.fx-h::after{content:'\25BE';margin-left:10px;color:var(--muted);font-size:14px;transition:transform .15s}.card.fx-c>.fx-h::after{transform:rotate(-90deg)}.card.fx-c>.fx-h{margin-bottom:0;padding-bottom:0;border-bottom:0}.card.fx-c>*:not(.fx-h){display:none !important}}</style>
 </head>
 <body>
 <div class="shell">
@@ -6587,6 +6588,17 @@ function start(){mount();var t=0,iv=setInterval(function(){if(boot()||++t>40)cle
  if(!sessionStorage.getItem('finHi')){try{sessionStorage.setItem('finHi',1)}catch(e){}setTimeout(function(){W.FinPet&&W.FinPet.say({text:pick(CH[HR()]),actions:[{label:'Ask a question',kind:'ask-custom'}]})},7000)}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
+</script>
+<script>
+(function(){var K='finCollapse',st={};try{st=JSON.parse(localStorage.getItem(K)||'{}')}catch(e){}
+var DEF=/^(Add |➕ Add|Income vs Expenses|Loans & Payables|Total by Type)/;
+function init(){['dashboard','income','expenses','loans','balances'].forEach(function(id){var s=document.getElementById(id);if(!s)return;
+ s.querySelectorAll('.card').forEach(function(c){var hd=c.querySelector(':scope>.card-hd'),t=hd&&hd.querySelector('.card-title');if(!t)return;
+  var key=id+':'+t.textContent.trim();hd.classList.add('fx-h');
+  if(key in st?st[key]:DEF.test(t.textContent.trim()))c.classList.add('fx-c');
+  hd.addEventListener('click',function(e){if(e.target.closest('button,input,select,a'))return;var on=c.classList.toggle('fx-c');st[key]=on;try{localStorage.setItem(K,JSON.stringify(st))}catch(x){}})})});
+ new MutationObserver(function(ms){ms.forEach(function(m){m.addedNodes.forEach(function(n){if(n.classList&&n.classList.contains('ft-root'))document.querySelectorAll('.card.fx-c[data-tour]').forEach(function(c){c.classList.remove('fx-c')})})})}).observe(document.body,{childList:true})}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init()})();
 </script>
 <script src="virtual-pet/tour-steps.js"></script>
 <script src="virtual-pet/tour.js"></script>
