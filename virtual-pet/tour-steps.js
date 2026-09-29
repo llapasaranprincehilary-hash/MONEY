@@ -46,6 +46,22 @@ window.FinTourSteps = [
     action: 'next'
   },
   {
+    target: 'currency-switch',
+    page: 'dashboard',
+    title: 'Change your currency',
+    description: 'Tap this to switch between peso, dollar, yen, won and more. Only the symbol changes, your numbers stay the same.',
+    placement: 'bottom',
+    action: 'next'
+  },
+  {
+    target: 'language-switch',
+    page: 'dashboard',
+    title: 'Change the language',
+    description: 'Tap the globe to pick your language. The main labels switch right away.',
+    placement: 'bottom',
+    action: 'next'
+  },
+  {
     target: 'nav-balances',
     title: 'Open Balances',
     description: 'Wallets live here. Click Balances to see them.',
@@ -88,6 +104,23 @@ window.FinTourSteps = [
     title: 'Log an expense',
     description: 'Describe it, add the amount, choose a category and the wallet it came out of. That wallet\u2019s balance updates automatically.',
     placement: 'bottom',
+    action: 'next'
+  },
+  {
+    target: 'scan-receipt',
+    page: 'expenses',
+    title: 'Scan a receipt',
+    description: 'Snap a photo of a receipt and I will read the amount, date and store for you. It runs on your device, so nothing gets uploaded.',
+    placement: 'bottom',
+    action: 'next'
+  },
+  {
+    target: 'quick-log',
+    page: 'expenses',
+    title: 'Quick Log Expense',
+    description: 'See this + button? Tap it from any page to log an expense in a few seconds, no need to open the full form.',
+    placement: 'left',
+    mobilePlacement: 'top',
     action: 'next'
   },
   {
