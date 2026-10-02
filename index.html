@@ -1202,6 +1202,54 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
 
 </style>
 <style>.verse-progress-track{background:var(--border2);border-radius:99px;height:2px;overflow:hidden;margin-top:14px}.verse-progress-fill{height:100%;border-radius:99px;background:var(--accent);transition:width .3s linear}.verse-next{display:inline-flex;align-items:center;gap:6px;margin-top:14px;background:none;border:none;color:var(--muted);font-family:inherit;font-size:11px;letter-spacing:.04em;cursor:pointer;padding:6px 10px;border-radius:99px;transition:color .2s,background .2s}.verse-next:hover{color:var(--accent);background:rgba(var(--accent-rgb),.08)}.verse-next:active{transform:scale(.96)}</style>
+<style>
+/* ── FIRST-TIME ONBOARDING ── */
+.ob-box{max-width:400px;width:100%;text-align:center}
+.ob-prog{display:flex;gap:6px;margin:0 auto 22px;max-width:200px}
+.ob-seg{flex:1;height:4px;border-radius:99px;background:var(--border2);overflow:hidden;position:relative}
+.ob-seg i{position:absolute;inset:0;background:var(--accent);border-radius:99px;transform:scaleX(0);transform-origin:left;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.ob-seg.on i{transform:scaleX(1)}
+.ob-step{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:rgba(var(--accent-rgb),.65);font-weight:600;margin-bottom:12px}
+.ob-ico{width:54px;height:54px;margin:0 auto 14px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:25px;background:linear-gradient(135deg,rgba(var(--accent-rgb),.18),rgba(var(--accent-rgb),.05));border:1px solid rgba(var(--accent-rgb),.28);box-shadow:0 0 36px rgba(var(--accent-rgb),.1)}
+.ob-title{font-family:var(--font-d);font-size:22px;font-weight:700;margin-bottom:6px;letter-spacing:-.01em}
+.ob-sub{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.5;padding:0 6px}
+.ob-body{text-align:left;max-height:min(46vh,370px);overflow-y:auto;padding:3px 4px 6px;margin:0 -4px;scrollbar-width:thin}
+.ob-list{display:flex;flex-direction:column;gap:8px}
+.ob-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ob-opt{position:relative;display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:12px 14px;cursor:pointer;color:var(--text);font-family:var(--font-b);transition:border-color .15s,background .15s,transform .12s,box-shadow .15s}
+.ob-opt:hover{border-color:rgba(var(--accent-rgb),.5);background:var(--surface2)}
+.ob-opt:active{transform:scale(.985)}
+.ob-opt:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ob-opt.sel{border-color:var(--accent);background:linear-gradient(135deg,rgba(var(--accent-rgb),.13),rgba(var(--accent-rgb),.04));box-shadow:0 0 0 3px var(--accent-glow)}
+.ob-grid .ob-opt{flex-direction:column;align-items:flex-start;gap:9px;padding:12px}
+.ob-flag{flex:none;min-width:34px;height:26px;display:flex;align-items:center;justify-content:center;font-size:22px;line-height:1;border-radius:6px}
+.ob-flag.cc{font-size:10px;font-weight:700;letter-spacing:.05em;font-family:var(--font-d);color:var(--muted);background:var(--surface3);border:1px solid var(--border2);padding:0 6px}
+.ob-emo{flex:none;min-width:34px;height:26px;display:flex;align-items:center;justify-content:center;font-size:21px;line-height:1}
+.ob-main{flex:1;min-width:0;display:block}
+.ob-name{display:block;font-size:14px;font-weight:600;line-height:1.3}
+.ob-meta{display:block;font-size:11.5px;color:var(--muted);margin-top:2px;line-height:1.35}
+.ob-list .ob-meta{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ob-tick{flex:none;width:19px;height:19px;border-radius:50%;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;transition:all .15s}
+.ob-grid .ob-tick{position:absolute;top:10px;right:10px}
+.ob-opt.sel .ob-tick{background:var(--accent);border-color:var(--accent)}
+.ob-tick svg{width:11px;height:11px;stroke:#080808;stroke-width:2.6;fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:0;transform:scale(.5);transition:all .18s}
+.ob-opt.sel .ob-tick svg{opacity:1;transform:none}
+.ob-tag{display:inline-block;font-size:9px;text-transform:uppercase;letter-spacing:.08em;font-weight:700;color:var(--accent);background:var(--accent-bg);border:1px solid rgba(var(--accent-rgb),.25);padding:2px 7px;border-radius:99px;margin-left:8px;vertical-align:middle}
+.ob-other{display:block;margin-top:10px;width:100%;padding:12px 14px;border-radius:12px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-family:var(--font-b);font-size:14px;outline:none;transition:border-color .15s}
+.ob-other:focus{border-color:var(--accent)}
+.ob-foot{display:flex;gap:10px;margin-top:20px}
+.ob-btn{flex:1;padding:13px;border-radius:12px;font-family:var(--font-d);font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all .15s}
+.ob-btn.pri{background:var(--accent);color:#080808}
+.ob-btn.pri:hover:not(:disabled){background:var(--accent-dim)}
+.ob-btn.pri:disabled{opacity:.35;cursor:not-allowed}
+.ob-btn.sec{flex:0 0 auto;padding:13px 20px;background:var(--surface2);color:var(--text);border:1px solid var(--border2)}
+.ob-btn.sec:hover{border-color:var(--accent)}
+.ob-skip{background:none;border:none;color:var(--muted);font-size:12px;margin-top:12px;cursor:pointer;font-family:var(--font-b);padding:6px 12px;border-radius:99px}
+.ob-skip:hover{color:var(--text)}
+@keyframes obIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.ob-anim{animation:obIn .4s cubic-bezier(.2,.7,.2,1)}
+@media (prefers-reduced-motion:reduce){.ob-anim{animation:none}.ob-seg i,.ob-opt{transition:none}}
+</style>
 </head>
 <body>
 <div class="shell">
@@ -1305,6 +1353,21 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
 
     <button id="terms-continue-btn" onclick="acceptTermsAndContinue()" disabled style="width:100%;background:var(--accent);color:#080808;border:none;padding:12px;border-radius:10px;font-family:var(--font-d);font-size:14px;font-weight:700;cursor:pointer;opacity:1">Agree &amp; Continue</button>
     <div id="terms-error" class="pin-error" style="text-align:center"></div>
+  </div>
+
+  <!-- STEP: ONBOARDING (first-time users: language, currency, how they found us) -->
+  <div id="auth-onboard" class="ob-box" style="display:none">
+    <div class="ob-prog" id="ob-prog"><div class="ob-seg"><i></i></div><div class="ob-seg"><i></i></div><div class="ob-seg"><i></i></div></div>
+    <div class="ob-step" id="ob-step"></div>
+    <div class="ob-ico" id="ob-ico" aria-hidden="true"></div>
+    <div class="ob-title" id="ob-title"></div>
+    <div class="ob-sub" id="ob-sub"></div>
+    <div class="ob-body" id="ob-body"></div>
+    <div class="ob-foot">
+      <button type="button" class="ob-btn sec" id="ob-back" onclick="obBack()"></button>
+      <button type="button" class="ob-btn pri" id="ob-next" onclick="obNext()"></button>
+    </div>
+    <button type="button" class="ob-skip" id="ob-skip" onclick="obFinish(true)"></button>
   </div>
 
   <!-- STEP: REGISTER (new user) -->
@@ -2783,7 +2846,7 @@ async function handleAuthState(user){
     return;
   }
   if(!state.username){
-    showRegisterScreen();
+    showOnboardingOrRegister();
     return;
   }
   if(forcePinResetAfterAuth){
@@ -4668,7 +4731,7 @@ function saveEditGoal(){
 
 /* ── AUTH SCREEN SWITCHER ── */
 function hideAllAuthScreens(){
-  ['auth-login','auth-terms','auth-register','auth-secsetup','auth-forgot','auth-pin','auth-pinsetup','auth-clearconfirm'].forEach(id=>{
+  ['auth-login','auth-terms','auth-onboard','auth-register','auth-secsetup','auth-forgot','auth-pin','auth-pinsetup','auth-clearconfirm'].forEach(id=>{
     const el=document.getElementById(id);
     if(el)el.style.display='none';
   });
@@ -4957,6 +5020,174 @@ async function authAnonymousSignIn(){
     console.error(e);
     errEl.textContent=authFriendlyError(e);
   }
+}
+
+/* ── FIRST-TIME ONBOARDING (language · currency · where did you hear about us) ── */
+// Flag emoji don't render on some desktops (Windows shows "PH" letters). Detect that once and
+// fall back to a tidy country-code chip so it never looks broken.
+const OB_FLAG_OK=(function(){
+  try{
+    const c=document.createElement('canvas');c.width=c.height=32;
+    const x=c.getContext('2d');x.textBaseline='top';x.font='24px sans-serif';x.fillText('\uD83C\uDDF5\uD83C\uDDED',0,0);
+    const d=x.getImageData(0,0,32,32).data;
+    for(let i=0;i<d.length;i+=4){if(d[i+3]>0&&(Math.abs(d[i]-d[i+1])>30||Math.abs(d[i+1]-d[i+2])>30))return true;}
+    return false;
+  }catch(e){return true;}
+})();
+function obFlagChar(cc){return String.fromCodePoint(0x1F1E6+cc.charCodeAt(0)-65,0x1F1E6+cc.charCodeAt(1)-65);}
+function obFlag(cc){return OB_FLAG_OK?'<span class="ob-flag" aria-hidden="true">'+obFlagChar(cc)+'</span>':'<span class="ob-flag cc" aria-hidden="true">'+cc+'</span>';}
+// shared with the Settings dropdowns (script below): emoji only, '' when flags can't render
+window.finFlagText=function(cc){return(OB_FLAG_OK&&cc)?obFlagChar(cc)+' ':'';};
+window.FIN_CUR_CC={PHP:'PH',USD:'US',EUR:'EU',GBP:'GB',JPY:'JP',KRW:'KR',CNY:'CN',INR:'IN',AUD:'AU',SGD:'SG',CAD:'CA',AED:'AE',SAR:'SA',HKD:'HK',MYR:'MY',THB:'TH',IDR:'ID'};
+window.FIN_LANG_CC={en:'US',fil:'PH',ja:'JP',ko:'KR',es:'ES'};
+
+const OB_LANGS=[
+  {k:'en',cc:'US',n:'English',fb:'United States'},
+  {k:'fil',cc:'PH',n:'Filipino',fb:'Philippines'},
+  {k:'ja',cc:'JP',n:'日本語',fb:'Japan'},
+  {k:'ko',cc:'KR',n:'한국어',fb:'South Korea'},
+  {k:'es',cc:'ES',n:'Español',fb:'Spain'}
+];
+const OB_SRC=[
+  {k:'friend',e:'👨‍👩‍👧'},{k:'facebook',e:'📘'},{k:'tiktok',e:'🎵'},{k:'instagram',e:'📸'},
+  {k:'youtube',e:'▶️'},{k:'google',e:'🔎'},{k:'church',e:'⛪'},{k:'other',e:'✨'}
+];
+const OB_T={
+  en:{step:'Step {n} of 3',t1:'Choose your language',s1:'You can change this anytime in Settings.',t2:'Pick your currency',s2:'Only the symbol changes. Amounts are never converted.',t3:'Where did you hear about us?',s3:'Just curious. It helps us reach more people like you.',cont:'Continue',back:'Back',skip:'Skip for now',sug:'Suggested',oph:'Tell us where…',
+    src:{friend:'Friend or family',facebook:'Facebook',tiktok:'TikTok',instagram:'Instagram',youtube:'YouTube',google:'Google search',church:'Church / community',other:'Somewhere else'}},
+  fil:{step:'Hakbang {n} sa 3',t1:'Piliin ang iyong wika',s1:'Mababago mo ito anumang oras sa Settings.',t2:'Piliin ang iyong pera',s2:'Simbolo lang ang magbabago. Hindi kino-convert ang mga halaga.',t3:'Saan mo kami nalaman?',s3:'Gusto lang naming malaman para mas marami pa kaming matulungan.',cont:'Magpatuloy',back:'Bumalik',skip:'Laktawan muna',sug:'Mungkahi',oph:'Sabihin kung saan…',
+    src:{friend:'Kaibigan o pamilya',facebook:'Facebook',tiktok:'TikTok',instagram:'Instagram',youtube:'YouTube',google:'Google search',church:'Simbahan / komunidad',other:'Iba pa'}},
+  ja:{step:'ステップ {n} / 3',t1:'言語を選択',s1:'設定からいつでも変更できます。',t2:'通貨を選択',s2:'記号のみ変わります。金額は換算されません。',t3:'FINUITYをどこで知りましたか？',s3:'より多くの方に届けるための参考にします。',cont:'続ける',back:'戻る',skip:'今はスキップ',sug:'おすすめ',oph:'どこで知りましたか…',
+    src:{friend:'友人・家族',facebook:'Facebook',tiktok:'TikTok',instagram:'Instagram',youtube:'YouTube',google:'Google検索',church:'教会・コミュニティ',other:'その他'}},
+  ko:{step:'{n}/3 단계',t1:'언어를 선택하세요',s1:'설정에서 언제든 바꿀 수 있어요.',t2:'통화를 선택하세요',s2:'기호만 바뀝니다. 금액은 환산되지 않아요.',t3:'FINUITY를 어떻게 알게 되셨나요?',s3:'더 많은 분들께 다가가는 데 도움이 돼요.',cont:'계속',back:'뒤로',skip:'나중에 하기',sug:'추천',oph:'어디에서 알게 되셨나요…',
+    src:{friend:'친구 또는 가족',facebook:'Facebook',tiktok:'TikTok',instagram:'Instagram',youtube:'YouTube',google:'구글 검색',church:'교회 / 커뮤니티',other:'기타'}},
+  es:{step:'Paso {n} de 3',t1:'Elige tu idioma',s1:'Puedes cambiarlo cuando quieras en Ajustes.',t2:'Elige tu moneda',s2:'Solo cambia el símbolo. Los montos no se convierten.',t3:'¿Dónde te enteraste de nosotros?',s3:'Solo por curiosidad. Nos ayuda a llegar a más personas.',cont:'Continuar',back:'Atrás',skip:'Omitir por ahora',sug:'Sugerido',oph:'Cuéntanos dónde…',
+    src:{friend:'Amigo o familia',facebook:'Facebook',tiktok:'TikTok',instagram:'Instagram',youtube:'YouTube',google:'Búsqueda en Google',church:'Iglesia / comunidad',other:'Otro lugar'}}
+};
+const OB_TICK='<span class="ob-tick" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.5 8.3L6.3 11.2L12.5 4.5"/></svg></span>';
+const OB_ICONS=['🌐','💱','📣'];
+let OB={step:0,lang:'en',cur:'PHP',src:'',det:{}};
+
+function obT(){return OB_T[OB.lang]||OB_T.en;}
+function obEl(id){return document.getElementById(id);}
+function obDN(type,code,fb){try{const n=new Intl.DisplayNames([OB.lang],{type:type}).of(code);if(n&&n!==code)return n;}catch(e){}return fb||code;}
+
+// Best guess from the device so most people can just tap Continue.
+function obDetect(){
+  const nl=String((navigator.languages&&navigator.languages[0])||navigator.language||'en').toLowerCase();
+  let lang='en',langFound=false;
+  if(/^(fil|tl)/.test(nl)){lang='fil';langFound=true;}
+  else if(nl.startsWith('ja')){lang='ja';langFound=true;}
+  else if(nl.startsWith('ko')){lang='ko';langFound=true;}
+  else if(nl.startsWith('es')){lang='es';langFound=true;}
+  else if(nl.startsWith('en')){langFound=true;}
+  let tz='';try{tz=Intl.DateTimeFormat().resolvedOptions().timeZone||'';}catch(e){}
+  const TZ={'Asia/Manila':'PHP','Asia/Tokyo':'JPY','Asia/Seoul':'KRW','Asia/Shanghai':'CNY','Asia/Kolkata':'INR','Asia/Calcutta':'INR','Asia/Singapore':'SGD','Asia/Dubai':'AED','Asia/Riyadh':'SAR','Asia/Hong_Kong':'HKD','Asia/Kuala_Lumpur':'MYR','Asia/Bangkok':'THB','Asia/Jakarta':'IDR','Australia/Sydney':'AUD','Australia/Melbourne':'AUD','Australia/Perth':'AUD','Australia/Brisbane':'AUD','Europe/London':'GBP','America/Toronto':'CAD','America/Vancouver':'CAD','America/New_York':'USD','America/Chicago':'USD','America/Denver':'USD','America/Los_Angeles':'USD'};
+  let cur=TZ[tz],curFound=!!cur;
+  if(!cur&&/^Europe\//.test(tz)){cur='EUR';curFound=true;}
+  if(!cur)cur='PHP';
+  return{lang:lang,langFound:langFound,cur:cur,curFound:curFound};
+}
+
+function showOnboarding(){
+  const ov=obEl('auth-overlay'),box=obEl('auth-onboard');
+  // already on screen (e.g. auth state re-fired): don't wipe what they picked
+  if(box&&box.style.display==='block'&&ov&&ov.style.display==='flex')return;
+  const det=obDetect();
+  let saved='';try{saved=localStorage.getItem('finLang')||'';}catch(e){}
+  OB={step:0,lang:OB_T[saved]?saved:det.lang,cur:det.cur,src:'',det:det};
+  ov.style.display='flex';
+  hideAllAuthScreens();
+  box.style.display='block';
+  if(window.FinX&&FinX.setLang)FinX.setLang(OB.lang);
+  obRender();
+}
+
+function obRender(){
+  const body=obEl('ob-body'),t=obT();let h='';
+  if(OB.step===0){
+    h='<div class="ob-list" role="radiogroup">'+OB_LANGS.map(function(l){
+      const sug=OB.det.langFound&&OB.det.lang===l.k;
+      return '<button type="button" role="radio" aria-checked="'+(OB.lang===l.k)+'" class="ob-opt'+(OB.lang===l.k?' sel':'')+'" data-k="'+l.k+'" lang="'+l.k+'" onclick="obPickLang(\''+l.k+'\')">'
+        +obFlag(l.cc)
+        +'<span class="ob-main"><span class="ob-name">'+l.n+(sug?'<span class="ob-tag" data-sug></span>':'')+'</span><span class="ob-meta" data-region="'+l.cc+'" data-fb="'+l.fb+'"></span></span>'
+        +OB_TICK+'</button>';
+    }).join('')+'</div>';
+  }else if(OB.step===1){
+    const curs=(window.FinX&&FinX.curs)?Object.keys(FinX.curs()):['PHP','USD'];
+    const order=curs.slice().sort(function(a,b){
+      const w=function(k){return k===OB.det.cur&&OB.det.curFound?0:k==='PHP'?1:k==='USD'?2:3;};
+      return w(a)-w(b);
+    });
+    h='<div class="ob-grid" role="radiogroup">'+order.map(function(k){
+      const c=FinX.curs()[k],cc=window.FIN_CUR_CC[k]||'';
+      const sug=OB.det.curFound&&OB.det.cur===k;
+      return '<button type="button" role="radio" aria-checked="'+(OB.cur===k)+'" class="ob-opt'+(OB.cur===k?' sel':'')+'" data-k="'+k+'" onclick="obPickCur(\''+k+'\')">'
+        +(cc?obFlag(cc):'')+OB_TICK
+        +'<span class="ob-main"><span class="ob-name">'+(c[0].trim()!==k?c[0].trim()+' · ':'')+k+(sug?'<span class="ob-tag" data-sug></span>':'')+'</span><span class="ob-meta">'+obDN('currency',k,c[3])+'</span></span></button>';
+    }).join('')+'</div>';
+  }else{
+    h='<div class="ob-grid" role="radiogroup">'+OB_SRC.map(function(s){
+      return '<button type="button" role="radio" aria-checked="'+(OB.src===s.k)+'" class="ob-opt'+(OB.src===s.k?' sel':'')+'" data-k="'+s.k+'" onclick="obPickSrc(\''+s.k+'\')">'
+        +'<span class="ob-emo" aria-hidden="true">'+s.e+'</span>'+OB_TICK
+        +'<span class="ob-main"><span class="ob-name">'+t.src[s.k]+'</span></span></button>';
+    }).join('')+'</div>'
+    +'<input type="text" id="ob-other" class="ob-other" maxlength="60" style="display:none" autocomplete="off" onkeydown="if(event.key===\'Enter\')obNext()">';
+  }
+  body.innerHTML=h;
+  body.scrollTop=0;
+  body.classList.remove('ob-anim');void body.offsetWidth;body.classList.add('ob-anim');
+  obChrome();
+  const sel=body.querySelector('.ob-opt.sel');
+  if(sel&&OB.step===1&&sel.scrollIntoView)sel.scrollIntoView({block:'nearest'});
+}
+
+// Texts that depend on the chosen language / step (kept separate so picking never rebuilds the list)
+function obChrome(){
+  const t=obT();
+  obEl('ob-step').textContent=t.step.replace('{n}',OB.step+1);
+  obEl('ob-ico').textContent=OB_ICONS[OB.step];
+  obEl('ob-title').textContent=t['t'+(OB.step+1)];
+  obEl('ob-sub').textContent=t['s'+(OB.step+1)];
+  obEl('ob-back').textContent='←  '+t.back;
+  obEl('ob-back').style.display=OB.step>0?'':'none';
+  const nx=obEl('ob-next');nx.textContent=t.cont+'  →';nx.disabled=(OB.step===2&&!OB.src);
+  const sk=obEl('ob-skip');sk.textContent=t.skip;sk.style.display=OB.step===2?'':'none';
+  obEl('ob-prog').querySelectorAll('.ob-seg').forEach(function(s,i){s.classList.toggle('on',i<=OB.step);});
+  document.querySelectorAll('#ob-body [data-sug]').forEach(function(e){e.textContent=t.sug;});
+  document.querySelectorAll('#ob-body [data-region]').forEach(function(e){e.textContent=obDN('region',e.getAttribute('data-region'),e.getAttribute('data-fb'));});
+  const o=obEl('ob-other');if(o)o.placeholder=t.oph;
+}
+function obMarkSel(k){
+  document.querySelectorAll('#ob-body .ob-opt').forEach(function(b){
+    const on=b.getAttribute('data-k')===k;
+    b.classList.toggle('sel',on);b.setAttribute('aria-checked',on);
+  });
+}
+function obPickLang(k){
+  OB.lang=k;obMarkSel(k);
+  if(window.FinX&&FinX.setLang)FinX.setLang(k);   // the whole app switches language right away
+  obChrome();
+}
+function obPickCur(k){OB.cur=k;obMarkSel(k);}
+function obPickSrc(k){
+  OB.src=(OB.src===k)?'':k;            // tap again to un-pick
+  obMarkSel(OB.src);
+  const o=obEl('ob-other');
+  if(o){const show=OB.src==='other';o.style.display=show?'block':'none';if(show)setTimeout(function(){o.scrollIntoView({block:'nearest'});o.focus({preventScroll:true});},80);}
+  obChrome();
+}
+function obNext(){if(OB.step<2){OB.step++;obRender();}else obFinish(false);}
+function obBack(){if(OB.step>0){OB.step--;obRender();}}
+function obFinish(skip){
+  const o=obEl('ob-other'),other=(!skip&&OB.src==='other'&&o)?o.value.trim().slice(0,60):'';
+  state.onboarding={done:true,lang:OB.lang,cur:OB.cur,heardFrom:skip?'':OB.src,heardOther:other,at:new Date().toISOString()};
+  if(window.FinX){if(FinX.setLang)FinX.setLang(OB.lang);if(FinX.setCur)FinX.setCur(OB.cur,true);}
+  save();
+  showRegisterScreen();
+}
+function showOnboardingOrRegister(){
+  if(state.onboarding&&state.onboarding.done)showRegisterScreen();else showOnboarding();
 }
 
 /* ── REGISTRATION (new user) ── */
@@ -6064,7 +6295,7 @@ function acceptTermsAndContinue(){
   state.termsAccepted={accepted:true,version:LEGAL_VERSION,date:new Date().toISOString()};
   save();
   // Existing users re-accepting an updated version go straight back in; new users continue to profile setup.
-  if(state.username){stateLoadedForUid=cloudUser?cloudUser.uid:null;handleAuthState(cloudUser);}else showRegisterScreen();
+  if(state.username){stateLoadedForUid=cloudUser?cloudUser.uid:null;handleAuthState(cloudUser);}else showOnboardingOrRegister();
 }
 /* Right to erasure: delete cloud data, the account, and the local copy */
 async function deleteAccountAndData(){
@@ -6707,13 +6938,18 @@ window.finGuessCat=guessCat;   // lets the receipt scanner reuse the keyword cat
 var W=window,L=function(k,v){try{return v===undefined?localStorage.getItem(k):localStorage.setItem(k,v)}catch(e){}};
 function pick(a){return a[Math.floor(Math.random()*a.length)]}
 /* ---------- currency ---------- */
-var CUR={PHP:['₱','en-PH',2,'Philippine Peso'],USD:['$','en-US',2,'US Dollar'],EUR:['€','de-DE',2,'Euro'],GBP:['£','en-GB',2,'British Pound'],JPY:['¥','ja-JP',0,'Japanese Yen'],KRW:['₩','ko-KR',0,'Korean Won'],CNY:['CN¥','zh-CN',2,'Chinese Yuan'],INR:['₹','en-IN',2,'Indian Rupee'],AUD:['A$','en-AU',2,'Australian Dollar'],SGD:['S$','en-SG',2,'Singapore Dollar']};
+var CUR={PHP:['₱','en-PH',2,'Philippine Peso'],USD:['$','en-US',2,'US Dollar'],EUR:['€','de-DE',2,'Euro'],GBP:['£','en-GB',2,'British Pound'],JPY:['¥','ja-JP',0,'Japanese Yen'],KRW:['₩','ko-KR',0,'Korean Won'],CNY:['CN¥','zh-CN',2,'Chinese Yuan'],INR:['₹','en-IN',2,'Indian Rupee'],AUD:['A$','en-AU',2,'Australian Dollar'],SGD:['S$','en-SG',2,'Singapore Dollar'],CAD:['C$','en-CA',2,'Canadian Dollar'],AED:['AED ','en-AE',2,'UAE Dirham'],SAR:['SAR ','en-SA',2,'Saudi Riyal'],HKD:['HK$','en-HK',2,'Hong Kong Dollar'],MYR:['RM','ms-MY',2,'Malaysian Ringgit'],THB:['฿','th-TH',2,'Thai Baht'],IDR:['Rp','id-ID',0,'Indonesian Rupiah']};
 var cur=L('finCur');if(!CUR[cur])cur='PHP';
 function sym(){return CUR[cur][0]}
 function money(n){var c=CUR[cur];return c[0]+Number(n).toLocaleString(c[1],{minimumFractionDigits:c[2],maximumFractionDigits:c[2]})}
 function syms(){document.querySelectorAll('.cur-sym').forEach(function(e){e.textContent=sym()})}
 function rerender(){syms();try{render()}catch(e){}}
 W.FinX={money:money,sym:sym};
+W.FinX.curs=function(){return CUR};
+W.FinX.getCur=function(){return cur};
+W.FinX.getLang=function(){return lang};
+W.FinX.setLang=function(k){if(!LG[k])return;lang=k;L('finLang',k);apply(document.body)};
+W.FinX.setCur=function(k,silent){if(!CUR[k])return;cur=k;L('finCur',k);if(silent)syms();else rerender()};
 /* ---------- language (text + placeholder/title swap) ---------- */
 var LG={en:'English',fil:'Filipino',ja:'日本語',ko:'한국어',es:'Español'},LI={fil:0,ja:1,ko:2,es:3},lang=L('finLang')||'en';
 var D={'Language & currency':['Wika at pera','言語と通貨','언어 및 통화','Idioma y moneda'],'Export & reports':['I-export at ulat','エクスポートとレポート','내보내기 및 보고서','Exportar e informes'],'Guided tour':['Gabay na tour','ガイドツアー','가이드 투어','Recorrido guiado'],'Take a tour':['Mag-tour','ツアーを見る','투어 보기','Hacer recorrido'],'Shortcuts':['Mga shortcut','ショートカット','단축키','Atajos'],'Dashboard':['Dashboard','ダッシュボード','대시보드','Panel'],'Income':['Kita','収入','수입','Ingresos'],'Expenses':['Gastos','支出','지출','Gastos'],'Balances':['Mga Balanse','残高','잔액','Saldos'],'Loans':['Mga Utang','ローン','대출','Préstamos'],'Goals & Budget':['Mga Layunin at Badyet','目標と予算','목표 및 예산','Metas y presupuesto'],'Export & Backup':['I-export at Backup','エクスポートとバックアップ','내보내기 및 백업','Exportar y respaldo'],'Menu':['Menu','メニュー','메뉴','Menú'],'Settings':['Mga Setting','設定','설정','Ajustes'],'Total Earned':['Kabuuang Kinita','総収入','총 수입','Total ganado'],'Total Spent':['Kabuuang Nagastos','総支出','총 지출','Total gastado'],'Net Income':['Netong Kita','純収入','순수입','Ingreso neto'],'I Owe':['Utang Ko','借入','내가 빌린 돈','Yo debo'],'Owed to Me':['Utang sa Akin','貸出','받을 돈','Me deben'],'Remaining':['Natitira','残り','남은 금액','Restante'],'Spent':['Nagastos','支出済み','지출','Gastado'],'Edit':['I-edit','編集','편집','Editar'],'Remove':['Alisin','削除','삭제','Quitar'],'Cancel':['Kanselahin','キャンセル','취소','Cancelar'],'Save':['I-save','保存','저장','Guardar'],'Add':['Idagdag','追加','추가','Añadir'],'Amount':['Halaga','金額','금액','Monto'],'Note':['Tala','メモ','메모','Nota'],'Date':['Petsa','日付','날짜','Fecha']};
@@ -6728,9 +6964,9 @@ new MutationObserver(function(ms){if(busy)return;ms.forEach(function(m){m.addedN
 /* ---------- pixel popover + topbar buttons ---------- */
 function mount(){
  var ls=document.getElementById('pref-lang'),cs=document.getElementById('pref-cur');
- if(ls&&!ls.options.length){Object.keys(LG).forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=LG[k];ls.appendChild(o)});ls.value=lang;
+ if(ls&&!ls.options.length){Object.keys(LG).forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=(W.finFlagText?W.finFlagText((W.FIN_LANG_CC||{})[k]):'')+LG[k];ls.appendChild(o)});ls.value=lang;
   ls.onchange=function(){lang=ls.value;L('finLang',lang);apply(document.body)}}
- if(cs&&!cs.options.length){Object.keys(CUR).forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=CUR[k][0]+'  '+k+' \u00b7 '+CUR[k][3];cs.appendChild(o)});cs.value=cur;
+ if(cs&&!cs.options.length){Object.keys(CUR).forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=(W.finFlagText?W.finFlagText((W.FIN_CUR_CC||{})[k]):'')+CUR[k][0]+'  '+k+' \u00b7 '+CUR[k][3];cs.appendChild(o)});cs.value=cur;
   cs.onchange=function(){cur=cs.value;L('finCur',cur);rerender();try{toast('Currency set to '+cur+'. Only the symbol changes, your numbers stay the same.')}catch(e){}}}
  apply(document.body)}
 /* ---------- Fin's Data Bank ---------- */
