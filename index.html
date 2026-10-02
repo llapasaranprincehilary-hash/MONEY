@@ -1126,8 +1126,81 @@ label.fa-row{cursor:pointer}
 }catch(e){}})();
 </script>
 <style>html.finlock body>*:not(#auth-overlay){visibility:hidden!important}</style>
-<style>@media(max-width:600px){.tb-left{display:none !important}.tb-right{width:100%;justify-content:space-between}}</style>
-<style>@media(max-width:900px){.fx-h{cursor:pointer;-webkit-tap-highlight-color:transparent}.fx-h::after{content:'\25BE';margin-left:10px;color:var(--muted);font-size:14px;transition:transform .15s}.card.fx-c>.fx-h::after{transform:rotate(-90deg)}.card.fx-c>.fx-h{margin-bottom:0;padding-bottom:0;border-bottom:0}.card.fx-c>*:not(.fx-h){display:none !important}}</style>
+
+<style id="layout-fixes">
+/* =====================================================================
+   LAYOUT FIXES  (self-contained block - delete it to revert everything)
+   ===================================================================== */
+
+
+/* =====================================================================
+   NAVIGATION RESTRUCTURE
+   desktop : Menu (6 items) / divider / Settings / profile / tour + shortcuts
+   phone   : title + Settings gear on top, Goals in the bottom nav
+   ===================================================================== */
+.nav-sep{height:1px;background:var(--border);margin:10px 8px}
+.sb-help{display:flex;gap:6px}
+.sb-help-btn{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:6px;min-height:34px;padding:0 6px;border-radius:8px;
+  border:1px solid var(--border);background:transparent;color:var(--muted);font:inherit;font-size:11.5px;cursor:pointer;white-space:nowrap;transition:background .15s,color .15s}
+.sb-help-btn:hover{background:var(--surface2);color:var(--text)}
+.sb-help-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sb-help-btn .kbd{margin:0}
+.tb-right .tb-gear{display:none}
+.tb-gear.active{color:var(--accent);border-color:rgba(var(--accent-rgb),.45);background:var(--accent-bg)}
+@media(max-width:900px){
+  .tb-right .tb-gear{display:inline-flex;align-items:center;justify-content:center;min-width:40px;min-height:40px;padding:0}
+}
+
+
+/* Quick-log (+) is for logging expenses: keep it off Settings/Export where it only covers content */
+body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none !important}
+/* Desktop: FAB sits in the corner, Fin docks directly above it */
+@media(min-width:901px){#fa-fab{right:24px !important;bottom:24px !important}}
+
+/* -- Theme toggle: bigger, with a sun/moon so it says what it does -- */
+.theme-toggle{width:46px !important;height:26px !important;border-radius:13px !important}
+.theme-toggle .theme-thumb{display:block;width:20px !important;height:20px !important;top:2px !important;left:2px !important;
+  background-color:#d9d9de !important;background-repeat:no-repeat !important;background-position:center !important;background-size:12px !important;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23222' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z'/%3E%3C/svg%3E") !important}
+.theme-toggle.on .theme-thumb{left:22px !important;background-color:var(--accent) !important;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Cpath d='M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4'/%3E%3C/svg%3E") !important}
+
+/* -- Card titles: sentence case reads calmer than tracked ALL CAPS -- */
+.card-title{text-transform:none !important;letter-spacing:0 !important;font-size:14px !important;font-weight:700 !important;color:var(--text) !important}
+
+/* -- Collapsible cards (phones): obvious, tappable, no dead space -- */
+@media(max-width:900px){
+  .fx-h{cursor:pointer;-webkit-tap-highlight-color:transparent;min-height:44px}
+  .fx-h::after{content:'';flex:none;width:30px;height:30px;margin-left:10px;border-radius:50%;
+    background:var(--surface2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") center/14px no-repeat;
+    transition:transform .18s}
+  .card.fx-c>.fx-h::after{transform:rotate(-90deg)}
+  .card.fx-c>.fx-h{margin:0 !important;padding:0 !important;border-bottom:0 !important}
+  .card.fx-c{padding-top:12px !important;padding-bottom:12px !important}
+  .card.fx-c>*:not(.fx-h){display:none !important}
+}
+
+/* -- Phones: tighter cards, clear scroll room for FAB + mascot -- */
+@media(max-width:600px){
+  .card{padding:18px !important;margin-bottom:14px !important}
+  .card-hd{margin-bottom:14px !important;padding-bottom:12px !important}
+
+  /* topbar: page title left, one tidy right-aligned action group */
+  .tb-left{display:flex !important;min-width:0;flex:1;overflow:hidden}
+  .tb-right{width:auto !important;flex-shrink:0;gap:6px !important;justify-content:flex-end}
+
+  /* Loans: two summary cards side by side instead of 320px of stacked height */
+  #loans .two-col{grid-template-columns:1fr 1fr !important;gap:10px !important;margin-bottom:0 !important}
+  #loans .two-col>.card{padding:14px !important;margin-bottom:0 !important}
+  #loans .two-col .card-title{font-size:12px !important;line-height:1.3;margin-bottom:8px !important}
+  #payable-total,#receivable-total{font-size:20px !important;overflow-wrap:anywhere}
+}
+@media(max-width:900px){
+  .content{padding-bottom:calc(150px + env(safe-area-inset-bottom,0px)) !important}
+  #fa-fab{right:16px;bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+}
+
+</style>
 <style>.verse-progress-track{background:var(--border2);border-radius:99px;height:2px;overflow:hidden;margin-top:14px}.verse-progress-fill{height:100%;border-radius:99px;background:var(--accent);transition:width .3s linear}.verse-dots{display:flex;justify-content:center;gap:5px;margin-top:10px;flex-wrap:wrap}.verse-dot{width:5px;height:5px;border-radius:50%;background:var(--muted2);cursor:pointer;transition:all .2s}.verse-dot.active{background:var(--accent);width:14px;border-radius:99px}</style>
 </head>
 <body>
@@ -1467,16 +1540,12 @@ label.fa-row{cursor:pointer}
       <span>Loans</span>
       <span class="nav-badge" id="nav-badge-loans">0</span>
     </div>
-    <div class="nav-item" onclick="show('export')" data-page="export">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-      <span>Export</span>
-    </div>
-    <div class="nav-lbl" style="margin-top:10px">Tools</div>
     <div class="nav-item" onclick="show('goals')" data-page="goals" data-tour="nav-goals">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
       <span>Goals</span>
       <span class="nav-badge" id="nav-badge-goals">0</span>
     </div>
+    <div class="nav-sep" role="separator"></div>
     <div class="nav-item" onclick="show('settings')" data-page="settings">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
       <span>Settings</span>
@@ -1493,7 +1562,16 @@ label.fa-row{cursor:pointer}
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
       </button>
     </div>
-    <div class="kbd-hint"><kbd class="kbd">?</kbd> show shortcuts</div>
+    <div class="sb-help">
+      <button type="button" class="sb-help-btn" onclick="window.FinTour&&window.FinTour.start(true)" data-tour="help-button" title="Replay the guided tour">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 015.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span>Take a tour</span>
+      </button>
+      <button type="button" class="sb-help-btn" onclick="document.getElementById('shortcuts-overlay').classList.add('show')" title="Keyboard shortcuts">
+        <kbd class="kbd">?</kbd>
+        <span>Shortcuts</span>
+      </button>
+    </div>
   </div>
 </nav>
 
@@ -1505,16 +1583,8 @@ label.fa-row{cursor:pointer}
       <span class="tb-sep"></span><span class="tb-date" id="topbar-date"></span>
     </div>
     <div class="tb-right">
-      <div class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode"><div class="theme-thumb"></div></div>
-      <button class="btn btn-ghost btn-sm" onclick="window.FinTour&&window.FinTour.start(true)" title="Take a guided tour" aria-label="Take a guided tour" data-tour="help-button">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 015.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-      </button>
-      <button class="btn btn-ghost btn-sm" onclick="show('settings')" title="Settings">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-      </button>
-      <button class="btn btn-ghost btn-sm tb-export-btn" onclick="show('export')">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-        <span class="tb-export-label">Export</span>
+      <button class="btn btn-ghost btn-sm tb-gear" data-page="settings" onclick="show('settings')" title="Settings" aria-label="Settings">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
       </button>
     </div>
   </div>
@@ -1857,10 +1927,13 @@ label.fa-row{cursor:pointer}
         <div class="set-menu">
         <button class="set-item" onclick="openSetPanel('personal')"><svg class="ic" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="lab">Personal Information</span><svg class="chev" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
         <button class="set-item" onclick="openSetPanel('appearance')"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg><span class="lab">Appearance</span><svg class="chev" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+        <button class="set-item" data-tour="settings-region" onclick="openSetPanel('region')"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg><span class="lab">Language &amp; currency</span><svg class="chev" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+        <button class="set-item" onclick="show('export')"><svg class="ic" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 12v6M9 15l3 3 3-3"/></svg><span class="lab">Export &amp; reports</span><svg class="chev" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
          <button class="set-item" id="settings-install-item" onclick="event.stopPropagation();handleInstallClick()"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3v11"/><polyline points="7 10 12 15 17 10"/><path d="M5 21h14"/></svg><span class="lab">Install FINUITY</span><svg class="chev" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
         <button class="set-item" onclick="openSetPanel('security')"><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg><span class="lab">PIN &amp; Security</span><svg class="chev" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
         <button class="set-item" onclick="openSetPanel('auto')"><svg class="ic" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.5 15a9 9 0 11-2.1-9.4L23 10"/></svg><span class="lab">Automation &amp; Recurring</span><svg class="chev" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
         <button class="set-item" onclick="openSetPanel('data')"><svg class="ic" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.7-4 3-9 3s-9-1.3-9-3M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/></svg><span class="lab">Data &amp; Backup</span><svg class="chev" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+        <button class="set-item" data-tour="help-button" onclick="window.FinTour&&window.FinTour.start(true)"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 015.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span class="lab">Guided tour</span><svg class="chev" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
         <button class="set-item" onclick="openSetPanel('legal')"><svg class="ic" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span class="lab">Privacy &amp; Legal</span><svg class="chev" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
         <button class="set-item" onclick="openSetPanel('about')"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg><span class="lab">About</span><svg class="chev" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
         </div>
@@ -1907,6 +1980,19 @@ label.fa-row{cursor:pointer}
       <div class="row" style="flex-direction:column;align-items:stretch;gap:10px">
         <div style="display:flex;justify-content:space-between;align-items:center"><span class="lbl">Accent color</span><span style="font-size:12px;color:var(--muted)" id="accent-label">Lime</span></div>
         <div class="swatches" id="accent-swatches"></div>
+      </div>
+    </div>
+      </div>
+      <div class="set-panel single" data-panel="region">
+    <!-- LANGUAGE & CURRENCY -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="row">
+        <div><div style="font-size:13px;font-weight:500">Language</div><div style="font-size:11px;color:var(--muted)">Main labels switch right away</div></div>
+        <select id="pref-lang" aria-label="Language" style="width:auto;max-width:55%"></select>
+      </div>
+      <div class="row" style="border-bottom:none">
+        <div><div style="font-size:13px;font-weight:500">Currency</div><div style="font-size:11px;color:var(--muted)">Changes the symbol only. Amounts are not converted.</div></div>
+        <select id="pref-cur" aria-label="Currency" style="width:auto;max-width:55%"></select>
       </div>
     </div>
       </div>
@@ -2039,6 +2125,7 @@ label.fa-row{cursor:pointer}
 
   <!-- ══ EXPORT ══ -->
   <div id="export" class="section">
+    <button type="button" class="btn btn-ghost btn-sm" onclick="show('settings')" style="margin-bottom:12px">&#8249; Settings</button>
     <div class="page-hd">
       <div class="page-title">Export & Backup</div>
       <div class="page-sub">Download your data as a formal report, CSV, or full backup</div>
@@ -2134,9 +2221,9 @@ label.fa-row{cursor:pointer}
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 12V8H4v4M20 12v8H4v-8M20 12H4M8 8V6a4 4 0 018 0v2"/></svg>
     Wallets
   </div>
-  <div class="bnav-item" onclick="show('settings')" data-page="settings">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-    Settings
+  <div class="bnav-item" onclick="show('goals')" data-page="goals" data-tour="nav-goals">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+    Goals
   </div>
 </div>
 
@@ -2810,7 +2897,7 @@ function toast(msg,type='ok'){
 }
 
 /* ── Settings menu navigation ── */
-const SET_TITLES={personal:'Personal Information',appearance:'Appearance',security:'PIN & Security',auto:'Automation & Recurring',data:'Data & Backup',legal:'Privacy & Legal',about:'About'};
+const SET_TITLES={personal:'Personal Information',appearance:'Appearance',region:'Language & Currency',security:'PIN & Security',auto:'Automation & Recurring',data:'Data & Backup',legal:'Privacy & Legal',about:'About'};
 function openSetPanel(key){
   const home=document.getElementById('set-home'),det=document.getElementById('set-detail');
   if(!home||!det)return;
@@ -2842,11 +2929,12 @@ function updateSettingsHome(){
 
 function show(id){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.bnav-item').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.nav-item,.bnav-item,.tb-gear').forEach(b=>b.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   document.querySelectorAll(`[data-page="${id}"]`).forEach(el=>el.classList.add('active'));
+  if(id==='export')document.querySelectorAll('[data-page="settings"]').forEach(el=>el.classList.add('active'));
   document.getElementById('topbar-title').textContent=PAGE_TITLES[id]||id;
+  document.body.dataset.page=id;
   if(id==='settings')openSetPanel(null);
   render();
   window.scrollTo({top:0,behavior:'smooth'});
@@ -5655,7 +5743,7 @@ function renderAccentSwatches(){
 function toggleTheme(){
   document.body.classList.toggle('light');
   const on=document.body.classList.contains('light');
-  document.getElementById('theme-toggle').classList.toggle('on',on);
+  const _tt=document.getElementById('theme-toggle');if(_tt)_tt.classList.toggle('on',on);
   const st=document.getElementById('theme-toggle-settings');
   if(st)st.classList.toggle('on',on);
   const lbl=document.getElementById('theme-label');
@@ -5666,7 +5754,7 @@ function toggleTheme(){
 }
 function initTheme(){
   const t=localStorage.getItem('mtTheme');
-  if(t==='light'){document.body.classList.add('light');document.getElementById('theme-toggle').classList.add('on');}
+  if(t==='light'){document.body.classList.add('light');['theme-toggle','theme-toggle-settings'].forEach(function(i){var e=document.getElementById(i);if(e)e.classList.add('on')});const _l=document.getElementById('theme-label');if(_l)_l.textContent='Light';}
   let a=null;try{a=localStorage.getItem('mtAccent');}catch(e){}
   applyAccent(a);
 }
@@ -6618,7 +6706,7 @@ function rerender(){syms();try{render()}catch(e){}}
 W.FinX={money:money,sym:sym};
 /* ---------- language (text + placeholder/title swap) ---------- */
 var LG={en:'English',fil:'Filipino',ja:'日本語',ko:'한국어',es:'Español'},LI={fil:0,ja:1,ko:2,es:3},lang=L('finLang')||'en';
-var D={'Dashboard':['Dashboard','ダッシュボード','대시보드','Panel'],'Income':['Kita','収入','수입','Ingresos'],'Expenses':['Gastos','支出','지출','Gastos'],'Balances':['Mga Balanse','残高','잔액','Saldos'],'Loans':['Mga Utang','ローン','대출','Préstamos'],'Goals & Budget':['Mga Layunin at Badyet','目標と予算','목표 및 예산','Metas y presupuesto'],'Export & Backup':['I-export at Backup','エクスポートとバックアップ','내보내기 및 백업','Exportar y respaldo'],'Menu':['Menu','メニュー','메뉴','Menú'],'Settings':['Mga Setting','設定','설정','Ajustes'],'Total Earned':['Kabuuang Kinita','総収入','총 수입','Total ganado'],'Total Spent':['Kabuuang Nagastos','総支出','총 지출','Total gastado'],'Net Income':['Netong Kita','純収入','순수입','Ingreso neto'],'I Owe':['Utang Ko','借入','내가 빌린 돈','Yo debo'],'Owed to Me':['Utang sa Akin','貸出','받을 돈','Me deben'],'Remaining':['Natitira','残り','남은 금액','Restante'],'Spent':['Nagastos','支出済み','지출','Gastado'],'Edit':['I-edit','編集','편집','Editar'],'Remove':['Alisin','削除','삭제','Quitar'],'Cancel':['Kanselahin','キャンセル','취소','Cancelar'],'Save':['I-save','保存','저장','Guardar'],'Add':['Idagdag','追加','추가','Añadir'],'Amount':['Halaga','金額','금액','Monto'],'Note':['Tala','メモ','메모','Nota'],'Date':['Petsa','日付','날짜','Fecha']};
+var D={'Language & currency':['Wika at pera','言語と通貨','언어 및 통화','Idioma y moneda'],'Export & reports':['I-export at ulat','エクスポートとレポート','내보내기 및 보고서','Exportar e informes'],'Guided tour':['Gabay na tour','ガイドツアー','가이드 투어','Recorrido guiado'],'Take a tour':['Mag-tour','ツアーを見る','투어 보기','Hacer recorrido'],'Shortcuts':['Mga shortcut','ショートカット','단축키','Atajos'],'Dashboard':['Dashboard','ダッシュボード','대시보드','Panel'],'Income':['Kita','収入','수입','Ingresos'],'Expenses':['Gastos','支出','지출','Gastos'],'Balances':['Mga Balanse','残高','잔액','Saldos'],'Loans':['Mga Utang','ローン','대출','Préstamos'],'Goals & Budget':['Mga Layunin at Badyet','目標と予算','목표 및 예산','Metas y presupuesto'],'Export & Backup':['I-export at Backup','エクスポートとバックアップ','내보내기 및 백업','Exportar y respaldo'],'Menu':['Menu','メニュー','메뉴','Menú'],'Settings':['Mga Setting','設定','설정','Ajustes'],'Total Earned':['Kabuuang Kinita','総収入','총 수입','Total ganado'],'Total Spent':['Kabuuang Nagastos','総支出','총 지출','Total gastado'],'Net Income':['Netong Kita','純収入','순수입','Ingreso neto'],'I Owe':['Utang Ko','借入','내가 빌린 돈','Yo debo'],'Owed to Me':['Utang sa Akin','貸出','받을 돈','Me deben'],'Remaining':['Natitira','残り','남은 금액','Restante'],'Spent':['Nagastos','支出済み','지출','Gastado'],'Edit':['I-edit','編集','편집','Editar'],'Remove':['Alisin','削除','삭제','Quitar'],'Cancel':['Kanselahin','キャンセル','취소','Cancelar'],'Save':['I-save','保存','저장','Guardar'],'Add':['Idagdag','追加','추가','Añadir'],'Amount':['Halaga','金額','금액','Monto'],'Note':['Tala','メモ','메모','Nota'],'Date':['Petsa','日付','날짜','Fecha']};
 var orig=new WeakMap(),busy=false;
 function trText(n){var b=orig.has(n)?orig.get(n):n.nodeValue,t=b.trim(),e=D[t],v=lang==='en'?null:e&&e[LI[lang]];
  if(v){orig.set(n,b);n.nodeValue=b.replace(t,v)}else if(orig.has(n)){n.nodeValue=orig.get(n);orig.delete(n)}}
@@ -6628,18 +6716,13 @@ function apply(root){busy=true;try{var w=document.createTreeWalker(root,NodeFilt
  if(root.querySelectorAll)root.querySelectorAll('[placeholder],[title]').forEach(trAttrs);document.documentElement.lang=lang==='fil'?'fil':lang}finally{busy=false}}
 new MutationObserver(function(ms){if(busy)return;ms.forEach(function(m){m.addedNodes.forEach(function(n){if(n.nodeType===1)apply(n);else if(n.nodeType===3){busy=true;trText(n);busy=false}})})}).observe(document.body,{childList:true,subtree:true});
 /* ---------- pixel popover + topbar buttons ---------- */
-function pop(btn,items,now,pickFn){var old=document.getElementById('fx-pop');if(old){old.remove();if(old._b===btn)return}
- var p=document.createElement('div');p.id='fx-pop';p._b=btn;var r=btn.getBoundingClientRect();
- p.style.cssText='position:fixed;top:'+(r.bottom+6)+'px;right:'+Math.max(8,innerWidth-r.right)+'px;z-index:9999;background:var(--surface);border:2px solid var(--accent);box-shadow:4px 4px 0 rgba(0,0,0,.45);padding:4px;min-width:180px;max-height:60vh;overflow:auto;font-size:12.5px';
- items.forEach(function(it){var b=document.createElement('button');b.textContent=(it[0]===now?'> ':'   ')+it[1];b.style.cssText='display:block;width:100%;text-align:left;background:'+(it[0]===now?'var(--accent-bg)':'transparent')+';color:var(--text);border:0;padding:7px 9px;cursor:pointer;font:inherit;white-space:pre';b.onclick=function(){p.remove();pickFn(it[0])};p.appendChild(b)});
- document.body.appendChild(p);setTimeout(function(){document.addEventListener('click',function h(e){if(!p.contains(e.target)&&!btn.contains(e.target)){p.remove();document.removeEventListener('click',h)}})},0)}
-function mount(){var bar=document.querySelector('.tb-right');if(!bar||document.getElementById('fx-lang'))return;
- var g=document.createElement('button');g.id='fx-lang';g.setAttribute('data-tour','language-switch');g.className='btn btn-ghost btn-sm';g.title='Language';g.setAttribute('aria-label','Language');
- g.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>';
- g.onclick=function(){pop(g,Object.keys(LG).map(function(k){return[k,LG[k]]}),lang,function(k){lang=k;L('finLang',k);apply(document.body)})};
- var c=document.createElement('button');c.id='fx-cur';c.setAttribute('data-tour','currency-switch');c.className='btn btn-ghost btn-sm';c.title='Currency';c.setAttribute('aria-label','Currency');c.style.fontWeight='700';c.textContent=sym();
- c.onclick=function(){pop(c,Object.keys(CUR).map(function(k){return[k,CUR[k][0]+'  '+k+' · '+CUR[k][3]]}),cur,function(k){cur=k;L('finCur',k);c.textContent=sym();rerender();try{toast('Currency set to '+k+'. Only the symbol changes, your numbers stay the same.')}catch(e){}})};
- bar.insertBefore(c,bar.firstChild);bar.insertBefore(g,bar.firstChild);apply(document.body)}
+function mount(){
+ var ls=document.getElementById('pref-lang'),cs=document.getElementById('pref-cur');
+ if(ls&&!ls.options.length){Object.keys(LG).forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=LG[k];ls.appendChild(o)});ls.value=lang;
+  ls.onchange=function(){lang=ls.value;L('finLang',lang);apply(document.body)}}
+ if(cs&&!cs.options.length){Object.keys(CUR).forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=CUR[k][0]+'  '+k+' \u00b7 '+CUR[k][3];cs.appendChild(o)});cs.value=cur;
+  cs.onchange=function(){cur=cs.value;L('finCur',cur);rerender();try{toast('Currency set to '+cur+'. Only the symbol changes, your numbers stay the same.')}catch(e){}}}
+ apply(document.body)}
 /* ---------- Fin's Data Bank ---------- */
 function S(){try{return state}catch(e){return{}}}
 function td(){try{return today()}catch(e){return new Date().toISOString().slice(0,10)}}
