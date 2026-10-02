@@ -1204,7 +1204,8 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
 <style>.verse-progress-track{background:var(--border2);border-radius:99px;height:2px;overflow:hidden;margin-top:14px}.verse-progress-fill{height:100%;border-radius:99px;background:var(--accent);transition:width .3s linear}.verse-next{display:inline-flex;align-items:center;gap:6px;margin-top:14px;background:none;border:none;color:var(--muted);font-family:inherit;font-size:11px;letter-spacing:.04em;cursor:pointer;padding:6px 10px;border-radius:99px;transition:color .2s,background .2s}.verse-next:hover{color:var(--accent);background:rgba(var(--accent-rgb),.08)}.verse-next:active{transform:scale(.96)}</style>
 <style>
 /* ── FIRST-TIME ONBOARDING ── */
-.ob-box{max-width:400px;width:100%;text-align:center}
+.ob-box{max-width:400px;width:100%;text-align:center;padding-bottom:6px}
+@media (min-width:640px){.ob-box{max-width:580px}.ob-grid{grid-template-columns:repeat(3,1fr)}}
 .ob-prog{display:flex;gap:6px;margin:0 auto 22px;max-width:200px}
 .ob-seg{flex:1;height:4px;border-radius:99px;background:var(--border2);overflow:hidden;position:relative}
 .ob-seg i{position:absolute;inset:0;background:var(--accent);border-radius:99px;transform:scaleX(0);transform-origin:left;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
@@ -1213,7 +1214,7 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
 .ob-ico{width:54px;height:54px;margin:0 auto 14px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:25px;background:linear-gradient(135deg,rgba(var(--accent-rgb),.18),rgba(var(--accent-rgb),.05));border:1px solid rgba(var(--accent-rgb),.28);box-shadow:0 0 36px rgba(var(--accent-rgb),.1)}
 .ob-title{font-family:var(--font-d);font-size:22px;font-weight:700;margin-bottom:6px;letter-spacing:-.01em}
 .ob-sub{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.5;padding:0 6px}
-.ob-body{text-align:left;max-height:min(46vh,370px);overflow-y:auto;padding:3px 4px 6px;margin:0 -4px;scrollbar-width:thin}
+.ob-body{text-align:left;padding:3px 4px 6px;margin:0 -4px}
 .ob-list{display:flex;flex-direction:column;gap:8px}
 .ob-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .ob-opt{position:relative;display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:12px 14px;cursor:pointer;color:var(--text);font-family:var(--font-b);transition:border-color .15s,background .15s,transform .12s,box-shadow .15s}
@@ -1237,7 +1238,7 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
 .ob-tag{display:inline-block;font-size:9px;text-transform:uppercase;letter-spacing:.08em;font-weight:700;color:var(--accent);background:var(--accent-bg);border:1px solid rgba(var(--accent-rgb),.25);padding:2px 7px;border-radius:99px;margin-left:8px;vertical-align:middle}
 .ob-other{display:block;margin-top:10px;width:100%;padding:12px 14px;border-radius:12px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-family:var(--font-b);font-size:14px;outline:none;transition:border-color .15s}
 .ob-other:focus{border-color:var(--accent)}
-.ob-foot{display:flex;gap:10px;margin-top:20px}
+.ob-foot{display:flex;gap:10px;margin-top:14px;position:sticky;bottom:0;padding:14px 0 6px;background:linear-gradient(to top,var(--bg) 62%,transparent);z-index:2}
 .ob-btn{flex:1;padding:13px;border-radius:12px;font-family:var(--font-d);font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all .15s}
 .ob-btn.pri{background:var(--accent);color:#080808}
 .ob-btn.pri:hover:not(:disabled){background:var(--accent-dim)}
@@ -1249,6 +1250,109 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
 @keyframes obIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .ob-anim{animation:obIn .4s cubic-bezier(.2,.7,.2,1)}
 @media (prefers-reduced-motion:reduce){.ob-anim{animation:none}.ob-seg i,.ob-opt{transition:none}}
+</style>
+<style>
+/* ── WALLET CARDS ── */
+.wc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin-bottom:18px}
+.wc{position:relative;overflow:hidden;container-type:inline-size;border-radius:22px;padding:18px;min-height:176px;color:#fff;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;background:linear-gradient(135deg,var(--c1),var(--c2));box-shadow:0 14px 30px -14px var(--c2),0 2px 6px rgba(0,0,0,.25);transition:transform .22s cubic-bezier(.2,.7,.2,1),box-shadow .22s;text-align:left}
+.wc:hover{transform:translateY(-3px);box-shadow:0 20px 36px -14px var(--c2),0 2px 6px rgba(0,0,0,.25)}
+.wc:active{transform:scale(.985)}
+.wc:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.wc.dark{color:#15200d}
+.wc.preview{cursor:default;pointer-events:none}
+.wc::before{content:'';position:absolute;right:-46px;top:-46px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.13)}
+.wc::after{content:'';position:absolute;right:26px;bottom:-70px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.07)}
+.wc>*{position:relative;z-index:1}
+.wc-top{display:flex;align-items:center;gap:10px}
+.wc-logo{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.95);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-weight:800;overflow:hidden;flex:none;box-shadow:0 2px 8px rgba(0,0,0,.2);letter-spacing:-.04em;line-height:1}
+.wc-logo img{width:100%;height:100%;object-fit:cover;display:block}
+.wc-name{flex:1;min-width:0;font-family:var(--font-d);font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wc-more{flex:none;width:30px;height:30px;border-radius:50%;border:none;background:rgba(255,255,255,.2);color:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.wc-more:hover{background:rgba(255,255,255,.36)}
+.wc.dark .wc-more{background:rgba(0,0,0,.1)}
+.wc-sub{font-size:11px;opacity:.8;margin-top:9px;letter-spacing:.02em}
+.wc-bal-l{font-size:9.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;opacity:.75;margin-top:16px}
+.wc-bal{font-family:var(--font-d);font-size:clamp(18px,10cqw,27px);font-weight:800;letter-spacing:-.02em;line-height:1.15;overflow-wrap:anywhere}
+.wc-bar{height:6px;border-radius:99px;background:rgba(255,255,255,.3);overflow:hidden;margin-top:14px}
+.wc.dark .wc-bar{background:rgba(0,0,0,.14)}
+.wc-bar i{display:block;height:100%;border-radius:99px;background:#fff;transition:width .5s}
+.wc.dark .wc-bar i{background:#15200d}
+.wc-meta{display:flex;justify-content:space-between;gap:8px;font-size:10.5px;opacity:.88;margin-top:5px}
+.wc-upd{font-size:10px;opacity:.6;margin-top:7px}
+.wc-add{min-height:176px;border-radius:22px;border:2px dashed var(--border2);background:transparent;color:var(--muted);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;font-family:var(--font-b);font-size:13px;font-weight:600;transition:all .18s}
+.wc-add:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-bg)}
+.wc-add .wc-plus{width:42px;height:42px;border-radius:50%;background:var(--accent-bg);border:1px solid rgba(var(--accent-rgb),.3);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:24px;line-height:1;font-weight:400;margin-bottom:2px}
+.wc-add small{font-size:11px;font-weight:400;opacity:.8}
+.wc-menu{position:fixed;z-index:1850;min-width:190px;background:var(--surface);color:var(--text);border:1px solid var(--border2);border-radius:14px;box-shadow:var(--shadow-lg);padding:6px;animation:obIn .16s ease}
+.wc-menu button{display:block;width:100%;text-align:left;background:none;border:none;color:inherit;font-family:var(--font-b);font-size:13px;padding:10px 12px;border-radius:9px;cursor:pointer}
+.wc-menu button:hover:not(:disabled){background:var(--surface2)}
+.wc-menu button:disabled{opacity:.35;cursor:default}
+.wc-menu button.danger{color:var(--red)}
+.wal-dot{display:inline-block;width:10px;height:10px;border-radius:50%;flex:none}
+/* editor sheet */
+.wal-ov{position:fixed;inset:0;z-index:1800;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:16px}
+.wal-sheet{width:100%;max-width:480px;max-height:calc(100vh - 32px);overflow-y:auto;background:var(--surface);border:1px solid var(--border2);border-radius:24px;padding:20px 20px 18px;box-shadow:var(--shadow-lg);animation:obIn .26s cubic-bezier(.2,.7,.2,1)}
+.wal-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.wal-title{font-family:var(--font-d);font-size:18px;font-weight:700}
+.wal-x{width:32px;height:32px;border-radius:50%;border:1px solid var(--border2);background:var(--surface2);color:var(--muted);cursor:pointer;font-size:13px}
+.wal-x:hover{color:var(--text)}
+#wal-prev{position:sticky;top:-21px;z-index:4;margin:0 -4px 14px;padding:8px 4px 12px;background:var(--surface)}
+#wal-prev .wc{min-height:150px}
+.wal-sec{margin-bottom:14px}
+.wal-sec>label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600;margin-bottom:7px}
+.wal-sec>label span{text-transform:none;letter-spacing:0;color:var(--muted2);font-weight:400}
+.wal-sec input[type=text],.wal-sec input[type=number]{width:100%}
+.wal-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.wal-row .wal-sec:only-child{grid-column:1/-1}
+.wal-gl{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted2);font-weight:700;margin:10px 0 6px}
+.wal-gl:first-child{margin-top:0}
+.wal-bg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.wal-brand{display:flex;flex-direction:column;align-items:center;gap:6px;padding:9px 4px 8px;border-radius:14px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-family:var(--font-b);font-size:10.5px;font-weight:500;cursor:pointer;transition:all .15s;text-align:center;line-height:1.2}
+.wal-brand:hover{border-color:rgba(var(--accent-rgb),.5)}
+.wal-brand.sel{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow);background:var(--accent-bg)}
+.wal-bl{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-weight:800;font-size:13px;letter-spacing:-.04em;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.wal-chips{display:flex;flex-wrap:wrap;gap:7px}
+.wal-chip{padding:8px 13px;border-radius:99px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-family:var(--font-b);font-size:12.5px;cursor:pointer;transition:all .15s}
+.wal-chip:hover{border-color:rgba(var(--accent-rgb),.5)}
+.wal-chip.sel{border-color:var(--accent);background:var(--accent-bg);color:var(--accent);font-weight:600}
+.wal-swatches{display:flex;flex-wrap:wrap;gap:10px}
+.wal-sw{width:30px;height:30px;border-radius:50%;border:2px solid transparent;cursor:pointer;box-shadow:0 0 0 1px var(--border2);transition:transform .12s}
+.wal-sw:hover{transform:scale(1.1)}
+.wal-sw.sel{border-color:var(--surface);box-shadow:0 0 0 2px var(--accent)}
+.wal-logo-row{display:flex;gap:8px;flex-wrap:wrap}
+.wal-ghost{padding:9px 14px;border-radius:10px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-family:var(--font-b);font-size:12.5px;cursor:pointer}
+.wal-ghost:hover{border-color:var(--accent)}
+.wal-err{color:var(--red);font-size:12px;min-height:18px;margin-bottom:4px}
+.wal-foot{display:flex;gap:10px}
+.wal-btn{flex:1;padding:13px;border-radius:12px;font-family:var(--font-d);font-size:14px;font-weight:700;cursor:pointer;border:none}
+.wal-btn.pri{background:var(--accent);color:#080808}
+.wal-btn.pri:hover{background:var(--accent-dim)}
+.wal-btn.sec{flex:0 0 auto;padding:13px 20px;background:var(--surface2);color:var(--text);border:1px solid var(--border2)}
+@media (max-width:520px){
+  .wc-grid{grid-template-columns:1fr 1fr;gap:10px}
+  .wc{padding:14px;min-height:158px;border-radius:18px}
+  .wc-logo{width:30px;height:30px}
+  .wc-name{font-size:13px}
+  .wc-more{width:26px;height:26px}
+  .wc-add{min-height:158px;border-radius:18px}
+  .wal-ov{align-items:flex-end;padding:0}
+  .wal-sheet{max-width:none;max-height:92vh;border-radius:24px 24px 0 0}
+  .wal-bg{grid-template-columns:repeat(4,1fr)}
+  #wal-prev{top:-21px}
+  #wal-prev .wc{min-height:112px;padding:12px}
+  #wal-prev .wc-bal-l{margin-top:8px}
+}
+@media (prefers-reduced-motion:reduce){.wc,.wc-bar i{transition:none}.wal-sheet,.wc-menu{animation:none}}
+/* ── INCOME ROWS ── */
+.inc-ico{flex:none;width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;background:var(--surface2);border:1px solid var(--border)}
+@supports (background:color-mix(in srgb,red 10%,transparent)){.inc-ico{background:color-mix(in srgb,var(--tc,var(--accent)) 14%,transparent);border-color:color-mix(in srgb,var(--tc,var(--accent)) 30%,transparent)}}
+.entry.inc-row.is-latest{background:linear-gradient(100deg,rgba(var(--accent-rgb),.12),rgba(var(--accent-rgb),.03) 65%,transparent);border:1px solid rgba(var(--accent-rgb),.28);border-radius:16px;padding:14px !important;margin:8px 0;box-shadow:0 10px 26px -16px rgba(var(--accent-rgb),.6)}
+.inc-new{display:inline-flex;align-items:center;gap:5px;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);background:var(--accent-bg);padding:2px 8px 2px 7px;border-radius:99px}
+.inc-new i{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:incPulse 2.2s infinite}
+@keyframes incPulse{0%{box-shadow:0 0 0 0 rgba(var(--accent-rgb),.55)}70%,100%{box-shadow:0 0 0 7px rgba(var(--accent-rgb),0)}}
+.inc-wal{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)}
+.inc-date{font-size:11px;color:var(--muted2)}
+@media (prefers-reduced-motion:reduce){.inc-new i{animation:none}}
 </style>
 </head>
 <body>
@@ -1771,27 +1875,7 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
       </div>
       <div class="page-sub">Manage your wallets and update balances anytime</div>
     </div>
-    <div class="bal-cards" id="balance-cards"></div>
-    <!-- ADD WALLET -->
-    <div class="card" style="margin-bottom:14px" data-tour="add-wallet">
-      <div class="card-hd"><div class="card-title">➕ Add Wallet</div></div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Wallet Name</label>
-          <input type="text" id="new-wallet-name" placeholder="e.g. Bank, Savings, Palengke..." maxlength="24">
-        </div>
-        <div class="form-group">
-          <label>Starting Balance (<span class="cur-sym">₱</span>)</label>
-          <input type="number" id="new-wallet-bal" placeholder="0.00" min="0" step="0.01">
-        </div>
-        <div class="form-group" style="display:flex;align-items:flex-end">
-          <button class="btn btn-primary" style="width:100%" onclick="addWallet()">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Add Wallet
-          </button>
-        </div>
-      </div>
-    </div>
+    <div class="wc-grid" id="balance-cards"></div>
     <div class="card">
       <div class="card-hd"><div class="card-title">Net Worth</div></div>
       <div id="nw-rows"></div>
@@ -2629,8 +2713,11 @@ function save(){
 
 // ── Cloud Sync (Firebase) ──────────────────────────────────
 let cloudUser=null;
-let cloudSyncTimer=null;
-let lastCloudUpdatedAt=0,cloudPushPending=false,cloudPushing=false,cloudPulling=false,lastCloudPullAt=0;
+let cloudSyncTimer=null,cloudRetryTimer=null;
+let lastCloudUpdatedAt=0,lastCloudRev=0,cloudPushPending=false,cloudPushing=false,cloudPulling=false,lastCloudPullAt=0,cloudConflictOpen=false,cloudFailToasted=false;
+/* The uid whose cloud copy this device has SUCCESSFULLY read. Nothing may be written to the cloud
+   until this matches the signed-in user: writing before reading is how a blank/new device wipes an account. */
+let stateLoadedForUid=null;
 
 function queueCloudPush(){
   if(!cloudUser)return;
@@ -2658,29 +2745,10 @@ function stripUndefined(val){
   return val;
 }
 
-async function pushToCloud(){
-  if(!cloudUser)return;
-  cloudPushPending=false;cloudPushing=true;
-  setCloudSpinner(true);
-  try{
-    const ts=Date.now();
-    await fbDb.collection('users').doc(cloudUser.uid).set({data:stripUndefined(state),updatedAt:ts});
-    lastCloudUpdatedAt=ts;
-    markCloudLinked(cloudUser.uid,ts);
-  }catch(e){
-    console.error('Cloud sync failed',e);
-    toast('Cloud sync failed - check your connection','error');
-  }
-  cloudPushing=false;
-  setCloudSpinner(false);
-}
-
-let stateLoadedForUid=null;
-
-/* Remember that THIS device's copy is already linked to a cloud account (and when it last matched),
+/* Remember that THIS device's copy is already linked to a cloud account (and when/which revision it last matched),
    so the "cloud vs device" question is only asked for a genuine first-time conflict. */
-function markCloudLinked(uid,at){
-  try{localStorage.setItem('finCloudLinked',JSON.stringify({uid:uid,at:at||Date.now()}));}catch(e){}
+function markCloudLinked(uid,at,rev){
+  try{localStorage.setItem('finCloudLinked',JSON.stringify({uid:uid,at:at||Date.now(),rev:rev||0}));}catch(e){}
 }
 function getCloudLinked(uid){
   try{const l=JSON.parse(localStorage.getItem('finCloudLinked')||'null');if(l&&l.uid===uid)return l;}catch(e){}
@@ -2688,66 +2756,169 @@ function getCloudLinked(uid){
 }
 function clearCloudLinked(){try{localStorage.removeItem('finCloudLinked');}catch(e){}}
 
-async function loadStateForUser(user){
-  if(stateLoadedForUid===user.uid)return; // already synced this session, avoid re-prompting on token refresh
+function hasLocalData(){
+  return !!state.username||(state.income&&state.income.length)||(state.expenses&&state.expenses.length)||
+    (state.loans&&state.loans.length)||(state.goals&&state.goals.length)||(state.wallets||[]).some(w=>w.balance);
+}
+
+/* Whenever one copy of the data is about to be replaced by another, keep the loser on this device
+   (last 2). Cheap insurance: nothing a person typed can vanish without a trace. */
+function keepSafetyCopy(reason,data){
+  try{
+    const k='finSafetyCopies';
+    let list=[];try{list=JSON.parse(localStorage.getItem(k)||'[]');}catch(e){}
+    list.unshift({at:Date.now(),reason:reason,uid:cloudUser&&cloudUser.uid||null,data:data});
+    list=list.slice(0,2);
+    try{localStorage.setItem(k,JSON.stringify(list));}
+    catch(e){localStorage.setItem(k,JSON.stringify(list.slice(0,1)));}
+  }catch(e){console.warn('Could not store a safety copy',e);}
+}
+
+async function pushToCloud(force){
+  if(!cloudUser)return;
+  // SAFETY 1: never write until this account's cloud copy has been read successfully.
+  if(stateLoadedForUid!==cloudUser.uid){cloudPushPending=true;return;}
+  // one write at a time; anything saved meanwhile is uploaded right after
+  if(cloudPushing){cloudPushPending=true;return;}
+  cloudPushPending=false;cloudPushing=true;
   setCloudSpinner(true);
+  const uid=cloudUser.uid,ref=fbDb.collection('users').doc(uid);
+  const payload=stripUndefined(state); // snapshot now, so a later sign-out wipe can never leak into this write
+  const ts=Date.now();
+  let conflict=null,failed=false,newRev=0;
+  try{
+    await fbDb.runTransaction(async tx=>{
+      conflict=null;
+      const snap=await tx.get(ref);
+      const d=snap.exists?snap.data():null;
+      const rRev=(d&&d.rev)||0,rAt=(d&&d.updatedAt)||0;
+      // SAFETY 2: another device saved since we last synced -> never silently overwrite it
+      if(!force&&d&&d.data&&(rRev>lastCloudRev||rAt>lastCloudUpdatedAt)){conflict=d;return;}
+      newRev=rRev+1;
+      tx.set(ref,{data:payload,updatedAt:ts,rev:newRev});
+    });
+    if(!conflict&&cloudUser&&cloudUser.uid===uid){lastCloudUpdatedAt=ts;lastCloudRev=newRev;markCloudLinked(uid,ts,newRev);cloudFailToasted=false;}
+  }catch(e){
+    failed=true;
+    console.error('Cloud sync failed',e);
+    if(!cloudFailToasted){cloudFailToasted=true;toast('Cloud sync failed - will retry shortly','error');}
+  }
+  cloudPushing=false;
+  setCloudSpinner(false);
+  if(conflict){await resolveCloudConflict(conflict);return;}
+  clearTimeout(cloudSyncTimer);
+  if(failed){cloudPushPending=true;cloudSyncTimer=setTimeout(pushToCloud,20000);}
+  else if(cloudPushPending){cloudSyncTimer=setTimeout(pushToCloud,300);}
+}
+
+/* Another device saved newer data than what this device last saw. Let the person decide,
+   and keep the copy that loses on this device. */
+async function resolveCloudConflict(d){
+  if(cloudConflictOpen)return;
+  cloudConflictOpen=true;
+  try{
+    const raw=d.data,remote=(typeof raw==='string')?JSON.parse(raw):raw,remoteAt=d.updatedAt||0;
+    const useRemote=await showMergeChoice(remote,remoteAt);
+    lastCloudUpdatedAt=remoteAt;lastCloudRev=d.rev||0;
+    if(useRemote){
+      keepSafetyCopy('this-device-before-newer-cloud',JSON.parse(JSON.stringify(state)));
+      Object.keys(state).forEach(k=>delete state[k]);
+      Object.assign(state,defaultState(),remote);
+      localStorage.setItem('kwentadoV1',JSON.stringify(state));
+      markCloudLinked(cloudUser.uid,remoteAt||Date.now(),lastCloudRev);
+      try{render();updateSidebarUsername();}catch(e){}
+      toast('Loaded the newer data from your other device ✓');
+    }else{
+      keepSafetyCopy('cloud-before-this-device-overwrote-it',remote);
+      await pushToCloud(true);
+    }
+  }catch(e){console.error('Conflict resolution failed',e);}
+  cloudConflictOpen=false;
+}
+
+/* Returns true only if the cloud copy was read successfully (or the account is genuinely new). */
+async function loadStateForUser(user){
+  if(stateLoadedForUid===user.uid)return true; // already synced this session, avoid re-prompting on token refresh
+  setCloudSpinner(true);
+  let ok=false;
   try{
     const doc=await fbDb.collection('users').doc(user.uid).get();
     if(doc.exists && doc.data().data){
-      const raw=doc.data().data;
+      const dd=doc.data(),raw=dd.data;
       const remote=(typeof raw==='string')?JSON.parse(raw):raw;
-      lastCloudUpdatedAt=doc.data().updatedAt||0;
-      const localHasData=!!state.username||(state.income&&state.income.length)||(state.expenses&&state.expenses.length)||(state.wallets||[]).some(w=>w.balance);
-      const remoteAt=doc.data().updatedAt||0;
+      const remoteAt=dd.updatedAt||0;
+      lastCloudUpdatedAt=remoteAt;lastCloudRev=dd.rev||0;
+      const localHasData=hasLocalData();
       const linked=getCloudLinked(user.uid);
       let useRemote=true;
       if(localHasData){
         if(linked){
           // Already connected to this account before: no question needed.
           // Cloud newer (edited on another device) -> take it; otherwise keep this device's copy.
-          useRemote=remoteAt>linked.at;
+          useRemote=remoteAt>linked.at||(dd.rev||0)>(linked.rev||0);
         }else{
-          useRemote=await showMergeChoice(remote,doc.data().updatedAt);
+          useRemote=await showMergeChoice(remote,remoteAt);
         }
       }
       if(useRemote){
+        if(localHasData&&JSON.stringify(state)!==JSON.stringify(remote))keepSafetyCopy('this-device-before-cloud-load',JSON.parse(JSON.stringify(state)));
         Object.keys(state).forEach(k=>delete state[k]);
         Object.assign(state,remote);
         localStorage.setItem('kwentadoV1',JSON.stringify(state));
-        markCloudLinked(user.uid,remoteAt||Date.now());
+        markCloudLinked(user.uid,remoteAt||Date.now(),lastCloudRev);
+        stateLoadedForUid=user.uid;
       }else{
-        await pushToCloud();
+        if(!linked)keepSafetyCopy('cloud-before-this-device-overwrote-it',remote);
+        stateLoadedForUid=user.uid;
+        await pushToCloud(true);
       }
     }else{
-      // brand-new account - seed the cloud with whatever's local (usually defaults)
+      // The read SUCCEEDED and there is no document: a genuinely new account - seed the cloud
+      stateLoadedForUid=user.uid;
       await pushToCloud();
     }
+    ok=true;
   }catch(e){
     console.error('Cloud load failed',e);
-    toast('Could not reach cloud data - working offline for now','error');
   }
-  stateLoadedForUid=user.uid;
   setCloudSpinner(false);
+  return ok;
+}
+
+/* Returning user opened the app without a connection: keep working from this device's copy,
+   then load + sync automatically as soon as the cloud is reachable again. */
+function startCloudRetry(){
+  clearInterval(cloudRetryTimer);
+  const tryNow=async()=>{
+    if(!cloudUser||stateLoadedForUid===cloudUser.uid){clearInterval(cloudRetryTimer);return;}
+    if(await loadStateForUser(cloudUser)){
+      clearInterval(cloudRetryTimer);
+      try{render();updateSidebarUsername();}catch(e){}
+      toast('Back online - your data is synced ✓');
+    }
+  };
+  cloudRetryTimer=setInterval(tryNow,30000);
+  window.addEventListener('online',tryNow,{once:true});
 }
 
 /* Another phone/tablet may have saved newer data while this one sat open. Without this,
    the stale copy would overwrite it on the next save. We re-check when the app comes
    back to the foreground (throttled) and only pull when nothing local is waiting to upload. */
 async function pullCloudIfNewer(){
-  if(!cloudUser||!stateLoadedForUid||cloudPushPending||cloudPushing||cloudPulling)return;
+  if(!cloudUser||stateLoadedForUid!==cloudUser.uid||cloudPushPending||cloudPushing||cloudPulling)return;
   if(Date.now()-lastCloudPullAt<15000)return;
   lastCloudPullAt=Date.now();cloudPulling=true;
   try{
     const doc=await fbDb.collection('users').doc(cloudUser.uid).get();
     if(doc.exists&&doc.data().data){
-      const at=doc.data().updatedAt||0;
-      if(at>lastCloudUpdatedAt&&!cloudPushPending&&!cloudPushing){
+      const at=doc.data().updatedAt||0,rev=doc.data().rev||0;
+      if((at>lastCloudUpdatedAt||rev>lastCloudRev)&&!cloudPushPending&&!cloudPushing){
         const raw=doc.data().data;
         const remote=(typeof raw==='string')?JSON.parse(raw):raw;
         Object.keys(state).forEach(k=>delete state[k]);
         Object.assign(state,defaultState(),remote);
-        lastCloudUpdatedAt=at;
-        markCloudLinked(cloudUser.uid,at);
+        lastCloudUpdatedAt=at;lastCloudRev=rev;
+        markCloudLinked(cloudUser.uid,at,rev);
         localStorage.setItem('kwentadoV1',JSON.stringify(state));
         render();updateSidebarUsername();
         toast('Updated with your latest data from another device ✓');
@@ -2757,7 +2928,7 @@ async function pullCloudIfNewer(){
   cloudPulling=false;
 }
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')pullCloudIfNewer();});
-window.addEventListener('online',pullCloudIfNewer);
+window.addEventListener('online',()=>{pullCloudIfNewer();if(cloudUser&&cloudPushPending)pushToCloud();});
 window.addEventListener('focus',pullCloudIfNewer);
 
 function updateAccountSettingsUI(){
@@ -2807,14 +2978,16 @@ function authSignOut(){
 }
 function doSignOut(){
   sessionStorage.removeItem('mtUnlocked');
-  stateLoadedForUid=null;
+  // cancel anything queued for the account we're leaving, and block writes until the next account has loaded
+  clearTimeout(cloudSyncTimer);clearInterval(cloudRetryTimer);cloudPushPending=false;
+  stateLoadedForUid=null;lastCloudUpdatedAt=0;lastCloudRev=0;
   // wipe this device's local copy so the next person gets a fresh app, not your leftover data
   Object.keys(state).forEach(k=>delete state[k]);
   Object.assign(state,defaultState());
   localStorage.removeItem('kwentadoV1');
   localStorage.removeItem('mtTutDone');
   clearCloudLinked();bioClear();
-  fbAuth.signOut();
+  return fbAuth.signOut();
 }
 
 async function authLinkToGoogle(){
@@ -2833,13 +3006,27 @@ async function authLinkToGoogle(){
 
 /* ── CENTRAL AUTH CONTROLLER ── */
 async function handleAuthState(user){
+  const prev=cloudUser;
   cloudUser=user;
+  // Uploads queued for the PREVIOUS account must never land in a different one.
+  if(!user||!prev||prev.uid!==user.uid){clearTimeout(cloudSyncTimer);cloudPushPending=false;stateLoadedForUid=null;}
   updateAccountSettingsUI();
   if(!user){
     showLoginScreen();
     return;
   }
-  await loadStateForUser(user);
+  const loaded=await loadStateForUser(user);
+  if(!loaded){
+    // We could NOT read this account's saved data. Carrying on with a blank state is exactly how
+    // existing data gets overwritten (the blank app asks to "sign up", saves, and wipes the cloud copy).
+    if(getCloudLinked(user.uid)&&hasLocalData()){
+      toast('You appear to be offline - showing the copy saved on this device. It will sync when you are back online.');
+      startCloudRetry();
+    }else{
+      showCloudLoadErrorScreen();
+      return;
+    }
+  }
   await migratePlaintextSecrets();
   if(!state.termsAccepted||state.termsAccepted.version!==LEGAL_VERSION){
     showTermsScreen();
@@ -2890,6 +3077,17 @@ function showConnectionErrorScreen(){
     <div style="font-size:16px;font-weight:700;margin-bottom:8px">Can't connect right now</div>
     <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:22px">FINUITY needs a connection to reach your account. Check your internet connection, then try again.</div>
     <button onclick="location.reload()" style="background:var(--accent);color:#080808;border:none;padding:11px 28px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Retry</button>
+  </div>`;
+}
+function showCloudLoadErrorScreen(){
+  const overlay=document.getElementById('auth-overlay');
+  if(!overlay)return;
+  overlay.style.display='flex';
+  overlay.innerHTML=`<div style="max-width:340px;width:100%;text-align:center;padding:30px">
+    <div style="font-size:16px;font-weight:700;margin-bottom:8px">We couldn't load your saved data</div>
+    <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:22px">Your account has data in the cloud, but this device couldn't reach it. To keep it safe, FINUITY won't continue until it loads. Check your connection and try again.</div>
+    <button onclick="location.reload()" style="background:var(--accent);color:#080808;border:none;padding:11px 28px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:12px">Try again</button>
+    <div><button onclick="Promise.resolve(doSignOut()).finally(function(){location.reload()})" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;text-decoration:underline">Sign out</button></div>
   </div>`;
 }
 const state=loadState();
@@ -3455,44 +3653,272 @@ function renderIncome(){
     html+=`<div style="margin-bottom:6px"><div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0 6px;border-bottom:1px solid var(--border);margin-bottom:2px"><span style="font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted2);font-weight:600">${yr}</span><span style="font-size:13px;font-weight:700;color:var(--accent)">${fmt(yrTotal)}</span></div>`;
     entries.forEach(e=>{
       const _iw=(state.wallets||[]).find(w=>w.id===e.wallet);
-      const _dateStr=e.dateAdded?`<span style="font-size:11px;color:var(--muted2)">added ${fmtDate(e.dateAdded)}</span>`:'';
-      const _isLatest=e.id===latestId;
-      const _entryStyle=_isLatest?' style="background:var(--accent-bg);border-left:2px solid var(--accent);border-radius:8px;padding-left:10px;padding-right:10px;margin:0 -10px 0 -10px"':'';
-      const _latestTag=_isLatest?'<span style="font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);font-weight:700;background:var(--accent-bg);border:1px solid rgba(var(--accent-rgb),.3);border-radius:20px;padding:2px 7px">Latest</span>':'';
-      html+=`<div class="entry"${_entryStyle}><div class="info"><div class="name">${esc(e.month)}${e.note?' - '+esc(e.note):''}</div><div class="meta"><span class="badge badge-${String(e.type).toLowerCase().replace(/[^a-z0-9]+/g,'-')}">${esc(e.type)}</span>${_latestTag}${_iw?`<span style="font-size:11px;color:var(--muted)">→ ${esc(_iw.label)}</span>`:''} ${_dateStr}</div></div><div class="right"><span class="amt ap">${fmt(e.amount)}</span><button class="btn btn-ghost btn-sm" onclick="openEditIncome(${e.id})">Edit</button><button class="btn btn-danger btn-sm" onclick="del('income',${e.id})">Remove</button></div></div>`;
+      const _isLatest=e.id===latestId,_ti=incTypeInfo(e.type);
+      const _dateStr=e.dateAdded?`<span class="inc-date">added ${fmtDate(e.dateAdded)}</span>`:'';
+      const _latestTag=_isLatest?'<span class="inc-new"><i></i>Latest</span>':'';
+      const _walTag=_iw?`<span class="inc-wal">${walDot(_iw)}${esc(_iw.label)}</span>`:'';
+      html+=`<div class="entry inc-row${_isLatest?' is-latest':''}"><div class="inc-ico" style="--tc:${_ti.c}" aria-hidden="true">${_ti.e}</div><div class="info"><div class="name">${esc(e.month)}${e.note?' - '+esc(e.note):''}</div><div class="meta"><span class="badge badge-${String(e.type).toLowerCase().replace(/[^a-z0-9]+/g,'-')}">${esc(e.type)}</span>${_latestTag}${_walTag}${_dateStr}</div></div><div class="right"><span class="amt ap">${fmt(e.amount)}</span><button class="btn btn-ghost btn-sm" onclick="openEditIncome(${e.id})">Edit</button><button class="btn btn-danger btn-sm" onclick="del('income',${e.id})">Remove</button></div></div>`;
     });
     html+='</div>';
   });
   document.getElementById('income-list').innerHTML=html;
 }
 
+/* ── WALLET CARDS: brand colors, card type, credit usage ── */
+const WAL_TYPES={ewallet:'E-Wallet',debit:'Debit',savings:'Savings',credit:'Credit',cash:'Cash',crypto:'Crypto',invest:'Investment'};
+// a/b = gradient colors (approximations of each brand's look), d = dark text, m = badge mark
+const WAL_BRANDS=[
+  {g:'E-wallets',k:'gcash',n:'GCash',t:'ewallet',a:'#2a7bff',b:'#0b4fd6',m:'G',re:/g[\s-]?cash/i},
+  {g:'E-wallets',k:'maya',n:'Maya',t:'ewallet',a:'#19c474',b:'#067a4a',m:'M',re:/\bmaya\b|pay\s?maya/i},
+  {g:'E-wallets',k:'gotyme',n:'GoTyme',t:'debit',a:'#9b6bf5',b:'#5b2bc4',m:'GT',re:/go\s?tyme/i},
+  {g:'E-wallets',k:'seabank',n:'SeaBank',t:'savings',a:'#ff8a4a',b:'#e5530c',m:'SB',re:/sea\s?bank/i},
+  {g:'E-wallets',k:'shopeepay',n:'ShopeePay',t:'ewallet',a:'#ff7a4d',b:'#ea4a22',m:'SP',re:/shopee/i},
+  {g:'E-wallets',k:'grabpay',n:'GrabPay',t:'ewallet',a:'#22c55e',b:'#0a8f3c',m:'GP',re:/grab/i},
+  {g:'E-wallets',k:'coinsph',n:'Coins.ph',t:'ewallet',a:'#3b95ff',b:'#1658d6',m:'C',re:/coins\.?\s?ph/i},
+  {g:'E-wallets',k:'paypal',n:'PayPal',t:'ewallet',a:'#2f8cf4',b:'#0b2f7c',m:'PP',re:/pay\s?pal/i},
+  {g:'E-wallets',k:'wise',n:'Wise',t:'ewallet',a:'#a6ee7a',b:'#74d44a',m:'W',d:1,re:/\bwise\b|transferwise/i},
+  {g:'Banks',k:'bpi',n:'BPI',t:'debit',a:'#f05a56',b:'#c42828',m:'BPI',re:/\bbpi\b|bank of the philippine islands/i},
+  {g:'Banks',k:'bdo',n:'BDO',t:'debit',a:'#2557d6',b:'#0a2a7a',m:'BDO',re:/\bbdo\b/i},
+  {g:'Banks',k:'metrobank',n:'Metrobank',t:'debit',a:'#2f6ee0',b:'#10398a',m:'MB',re:/metro\s?bank/i},
+  {g:'Banks',k:'unionbank',n:'UnionBank',t:'debit',a:'#ffa040',b:'#e86a00',m:'UB',re:/union\s?bank/i},
+  {g:'Banks',k:'landbank',n:'Landbank',t:'debit',a:'#2bb066',b:'#0b6b36',m:'LB',re:/land\s?bank/i},
+  {g:'Banks',k:'rcbc',n:'RCBC',t:'debit',a:'#348cf2',b:'#0c56b8',m:'RC',re:/\brcbc\b/i},
+  {g:'Banks',k:'pnb',n:'PNB',t:'debit',a:'#3a78dc',b:'#0f3f8c',m:'PNB',re:/\bpnb\b/i},
+  {g:'Banks',k:'chinabank',n:'China Bank',t:'debit',a:'#e5484d',b:'#a3141b',m:'CB',re:/china\s?bank/i},
+  {g:'Banks',k:'eastwest',n:'EastWest',t:'debit',a:'#9a52d0',b:'#5a2290',m:'EW',re:/east\s?west/i},
+  {g:'Banks',k:'cimb',n:'CIMB',t:'savings',a:'#f2494d',b:'#b3121a',m:'CIMB',re:/\bcimb\b/i},
+  {g:'Banks',k:'maribank',n:'Mari',t:'savings',a:'#b266f8',b:'#6d28d9',m:'MR',re:/mari\s?bank|\bmari\b/i},
+  {g:'Crypto & more',k:'binance',n:'Binance',t:'crypto',a:'#fcd535',b:'#e8ae00',m:'B',d:1,re:/binance/i},
+  {g:'Crypto & more',k:'bitcoin',n:'Bitcoin',t:'crypto',a:'#f9ab45',b:'#e8710a',m:'₿',re:/bitcoin|\bbtc\b/i},
+  {g:'Crypto & more',k:'invest',n:'Investments',t:'invest',a:'#1fc5b4',b:'#0e766e',m:'↗',re:/invest|stocks?\b|mutual fund|mp2|uitf/i},
+  {g:'Basics',k:'cash',n:'Cash on Hand',t:'cash',a:'#3cc98f',b:'#0f8a5f',m:'$',re:/\bcash\b|cash on hand|\bcoh\b|\bpera\b/i},
+  {g:'Basics',k:'savings',n:'Savings',t:'savings',a:'#6c70f2',b:'#3730a3',m:'S',re:/\bsavings?\b|\bipon\b/i},
+  {g:'Basics',k:'credit',n:'Credit Card',t:'credit',a:'#4b5a70',b:'#111a2b',m:'CC',re:/credit\s?card|\bcc\b/i}
+];
+const WAL_MAP={};WAL_BRANDS.forEach(b=>WAL_MAP[b.k]=b);
+const WAL_SWATCHES=[['#7fb82a','#3f6b0c'],['#2a7bff','#0b4fd6'],['#f05a56','#c42828'],['#ffa040','#e86a00'],['#9b6bf5','#5b2bc4'],['#1fc5b4','#0e766e'],['#ec4899','#be185d'],['#fcd535','#e8ae00',1],['#4b5a70','#111a2b'],['#2b2b2b','#000000']];
+const WAL_DEFAULT=['#7fb82a','#3f6b0c'];
+
+function walDetect(name){name=String(name||'');if(!name.trim())return null;for(const b of WAL_BRANDS){if(b.re.test(name))return b;}return null;}
+function walBrandOf(w){return(w.brand&&WAL_MAP[w.brand])||walDetect(w.label);}
+function walType(w){const b=walBrandOf(w);return(w.type&&WAL_TYPES[w.type])?w.type:(b?b.t:'');}
+function walStyle(w){
+  const b=walBrandOf(w),own=!!w.c1;
+  const c1=w.c1||(b?b.a:WAL_DEFAULT[0]),c2=w.c2||(b?b.b:WAL_DEFAULT[1]),dark=own?!!w.dark:(b?!!b.d:false);
+  let m=b?b.m:String(w.label||'?').trim().split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase();
+  if(w.brand&&!b)m=String(w.label||'?').trim().slice(0,2).toUpperCase();
+  if(m==='$')m=(window.FinX?FinX.sym().trim():'₱').slice(0,3);
+  return{c1:c1,c2:c2,dark:dark,mono:m||'?',b:b};
+}
+function walLogoHTML(w,st){
+  if(w.logo)return '<span class="wc-logo"><img src="'+escAttr(w.logo)+'" alt=""></span>';
+  const m=st.mono,fs=m.length>=4?10:m.length===3?12:m.length===2?15:18;
+  return '<span class="wc-logo" style="font-size:'+fs+'px;color:'+(st.dark?'#15200d':st.c2)+'">'+esc(m)+'</span>';
+}
+function walDot(w){const st=walStyle(w);return '<span class="wal-dot" style="background:linear-gradient(135deg,'+st.c1+','+st.c2+')"></span>';}
+function walCardHTML(w,o){
+  o=o||{};const st=walStyle(w),t=walType(w),F=o.preview?fmt:fmtBal,cur=(window.FinX&&FinX.getCur)?FinX.getCur():'PHP';
+  const credit=t==='credit',bal=+w.balance||0,limit=+w.limit||0,used=Math.max(0,-bal);
+  const pct=limit?Math.min(100,Math.round(used/limit*100)):0,left=Math.max(0,limit-used);
+  let body;
+  if(credit){
+    body=(limit?'<div class="wc-bar"><i style="width:'+pct+'%"></i></div><div class="wc-meta"><span>'+pct+'% used</span><span>'+F(left)+' left</span></div>':'')
+      +'<div class="wc-bal-l">Used credit</div><div class="wc-bal">'+F(used)+'</div>';
+  }else body='<div class="wc-bal-l">Balance</div><div class="wc-bal">'+F(bal)+'</div>';
+  const dots='<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>';
+  const attrs=o.preview?'':' id="walcard-'+w.id+'" tabindex="0" role="button" aria-label="'+escAttr(w.label)+', update balance" onclick="openWalModal(\'bal\',\''+w.id+'\')" onkeydown="if(event.key===\'Enter\')openWalModal(\'bal\',\''+w.id+'\')"';
+  return '<div class="wc'+(st.dark?' dark':'')+(o.preview?' preview':'')+'" style="--c1:'+st.c1+';--c2:'+st.c2+'"'+attrs+'>'
+    +'<div><div class="wc-top">'+walLogoHTML(w,st)+'<div class="wc-name">'+esc(w.label||'Account name')+'</div>'
+    +(o.preview?'':'<button type="button" class="wc-more" aria-label="Card options" onclick="event.stopPropagation();walMenu(event,\''+w.id+'\')">'+dots+'</button>')
+    +'</div><div class="wc-sub">'+(t?WAL_TYPES[t]:'Wallet')+' • '+cur+'</div></div>'
+    +'<div>'+body+(o.preview?'':'<div class="wc-upd">Updated '+(fmtDate(w.updated)||'-')+'</div>')+'</div></div>';
+}
+function walAddTile(){
+  return '<button type="button" class="wc-add" data-tour="add-wallet" onclick="openWalModal(\'add\')"><span class="wc-plus">+</span><span>Add account</span><small>Banks, e-wallets, cards, cash</small></button>';
+}
+// spending checks that understand credit limits
+function walShort(w,amt){
+  if(walType(w)==='credit'){const lim=+w.limit||0;return lim>0&&(Math.max(0,-w.balance)+amt)>lim;}
+  return w.balance<amt;
+}
+function walShortMsg(w){
+  return walType(w)==='credit'?'This will go over the credit limit on '+w.label+'. Continue?':'This will put your '+w.label+' balance below zero. Continue?';
+}
+
+/* card menu (floating, so the card's rounded edge never clips it) */
+function closeWalMenu(){const m=document.getElementById('wc-menu');if(m)m.remove();}
+function walMenu(ev,id){
+  closeWalMenu();
+  const ws=state.wallets||[],i=ws.findIndex(w=>w.id===id);if(i<0)return;
+  const r=ev.currentTarget.getBoundingClientRect(),m=document.createElement('div');
+  m.id='wc-menu';m.className='wc-menu';m.setAttribute('role','menu');
+  m.innerHTML='<button type="button" onclick="closeWalMenu();openWalModal(\'bal\',\''+id+'\')">Update balance</button>'
+    +'<button type="button" onclick="closeWalMenu();openWalModal(\'edit\',\''+id+'\')">Edit card</button>'
+    +'<button type="button" '+(i===0?'disabled':'')+' onclick="closeWalMenu();walMove(\''+id+'\',-1)">Move earlier</button>'
+    +'<button type="button" '+(i===ws.length-1?'disabled':'')+' onclick="closeWalMenu();walMove(\''+id+'\',1)">Move later</button>'
+    +'<button type="button" class="danger" onclick="closeWalMenu();confirmRemoveWallet(\''+id+'\')">Remove</button>';
+  document.body.appendChild(m);
+  let top=r.bottom+6,left=r.right-m.offsetWidth;
+  if(left<8)left=8;if(left+m.offsetWidth>innerWidth-8)left=innerWidth-m.offsetWidth-8;
+  if(top+m.offsetHeight>innerHeight-8)top=Math.max(8,r.top-m.offsetHeight-6);
+  m.style.top=top+'px';m.style.left=left+'px';
+  setTimeout(function(){document.addEventListener('click',closeWalMenu,{once:true});window.addEventListener('scroll',closeWalMenu,{once:true,capture:true});},0);
+}
+function walMove(id,dir){
+  const ws=state.wallets||[],i=ws.findIndex(w=>w.id===id),j=i+dir;
+  if(i<0||j<0||j>=ws.length)return;
+  const t=ws[i];ws[i]=ws[j];ws[j]=t;save();render();
+}
+
+/* editor sheet: add / edit / quick balance update */
+let WD=null;
+function walBuildPickers(){
+  let h='',grp='';
+  WAL_BRANDS.forEach(function(b){
+    if(b.g!==grp){if(grp)h+='</div>';grp=b.g;h+='<div class="wal-gl">'+b.g+'</div><div class="wal-bg">';}
+    const m=b.m==='$'?'₱':b.m,fs=m.length>=4?9:m.length===3?11:m.length===2?13:15;
+    h+='<button type="button" class="wal-brand" data-k="'+b.k+'" onclick="walPickBrand(\''+b.k+'\')"><span class="wal-bl" style="background:linear-gradient(135deg,'+b.a+','+b.b+');color:'+(b.d?'#15200d':'#fff')+';font-size:'+fs+'px">'+esc(m)+'</span><span>'+esc(b.n)+'</span></button>';
+  });
+  document.getElementById('wal-brands').innerHTML=h+'</div>';
+  document.getElementById('wal-types').innerHTML=Object.keys(WAL_TYPES).map(function(k){return '<button type="button" class="wal-chip" data-k="'+k+'" onclick="walPickType(\''+k+'\')">'+WAL_TYPES[k]+'</button>';}).join('');
+  document.getElementById('wal-colors').innerHTML=WAL_SWATCHES.map(function(s,i){return '<button type="button" class="wal-sw" data-i="'+i+'" aria-label="Color '+(i+1)+'" style="background:linear-gradient(135deg,'+s[0]+','+s[1]+')" onclick="walPickColor('+i+')"></button>';}).join('');
+}
+function openWalModal(mode,id){
+  closeWalMenu();
+  let w=null;
+  if(id){w=(state.wallets||[]).find(x=>x.id===id);if(!w)return;}
+  walBuildPickers();
+  if(w){
+    const st=walStyle(w),t=walType(w)||'ewallet',b=st.b;
+    WD={mode:mode,id:w.id,brand:b?b.k:(w.brand||''),label:w.label,type:t,c1:st.c1,c2:st.c2,dark:st.dark,logo:w.logo||'',manual:!!w.c1&&!b,typeTouched:true,nameTouched:true,auto:false,last:'',origCredit:t==='credit'};
+    const shown=t==='credit'?Math.max(0,-(+w.balance||0)):(+w.balance||0);
+    WD.orig=shown;
+    document.getElementById('wal-bal').value=shown||'';
+    document.getElementById('wal-limit').value=w.limit||'';
+  }else{
+    WD={mode:'add',id:null,brand:'',label:'',type:'ewallet',c1:WAL_DEFAULT[0],c2:WAL_DEFAULT[1],dark:false,logo:'',manual:false,typeTouched:false,nameTouched:false,auto:false,last:'',orig:0};
+    document.getElementById('wal-bal').value='';document.getElementById('wal-limit').value='';
+  }
+  document.getElementById('wal-name').value=WD.label;
+  document.getElementById('wal-err').textContent='';
+  const bal=WD.mode==='bal';
+  ['wal-sec-brand','wal-sec-name','wal-sec-type','wal-sec-color','wal-sec-logo'].forEach(function(i){document.getElementById(i).style.display=bal?'none':'';});
+  document.getElementById('wal-title').textContent=WD.mode==='add'?'Add account':bal?'Update balance':'Edit card';
+  document.getElementById('wal-save').textContent=WD.mode==='add'?'Add account':bal?'Update':'Save changes';
+  const ov=document.getElementById('wal-modal');ov.style.display='flex';document.body.style.overflow='hidden';
+  walSync();
+  setTimeout(function(){if(!WD)return;const f=document.getElementById(WD.mode==='add'?'wal-name':'wal-bal');if(f&&matchMedia('(hover:hover)').matches){f.focus();if(bal)f.select();}},120);
+}
+function closeWalModal(){document.getElementById('wal-modal').style.display='none';document.body.style.overflow='';WD=null;}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&WD)closeWalModal();});
+function walApply(b){WD.brand=b.k;WD.c1=b.a;WD.c2=b.b;WD.dark=!!b.d;WD.manual=false;if(!WD.typeTouched)WD.type=b.t;}
+function walPickBrand(k){
+  const b=WAL_MAP[k];if(!b||!WD)return;
+  walApply(b);WD.auto=false;
+  if(!WD.nameTouched||WD.label===WD.last){WD.label=b.n;WD.last=b.n;document.getElementById('wal-name').value=b.n;}
+  walSync();
+}
+function walName(v){
+  if(!WD)return;WD.label=v;WD.nameTouched=true;
+  if(!WD.manual){
+    const b=walDetect(v);
+    if(b){walApply(b);WD.auto=true;
+      // "BPI Credit Card": keep the bank's colors but treat it as a credit card (usage bar, limit), not a debit card
+      if(!WD.typeTouched&&/credit\s?card|\bcredit\b|\bcc\b/i.test(v))WD.type='credit';}
+    else if(WD.auto){WD.brand='';WD.c1=WAL_DEFAULT[0];WD.c2=WAL_DEFAULT[1];WD.dark=false;WD.auto=false;}
+  }
+  walSync();
+}
+function walPickType(t){if(!WD)return;WD.type=t;WD.typeTouched=true;walSync();}
+function walPickColor(i){const s=WAL_SWATCHES[i];if(!s||!WD)return;WD.c1=s[0];WD.c2=s[1];WD.dark=!!s[2];WD.manual=true;WD.auto=false;walSync();}
+function walLogoRemove(){if(!WD)return;WD.logo='';walSync();}
+function walLogoPick(inp){
+  const f=inp.files&&inp.files[0];inp.value='';
+  if(!f||!WD)return;
+  if(!/^image\//.test(f.type)){toast('Please pick an image file','error');return;}
+  const img=new Image(),url=URL.createObjectURL(f);
+  img.onload=function(){
+    const S=96,c=document.createElement('canvas');c.width=c.height=S;
+    const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,S,S);
+    const r=Math.min(img.width,img.height);x.drawImage(img,(img.width-r)/2,(img.height-r)/2,r,r,0,0,S,S);
+    URL.revokeObjectURL(url);
+    if(WD){WD.logo=c.toDataURL('image/jpeg',0.88);walSync();}
+  };
+  img.onerror=function(){URL.revokeObjectURL(url);toast('Could not read that image','error');};
+  img.src=url;
+}
+function walDraft(){
+  const credit=WD.type==='credit',n=parseFloat(document.getElementById('wal-bal').value)||0;
+  return{id:'preview',label:WD.label,brand:WD.brand,type:WD.type,balance:credit?-Math.abs(n):n,limit:parseFloat(document.getElementById('wal-limit').value)||0,c1:WD.c1,c2:WD.c2,dark:WD.dark,logo:WD.logo,updated:today()};
+}
+function walSync(){
+  if(!WD)return;
+  const credit=WD.type==='credit',sym=(window.FinX?FinX.sym().trim():'₱');
+  document.getElementById('wal-sec-limit').style.display=credit?'':'none';
+  document.getElementById('wal-bal-l').textContent=(credit?'Used credit':WD.mode==='add'?'Starting balance':'Current balance')+' ('+sym+')';
+  document.querySelectorAll('#wal-brands .wal-brand').forEach(function(e){e.classList.toggle('sel',e.getAttribute('data-k')===WD.brand);});
+  document.querySelectorAll('#wal-types .wal-chip').forEach(function(e){e.classList.toggle('sel',e.getAttribute('data-k')===WD.type);});
+  document.querySelectorAll('#wal-colors .wal-sw').forEach(function(e){e.classList.toggle('sel',WAL_SWATCHES[+e.getAttribute('data-i')][0]===WD.c1);});
+  document.getElementById('wal-logo-rm').style.display=WD.logo?'':'none';
+  document.getElementById('wal-prev').innerHTML=walCardHTML(walDraft(),{preview:true});
+}
+function walSave(){
+  if(!WD)return;
+  const err=function(m){document.getElementById('wal-err').textContent=m;};
+  err('');
+  const credit=WD.type==='credit',name=(WD.label||'').trim();
+  if(WD.mode!=='bal'){
+    if(!name)return err('Give this account a name.');
+    if(name.length>24)return err('Name is too long (max 24 characters).');
+    if((state.wallets||[]).some(w=>w.id!==WD.id&&w.label.toLowerCase()===name.toLowerCase()))return err('You already have an account with that name.');
+  }
+  const raw=document.getElementById('wal-bal').value,num=raw===''?0:parseFloat(raw);
+  if(isNaN(num))return err('Enter a valid amount.');
+  const limit=credit?(parseFloat(document.getElementById('wal-limit').value)||0):0;
+  if(credit&&limit<0)return err('Credit limit cannot be negative.');
+  const r2=function(x){return Math.round(x*100)/100;};
+  const changed=WD.mode==='add'||r2(num)!==r2(WD.orig);
+  // Credit stores "used credit" as a NEGATIVE balance, everything else as a positive one. If the type flips,
+  // the old number means something different, so never reinterpret it silently (that would invent or hide money).
+  if(WD.mode==='edit'&&(WD.type==='credit')!==!!WD.origCredit&&!changed)return err('You changed the account type. Please re-enter the balance for it.');
+  if(changed&&!credit&&num<0)return err('Balance cannot be negative.');
+  const newBal=r2(credit?-Math.abs(num):num);
+  if(!state.wallets)state.wallets=[];
+  if(WD.mode==='add'){
+    const id='w'+Date.now();
+    state.wallets.push({id:id,label:name,balance:newBal,updated:today(),brand:WD.brand,type:WD.type,limit:limit,c1:WD.c1,c2:WD.c2,dark:WD.dark,logo:WD.logo});
+    save();closeWalModal();render();toast(name+' added ✓');
+    window.dispatchEvent(new CustomEvent('fin:wallet-added',{detail:{id:id,name:name}}));
+    return;
+  }
+  const w=state.wallets.find(x=>x.id===WD.id);if(!w){closeWalModal();return;}
+  if(WD.mode==='edit'){w.label=name;w.brand=WD.brand;w.type=WD.type;w.c1=WD.c1;w.c2=WD.c2;w.dark=WD.dark;w.logo=WD.logo;}
+  w.limit=limit;
+  if(changed){w.balance=newBal;w.updated=today();}
+  const wasBal=WD.mode==='bal';
+  save();closeWalModal();render();toast(wasBal?w.label+' updated ✓':'Saved ✓');
+}
+
+/* income rows: a little icon per type */
+function incTypeInfo(t){
+  t=String(t||'');
+  if(/salary|sahod|wage/i.test(t))return{e:'💼',c:'var(--accent)'};
+  if(/bonus|13th|incentive/i.test(t))return{e:'🎁',c:'var(--amber)'};
+  if(/loan|repay|utang/i.test(t))return{e:'🤝',c:'var(--blue)'};
+  if(/freelance|business|sales?|side/i.test(t))return{e:'🧾',c:'var(--purple)'};
+  if(/gift|allow|regalo/i.test(t))return{e:'🎀',c:'var(--purple)'};
+  if(/interest|dividend|invest/i.test(t))return{e:'📈',c:'var(--teal)'};
+  return{e:'💰',c:'var(--muted)'};
+}
+
 function renderBalances(){
   const wallets=state.wallets||[];
   const total=wallets.reduce((a,w)=>a+w.balance,0);
-  document.getElementById('balance-cards').innerHTML=wallets.map(w=>`
-    <div class="bal-card" id="walcard-${w.id}">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
-        <div class="acct" id="wname-display-${w.id}" style="display:flex;align-items:center;gap:6px">${esc(w.label)}<span onclick="toggleWalletRename('${w.id}')" title="Rename wallet" style="cursor:pointer;color:var(--muted);font-size:12px;opacity:.75">✎</span></div>
-        <div style="display:flex;gap:6px">
-          ${wallets.length>1?`<button class="btn btn-ghost btn-sm" style="padding:3px 9px;font-size:11px;color:var(--muted);border-color:transparent" onclick="confirmRemoveWallet('${w.id}')" title="Remove wallet">✕ Remove</button>`:''}
-        </div>
-      </div>
-      <div class="upd-form" id="wname-edit-${w.id}" style="display:none;margin-bottom:10px">
-        <input type="text" id="wname-input-${w.id}" value="${escAttr(w.label)}" maxlength="24" placeholder="Wallet name" onkeydown="if(event.key==='Enter')renameWallet('${w.id}');if(event.key==='Escape')toggleWalletRename('${w.id}')">
-        <button class="btn btn-primary btn-sm" onclick="renameWallet('${w.id}')">Save</button>
-        <button class="btn btn-ghost btn-sm" onclick="toggleWalletRename('${w.id}')">Cancel</button>
-      </div>
-      <div class="amount">${fmtBal(w.balance)}</div>
-      <div class="upd">Updated ${fmtDate(w.updated)||'-'}</div>
-      <div class="upd-form">
-        <input type="number" id="bal-input-${w.id}" placeholder="New balance" min="0">
-        <button class="btn btn-primary btn-sm" onclick="updateBalance('${w.id}')">Save</button>
-      </div>
-    </div>`).join('');
+  document.getElementById('balance-cards').innerHTML=wallets.map(w=>walCardHTML(w)).join('')+walAddTile();
   // Net worth rows
   const nwRows=document.getElementById('nw-rows');
   if(nwRows){
-    nwRows.innerHTML=wallets.map(w=>`<div class="row"><span class="lbl">${esc(w.label)}</span><span class="val ap">${fmtBal(w.balance)}</span></div>`).join('');
+    nwRows.innerHTML=wallets.map(w=>`<div class="row"><span class="lbl" style="display:inline-flex;align-items:center;gap:9px">${walDot(w)}${esc(w.label)}</span><span class="val ap">${fmtBal(w.balance)}</span></div>`).join('');
   }
   document.getElementById('nw-total').textContent=state.hideBalances?((window.FinX?FinX.sym():'₱')+' ••••••'):fmt(total);
   // update expense source dropdown
@@ -3807,8 +4233,8 @@ async function addExpense(){
   if(!amount||amount<=0){toast('Enter a valid amount','error');return;}
 
   const walletPreview=(state.wallets||[]).find(w=>w.id===source);
-  if(walletPreview&&walletPreview.balance<amount){
-    const goNeg=await mtConfirm('This will put your '+walletPreview.label+' balance below zero. Continue?','⚠️','Continue','var(--amber)');
+  if(walletPreview&&walShort(walletPreview,amount)){
+    const goNeg=await mtConfirm(walShortMsg(walletPreview),'⚠️','Continue','var(--amber)');
     if(!goNeg)return;
   }
   const wallet=deductWalletBalance(source,amount);
@@ -4063,8 +4489,8 @@ async function addLoan(){
   if(walletId){
     const wallet=(state.wallets||[]).find(w=>w.id===walletId);
     if(wallet){
-      if(wallet.balance<amount){
-        const goNeg=await mtConfirm('This will put your '+wallet.label+' balance below zero. Continue?','⚠️','Continue','var(--amber)');
+      if(walShort(wallet,amount)){
+        const goNeg=await mtConfirm(walShortMsg(wallet),'⚠️','Continue','var(--amber)');
         if(!goNeg)return;
       }
       wallet.balance=Math.round((wallet.balance-amount)*100)/100;
@@ -4126,8 +4552,8 @@ async function saveEditLoan(){
   if(newWalletId){
     const newWallet=(state.wallets||[]).find(w=>w.id===newWalletId);
     if(newWallet){
-      if(newWallet.balance<amount){
-        const goNeg=await mtConfirm('This will put your '+newWallet.label+' balance below zero. Continue?','⚠️','Continue','var(--amber)');
+      if(walShort(newWallet,amount)){
+        const goNeg=await mtConfirm(walShortMsg(newWallet),'⚠️','Continue','var(--amber)');
         if(!goNeg){
           // Undo the revert we just did, since we're bailing out
           if(oldWalletId){
@@ -4241,8 +4667,8 @@ async function confirmSettleLoan(){
   if(!l.amount||l.amount<=0){toast('This loan has no outstanding amount','error');closeSettleLoan();return;}
 
   if(l.type==='payable'){
-    if(wallet.balance<l.amount){
-      const goNeg=await mtConfirm('This will put your '+wallet.label+' balance below zero. Continue?','⚠️','Continue','var(--amber)');
+    if(walShort(wallet,l.amount)){
+      const goNeg=await mtConfirm(walShortMsg(wallet),'⚠️','Continue','var(--amber)');
       if(!goNeg)return;
     }
     deductWalletBalance(walletId,l.amount);
@@ -5135,11 +5561,9 @@ function obRender(){
     +'<input type="text" id="ob-other" class="ob-other" maxlength="60" style="display:none" autocomplete="off" onkeydown="if(event.key===\'Enter\')obNext()">';
   }
   body.innerHTML=h;
-  body.scrollTop=0;
+  const _ov=obEl('auth-overlay');if(_ov)_ov.scrollTop=0;
   body.classList.remove('ob-anim');void body.offsetWidth;body.classList.add('ob-anim');
   obChrome();
-  const sel=body.querySelector('.ob-opt.sel');
-  if(sel&&OB.step===1&&sel.scrollIntoView)sel.scrollIntoView({block:'nearest'});
 }
 
 // Texts that depend on the chosen language / step (kept separate so picking never rebuilds the list)
@@ -5174,7 +5598,7 @@ function obPickSrc(k){
   OB.src=(OB.src===k)?'':k;            // tap again to un-pick
   obMarkSel(OB.src);
   const o=obEl('ob-other');
-  if(o){const show=OB.src==='other';o.style.display=show?'block':'none';if(show)setTimeout(function(){o.scrollIntoView({block:'nearest'});o.focus({preventScroll:true});},80);}
+  if(o){const show=OB.src==='other';o.style.display=show?'block':'none';if(show)setTimeout(function(){o.scrollIntoView({block:'center',behavior:'smooth'});o.focus({preventScroll:true});},80);}
   obChrome();
 }
 function obNext(){if(OB.step<2){OB.step++;obRender();}else obFinish(false);}
@@ -6295,7 +6719,7 @@ function acceptTermsAndContinue(){
   state.termsAccepted={accepted:true,version:LEGAL_VERSION,date:new Date().toISOString()};
   save();
   // Existing users re-accepting an updated version go straight back in; new users continue to profile setup.
-  if(state.username){stateLoadedForUid=cloudUser?cloudUser.uid:null;handleAuthState(cloudUser);}else showOnboardingOrRegister();
+  if(state.username){handleAuthState(cloudUser);}else showOnboardingOrRegister();
 }
 /* Right to erasure: delete cloud data, the account, and the local copy */
 async function deleteAccountAndData(){
@@ -6941,7 +7365,7 @@ function pick(a){return a[Math.floor(Math.random()*a.length)]}
 var CUR={PHP:['₱','en-PH',2,'Philippine Peso'],USD:['$','en-US',2,'US Dollar'],EUR:['€','de-DE',2,'Euro'],GBP:['£','en-GB',2,'British Pound'],JPY:['¥','ja-JP',0,'Japanese Yen'],KRW:['₩','ko-KR',0,'Korean Won'],CNY:['CN¥','zh-CN',2,'Chinese Yuan'],INR:['₹','en-IN',2,'Indian Rupee'],AUD:['A$','en-AU',2,'Australian Dollar'],SGD:['S$','en-SG',2,'Singapore Dollar'],CAD:['C$','en-CA',2,'Canadian Dollar'],AED:['AED ','en-AE',2,'UAE Dirham'],SAR:['SAR ','en-SA',2,'Saudi Riyal'],HKD:['HK$','en-HK',2,'Hong Kong Dollar'],MYR:['RM','ms-MY',2,'Malaysian Ringgit'],THB:['฿','th-TH',2,'Thai Baht'],IDR:['Rp','id-ID',0,'Indonesian Rupiah']};
 var cur=L('finCur');if(!CUR[cur])cur='PHP';
 function sym(){return CUR[cur][0]}
-function money(n){var c=CUR[cur];return c[0]+Number(n).toLocaleString(c[1],{minimumFractionDigits:c[2],maximumFractionDigits:c[2]})}
+function money(n){var c=CUR[cur],v=Number(n)||0,neg=v<0&&Math.round(Math.abs(v)*Math.pow(10,c[2]))>0;return(neg?'-':'')+c[0]+Math.abs(v).toLocaleString(c[1],{minimumFractionDigits:c[2],maximumFractionDigits:c[2]})}
 function syms(){document.querySelectorAll('.cur-sym').forEach(function(e){e.textContent=sym()})}
 function rerender(){syms();try{render()}catch(e){}}
 W.FinX={money:money,sym:sym};
@@ -7033,5 +7457,26 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 </script>
 <script src="virtual-pet/tour-steps.js"></script>
 <script src="virtual-pet/tour.js"></script>
+<!-- WALLET EDITOR -->
+<div id="wal-modal" class="wal-ov" style="display:none" onclick="if(event.target===this)closeWalModal()">
+  <div class="wal-sheet" role="dialog" aria-modal="true" aria-labelledby="wal-title">
+    <div class="wal-hd"><div class="wal-title" id="wal-title">Add account</div><button type="button" class="wal-x" onclick="closeWalModal()" aria-label="Close">✕</button></div>
+    <div id="wal-prev"></div>
+    <div class="wal-sec" id="wal-sec-brand"><label>Pick a bank or wallet</label><div id="wal-brands"></div></div>
+    <div class="wal-sec" id="wal-sec-name"><label for="wal-name">Name</label><input type="text" id="wal-name" maxlength="24" placeholder="e.g. GCash, BPI Savings, Palengke…" autocomplete="off" oninput="walName(this.value)"></div>
+    <div class="wal-sec" id="wal-sec-type"><label>Type</label><div id="wal-types" class="wal-chips"></div></div>
+    <div class="wal-row">
+      <div class="wal-sec" id="wal-sec-bal"><label for="wal-bal" id="wal-bal-l">Balance</label><input type="number" id="wal-bal" step="0.01" inputmode="decimal" placeholder="0.00" oninput="walSync()" onkeydown="if(event.key==='Enter')walSave()"></div>
+      <div class="wal-sec" id="wal-sec-limit" style="display:none"><label for="wal-limit">Credit limit</label><input type="number" id="wal-limit" min="0" step="0.01" inputmode="decimal" placeholder="0.00" oninput="walSync()" onkeydown="if(event.key==='Enter')walSave()"></div>
+    </div>
+    <div class="wal-sec" id="wal-sec-color"><label>Card color</label><div id="wal-colors" class="wal-swatches"></div></div>
+    <div class="wal-sec" id="wal-sec-logo"><label>Logo <span>(optional, shows in the round badge)</span></label>
+      <div class="wal-logo-row"><button type="button" class="wal-ghost" onclick="document.getElementById('wal-file').click()">Upload image</button><button type="button" class="wal-ghost" id="wal-logo-rm" onclick="walLogoRemove()" style="display:none">Remove image</button><input type="file" id="wal-file" accept="image/*" style="display:none" onchange="walLogoPick(this)"></div>
+    </div>
+    <div class="wal-err" id="wal-err" role="alert"></div>
+    <div class="wal-foot"><button type="button" class="wal-btn sec" onclick="closeWalModal()">Cancel</button><button type="button" class="wal-btn pri" id="wal-save" onclick="walSave()">Save</button></div>
+  </div>
+</div>
+
 </body>
 </html>
