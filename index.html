@@ -5726,6 +5726,18 @@ function setAccent(hex){
   applyAccent(hex);
   renderAccentSwatches();
 }
+/* Live update while the native color picker is open. It must NOT rebuild the swatches:
+   replacing the <input type="color"> closes its popup, which made the picker "vanish" after one click.
+   renderAccentSwatches() runs on `change` (picker closed) to tidy up the final state. */
+function previewCustomAccent(inp){
+  const hex=inp.value;
+  try{ localStorage.setItem('mtAccent',hex); }catch(e){}
+  applyAccent(hex);
+  const lab=inp.closest('.swatch-custom');
+  if(lab){ lab.style.setProperty('--sw-c',hex); lab.style.background=hex; lab.classList.add('sel'); }
+  document.querySelectorAll('#accent-swatches .swatch:not(.swatch-custom)').forEach(b=>b.classList.remove('sel'));
+  const lbl=document.getElementById('accent-label'); if(lbl)lbl.textContent='Custom';
+}
 function renderAccentSwatches(){
   const box=document.getElementById('accent-swatches');
   if(!box)return;
@@ -5734,7 +5746,7 @@ function renderAccentSwatches(){
   box.innerHTML=ACCENT_PRESETS.map(p=>
     '<button type="button" class="swatch'+(p.hex===cur?' sel':'')+'" style="--sw-c:'+(p.hex||p.c)+'" title="'+p.name+'" aria-label="'+p.name+'" onclick="setAccent('+(p.hex?"'"+p.hex+"'":'null')+')"></button>'
   ).join('')+
-  '<label class="swatch swatch-custom'+(cur&&!isPreset?' sel':'')+'" title="Pick any color"'+(cur&&!isPreset?' style="--sw-c:'+cur+';background:'+cur+'"':'')+'><input type="color" value="'+(cur||'#a8e038')+'" oninput="setAccent(this.value)"></label>';
+  '<label class="swatch swatch-custom'+(cur&&!isPreset?' sel':'')+'" title="Pick any color"'+(cur&&!isPreset?' style="--sw-c:'+cur+';background:'+cur+'"':'')+'><input type="color" value="'+(cur||'#a8e038')+'" oninput="previewCustomAccent(this)" onchange="renderAccentSwatches()" aria-label="Pick a custom accent color"></label>';
   const lbl=document.getElementById('accent-label');
   if(lbl){const p=ACCENT_PRESETS.find(p=>p.hex===cur);lbl.textContent=!cur?'Lime':p?p.name:'Custom';}
 }
