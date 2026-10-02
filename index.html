@@ -1201,7 +1201,7 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
 }
 
 </style>
-<style>.verse-progress-track{background:var(--border2);border-radius:99px;height:2px;overflow:hidden;margin-top:14px}.verse-progress-fill{height:100%;border-radius:99px;background:var(--accent);transition:width .3s linear}.verse-dots{display:flex;justify-content:center;gap:5px;margin-top:10px;flex-wrap:wrap}.verse-dot{width:5px;height:5px;border-radius:50%;background:var(--muted2);cursor:pointer;transition:all .2s}.verse-dot.active{background:var(--accent);width:14px;border-radius:99px}</style>
+<style>.verse-progress-track{background:var(--border2);border-radius:99px;height:2px;overflow:hidden;margin-top:14px}.verse-progress-fill{height:100%;border-radius:99px;background:var(--accent);transition:width .3s linear}.verse-next{display:inline-flex;align-items:center;gap:6px;margin-top:14px;background:none;border:none;color:var(--muted);font-family:inherit;font-size:11px;letter-spacing:.04em;cursor:pointer;padding:6px 10px;border-radius:99px;transition:color .2s,background .2s}.verse-next:hover{color:var(--accent);background:rgba(var(--accent-rgb),.08)}.verse-next:active{transform:scale(.96)}</style>
 </head>
 <body>
 <div class="shell">
@@ -1476,10 +1476,10 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
     <div style="background:linear-gradient(135deg,var(--surface) 0%,var(--surface2) 100%);border:1px solid rgba(var(--accent-rgb),.18);border-radius:16px;padding:26px 28px;margin-bottom:28px;position:relative;overflow:hidden">
       <div style="position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:radial-gradient(circle,rgba(var(--accent-rgb),.1) 0%,transparent 70%);pointer-events:none"></div>
       <div style="font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:rgba(var(--accent-rgb),.5);font-weight:600;margin-bottom:14px">✝ Word for Today</div>
-      <div id="splash-verse" style="font-size:15px;color:var(--text);line-height:1.7;font-style:italic;margin-bottom:14px">"..."</div>
+      <div id="splash-verse" style="font-size:15px;color:var(--text);line-height:1.7;font-style:italic;margin-bottom:14px;min-height:7em;display:flex;align-items:center;justify-content:center">"..."</div>
       <div id="splash-ref" style="font-size:12px;color:var(--accent);font-weight:600;font-family:var(--font-d)"></div>
       <div class="verse-progress-track"><div class="verse-progress-fill" id="verse-prog" style="width:0%"></div></div>
-      <div class="verse-dots" id="verse-dots"></div>
+      <button type="button" class="verse-next" onclick="nextVerse()" aria-label="Show another verse">↻ Another verse</button>
     </div>
     <div id="splash-greeting" style="font-size:13px;color:var(--muted);margin-bottom:28px"></div>
     <button onclick="closeSplash()" style="background:var(--accent);color:#080808;border:none;padding:12px 36px;border-radius:10px;font-family:var(--font-d);font-size:14px;font-weight:700;cursor:pointer;transition:all .16s;letter-spacing:.02em" onmouseover="this.style.background='var(--accent-dim)'" onmouseout="this.style.background='var(--accent)'">
@@ -2434,16 +2434,19 @@ function closeSplash(){
   const el=document.getElementById('welcome-splash');
   el.style.transition='opacity .4s ease, transform .4s ease';
   el.style.opacity='0';el.style.transform='scale(.97)';
-  setTimeout(()=>{el.style.display='none';clearInterval(verseTimer);clearInterval(verseProgTimer);},400);
+  setTimeout(()=>{el.style.display='none';clearTimeout(verseTimer);clearInterval(verseProgTimer);},400);
   sessionStorage.setItem('mtUnlocked','1');
 }
 function showSplash(){
-  // "Word for Today" only appears the FIRST time the user gets in on a given day.
-  // Later logins the same day skip straight to the app (closeSplash() still runs so Fin greets as usual).
-  try{
-    if(localStorage.getItem('finSplashDay')===today()){closeSplash();return;}
-    localStorage.setItem('finSplashDay',today());
-  }catch(e){}
+  // Set SPLASH_ONCE_PER_DAY=true to only show "Word for Today" the first time you get in each day.
+  // (false = every time you open/unlock, with a different verse each time.)
+  const SPLASH_ONCE_PER_DAY=false;
+  if(SPLASH_ONCE_PER_DAY){
+    try{
+      if(localStorage.getItem('finSplashDay')===today()){closeSplash();return;}
+      localStorage.setItem('finSplashDay',today());
+    }catch(e){}
+  }
   // show welcome splash for returning user after unlock or no-pin scenario
   const el=document.getElementById('welcome-splash');
   if(el){el.style.display='flex';el.style.opacity='1';el.style.transform='';}
@@ -5771,35 +5774,30 @@ function initTheme(){
   applyAccent(a);
 }
 
-/* ── WORD FOR TODAY (one verse per day) ── */
-let verseIdx=0,verseTimer,verseProgTimer,verseProgVal=0;
+/* ── WORD FOR TODAY (a fresh verse every time the splash opens) ── */
+let verseTimer,verseProgTimer,verseProgVal=0;
 const VERSE_INTERVAL=30000;
 function initSplash(){
-  const dv=getDailyVerse();verseIdx=Math.max(0,VERSES.findIndex(v=>v.ref===dv.ref));
-  buildVerseDots();showVerse(verseIdx,true);startVerseTimer();
+  // New random verse each visit. pickVerse() never repeats until every verse has been seen,
+  // and still leans toward verses that suit the day (Sunday, payday, month start...).
+  showVerse(pickVerse('finSeenSplashVerses',0.7),true);startVerseTimer();
   const h=new Date().getHours();
   const greet=h<12?'Good morning ☀️':h<17?'Good afternoon 🌤️':'Good evening 🌙';
   const nm=state.username?', '+state.username:'';document.getElementById('splash-greeting').textContent=greet+nm+' - here\'s your finances for today.';
   document.getElementById('splash-date').textContent=new Date().toLocaleDateString('en-PH',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 }
-
-function buildVerseDots(){
-  const c=document.getElementById('verse-dots');if(!c)return;
-  c.innerHTML=VERSES.map((_,i)=>`<div class="verse-dot" onclick="jumpVerse(${i})"></div>`).join('');
-}
-function showVerse(idx,instant){
-  const v=VERSES[idx],vEl=document.getElementById('splash-verse'),rEl=document.getElementById('splash-ref');
+function showVerse(v,instant){
+  const vEl=document.getElementById('splash-verse'),rEl=document.getElementById('splash-ref');
   if(!vEl||!rEl||!v)return;
   const set=()=>{vEl.textContent='"'+v.text+'"';rEl.textContent=' - '+v.ref;vEl.style.opacity='1';rEl.style.opacity='1'};
   if(instant)set();else{vEl.style.transition=rEl.style.transition='opacity .4s';vEl.style.opacity='0';rEl.style.opacity='0';setTimeout(set,350)}
-  document.querySelectorAll('.verse-dot').forEach((d,i)=>d.classList.toggle('active',i===idx));
   verseProgVal=0;const p=document.getElementById('verse-prog');if(p)p.style.width='0%';
 }
-function jumpVerse(idx){verseIdx=idx;showVerse(idx);startVerseTimer();}
+function nextVerse(){showVerse(pickVerse('finSeenSplashVerses',0.7));startVerseTimer();}
 function startVerseTimer(){
-  clearInterval(verseTimer);clearInterval(verseProgTimer);verseProgVal=0;
+  clearTimeout(verseTimer);clearInterval(verseProgTimer);verseProgVal=0;
   verseProgTimer=setInterval(()=>{verseProgVal+=100/(VERSE_INTERVAL/100);const el=document.getElementById('verse-prog');if(el)el.style.width=Math.min(verseProgVal,100)+'%'},100);
-  verseTimer=setTimeout(()=>{verseIdx=(verseIdx+1)%VERSES.length;showVerse(verseIdx);startVerseTimer()},VERSE_INTERVAL);
+  verseTimer=setTimeout(nextVerse,VERSE_INTERVAL);
 }
 
 /* ── SWIPE TO DELETE (mobile) ── */
