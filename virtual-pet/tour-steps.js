@@ -46,6 +46,22 @@ window.FinTourSteps = [
     action: 'next'
   },
   {
+    target: 'currency-switch',
+    page: 'dashboard',
+    title: 'Change your currency',
+    description: 'Tap this to switch between peso, dollar, yen, won and more. Only the symbol changes, your numbers stay the same.',
+    placement: 'bottom',
+    action: 'next'
+  },
+  {
+    target: 'language-switch',
+    page: 'dashboard',
+    title: 'Change the language',
+    description: 'Tap the globe to pick your language. The main labels switch right away.',
+    placement: 'bottom',
+    action: 'next'
+  },
+  {
     target: 'nav-balances',
     title: 'Open Balances',
     description: 'Wallets live here. Click Balances to see them.',
@@ -112,7 +128,6 @@ window.FinTourSteps = [
     title: 'Budget and goals',
     description: 'Click Goals to set a monthly limit and save toward things you want.',
     placement: 'right',
-    mobilePlacement: 'top',
     action: 'click'
   },
   {
@@ -124,21 +139,11 @@ window.FinTourSteps = [
     action: 'next'
   },
   {
-    target: 'settings-region',
-    page: 'settings',
-    title: 'Language and currency',
-    description: 'Pick your language and currency in Settings. Only the currency symbol changes, your numbers stay the same.',
-    placement: 'right',
-    mobilePlacement: 'bottom',
-    action: 'next'
-  },
-  {
     target: 'help-button',
-    page: 'settings',
+    page: 'dashboard',
     title: 'Need me again?',
-    description: 'Replay this tour any time: on a computer it is under your profile in the sidebar, on a phone it is in Settings. You can also tap me for tips. That\u2019s it, you\u2019re ready!',
-    placement: 'right',
-    mobilePlacement: 'bottom',
+    description: 'Tap this ? button any time to replay the tour. You can also tap me for tips. That\u2019s it, you\u2019re ready!',
+    placement: 'bottom',
     action: 'next'
   }
 ];

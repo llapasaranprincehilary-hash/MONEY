@@ -554,7 +554,6 @@
   }
   function walkTo(targetRightPx, onArrive){
     if(!els.root) return;
-    if(els.root.style.left) { if(onArrive) onArrive(); return; } // dragged: positioned via left/top, don't fight it
     var startRight = parseFloat(getComputedStyle(els.root).right) || 0;
     var startTs = null;
     var duration = Math.min(2200, Math.max(500, Math.abs(targetRightPx-startRight)*6));
@@ -733,7 +732,18 @@
         break;
       case 'tip':
         setMood('thinking');
-        setTimeout(function(){ showBubble(dlg.getTipMessage(pet.shownTips, safeCtx())); }, 280);
+        setTimeout(function(){
+          // about half the time, give a tip built from the person's own numbers
+          var m = null;
+          try{ if(window.FinLearn && Math.random() < 0.5) m = window.FinLearn.insightMessage(); }catch(e){}
+          showBubble(m || dlg.getTipMessage(pet.shownTips, safeCtx()));
+        }, 280);
+        break;
+      case 'learn':
+        if(window.FinLearn) window.FinLearn.open(action.id);
+        break;
+      case 'wallet-add':
+        if(typeof window.show==='function'){ window.show('balances'); setTimeout(function(){ if(typeof window.openWalModal==='function') window.openWalModal('add'); }, 220); }
         break;
       case 'glossary':
         setMood('thinking');
@@ -974,28 +984,13 @@
   var LS_POS = 'finPetPos';
   var drag = { active:false, moved:false, pointerId:null, startX:0, startY:0, startLeft:0, startTop:0 };
 
-  /* Keep Fin out of the zones the UI owns: under the sticky topbar, and
-     (on phones) above the bottom nav + the quick-log FAB. */
-  function petBounds(){
-    var top = 4, bottom = 4;
-    var tb = document.querySelector('.topbar'); if(tb) top = tb.offsetHeight + 4;
-    if(window.innerWidth <= 900){
-      var nav = document.getElementById('bottom-nav'); bottom = 8 + (nav ? nav.offsetHeight : 64);
-    }
-    /* FAB reserve is constant (it is only hidden on Settings/Export), so Fin never jumps around page to page */
-    var fab = document.getElementById('fa-fab');
-    if(fab) bottom += (window.innerWidth <= 900 ? 52 : 52 + 20) + 20;
-    return {top:top, bottom:bottom};
-  }
-
   function clampAndApplyPosition(x, y){
     var r = els.root.getBoundingClientRect();
     var w = r.width || 80, h = r.height || 80;
-    var b = petBounds();
     var maxX = Math.max(4, window.innerWidth - w - 4);
-    var maxY = Math.max(b.top, window.innerHeight - h - b.bottom);
+    var maxY = Math.max(4, window.innerHeight - h - 4);
     x = Math.max(4, Math.min(x, maxX));
-    y = Math.max(b.top, Math.min(y, maxY));
+    y = Math.max(4, Math.min(y, maxY));
     els.root.style.left = x+'px';
     els.root.style.top = y+'px';
     els.root.style.right = 'auto';
@@ -1052,12 +1047,6 @@
       els.root.classList.remove('fin-dragging');
       if(drag.moved){
         var r = els.root.getBoundingClientRect();
-        /* phones: snap to the right edge so Fin parks on the rail instead of covering cards
-           (the speech bubble opens leftwards, so the right edge is the only safe side) */
-        if(window.innerWidth <= 900){
-          clampAndApplyPosition(window.innerWidth - r.width - 12, r.top);
-          r = els.root.getBoundingClientRect();
-        }
         try{ localStorage.setItem(LS_POS, JSON.stringify({x:r.left, y:r.top})); }catch(err){}
         pet.suppressClick = true; // this was a drag, not a tap - swallow the click that follows
       }

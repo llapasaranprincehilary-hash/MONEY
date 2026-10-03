@@ -518,6 +518,7 @@
         { label:'🧭 What\'s next?', kind:'next' },
         { label:'🗺️ Show me around', kind:'tour' },
         { label:'💡 Quick tip', kind:'tip' },
+        { label:'📚 Learn', kind:'navigate', module:'learn' },
         { label:'📊 Check-in', kind:'health' },
         { label:'📖 Explain a term', kind:'glossary' },
         { label:'❓ Ask me something', kind:'ask-menu' },
@@ -534,7 +535,7 @@
   function getNextActionMessage(ctx){
     if(!ctx.hasWallets){
       return { text:"Start with a wallet - income, expenses, and balances are all tracked against one.",
-        actions:[ { label:'Add Wallet', kind:'navigate', module:'balances', focus:'new-wallet-name' }, { label:'Menu', kind:'menu' } ] };
+        actions:[ { label:'Add Wallet', kind:'wallet-add' }, { label:'Menu', kind:'menu' } ] };
     }
     if(!ctx.hasIncome){
       return { text:"Next, log some income so your wallet balances have something behind them.",
@@ -718,8 +719,17 @@
       idx,
       text: FIN_TIPS[idx].text,
       mood: 'idle',
-      actions: [ { label:'Another tip', kind:'tip' }, { label:'Menu', kind:'menu' } ]
+      actions: tipActions(FIN_TIPS[idx].tags)
     };
+  }
+
+  // Link a tip to the matching Learn lesson
+  function tipActions(tags){
+    var LN = { budget:['budgeting','Budgeting 101'], saving:['saving','Saving'], debt:['debt','Debt & credit'], tracking:['tracking','Tracking'] };
+    var acts = [];
+    for(var i=0;i<(tags||[]).length;i++){ if(LN[tags[i]]){ acts.push({ label:'📚 '+LN[tags[i]][1], kind:'learn', id:LN[tags[i]][0] }); break; } }
+    acts.push({ label:'Another tip', kind:'tip' }, { label:'Menu', kind:'menu' });
+    return acts;
   }
 
   /* ---------- 5. financial glossary (context-weighted) ---------- */
