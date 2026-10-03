@@ -11,7 +11,7 @@
    CACHE_NAME — so an unchanged cache name means old, stale assets (icons
    included) can keep being served indefinitely even after you replace the
    underlying files. */
-const CACHE_NAME = 'finuity-shell-v22';
+const CACHE_NAME = 'finuity-shell-v23';
 
 const APP_SHELL = [
   './',
@@ -56,8 +56,15 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return; // never touch writes (Firestore etc.)
 
+  // Compare without the query string for our own files: the page links icons as "icon-192.png?v=2",
+  // which never matched the plain entries in APP_SHELL, so those requests were never cached offline.
+  const keyOf = u => {
+    const x = new URL(u, self.location.href);
+    return x.origin === self.location.origin ? x.origin + x.pathname : x.href;
+  };
+  const reqKey = keyOf(event.request.url);
   const isShellAsset = APP_SHELL.some(shellUrl => {
-    try { return new URL(shellUrl, self.location.href).href === event.request.url; }
+    try { return keyOf(shellUrl) === reqKey; }
     catch (e) { return false; }
   });
   if (!isShellAsset) return; // let every other request (Firestore, Auth, images...) pass through untouched
@@ -67,8 +74,8 @@ self.addEventListener('fetch', event => {
   // Everything else in the shell (icons, manifest, Firebase SDK — rarely change)
   // stays cache-first for an instant, offline-friendly load.
   const isPageRequest = event.request.mode === 'navigate' ||
-    event.request.url === new URL('./', self.location.href).href ||
-    event.request.url === new URL('./index.html', self.location.href).href;
+    reqKey === keyOf('./') ||
+    reqKey === keyOf('./index.html');
 
   if (isPageRequest) {
     event.respondWith(
@@ -82,13 +89,14 @@ self.addEventListener('fetch', event => {
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
         }
         return response;
-      }).catch(() => caches.match(event.request)) // offline: fall back to last cached page
+      }).catch(() => caches.match(event.request, { ignoreSearch: true })
+        .then(hit => hit || caches.match('./index.html'))) // offline: last cached page (also for ?query / deep links)
     );
     return;
   }
 
   event.respondWith(
-    caches.match(event.request).then(cached => {
+    caches.match(event.request, { ignoreSearch: true }).then(cached => {
       const networkFetch = fetch(event.request).then(response => {
         if (response && response.status === 200) {
           const clone = response.clone();
