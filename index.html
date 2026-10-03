@@ -1113,6 +1113,7 @@ label.fa-row{cursor:pointer}
      and the virtual-pet/ folder. Does not touch app state or navigation
      except by calling the app's own existing functions. -->
 <link rel="stylesheet" href="virtual-pet/pet.css">
+<link rel="stylesheet" href="learn.css">
 <link rel="stylesheet" href="virtual-pet/tour.css">
 <script>
 /* Instant lock: if this device has a PIN and the session isn't unlocked yet, hide the app
@@ -1272,7 +1273,7 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
 .wc.dark .wc-more{background:rgba(0,0,0,.1)}
 .wc-sub{font-size:11px;opacity:.8;margin-top:9px;letter-spacing:.02em}
 .wc-bal-l{font-size:9.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;opacity:.75;margin-top:16px}
-.wc-bal{font-family:var(--font-d);font-size:clamp(18px,10cqw,27px);font-weight:800;letter-spacing:-.02em;line-height:1.15;overflow-wrap:anywhere}
+.wc-bal{font-family:var(--font-d);font-size:24px;font-size:clamp(18px,10cqw,27px);font-weight:800;letter-spacing:-.02em;line-height:1.15;overflow-wrap:anywhere}
 .wc-bar{height:6px;border-radius:99px;background:rgba(255,255,255,.3);overflow:hidden;margin-top:14px}
 .wc.dark .wc-bar{background:rgba(0,0,0,.14)}
 .wc-bar i{display:block;height:100%;border-radius:99px;background:#fff;transition:width .5s}
@@ -1642,11 +1643,11 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
     <div style="font-size:12px;color:var(--muted);margin-bottom:36px">Personal Finance Tracker · v2.4</div>
     <div style="background:linear-gradient(135deg,var(--surface) 0%,var(--surface2) 100%);border:1px solid rgba(var(--accent-rgb),.18);border-radius:16px;padding:26px 28px;margin-bottom:28px;position:relative;overflow:hidden">
       <div style="position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:radial-gradient(circle,rgba(var(--accent-rgb),.1) 0%,transparent 70%);pointer-events:none"></div>
-      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:rgba(var(--accent-rgb),.5);font-weight:600;margin-bottom:14px">✝ Word for Today</div>
+      <div class="splash-tabs" role="tablist"><button type="button" role="tab" id="st-verse" class="on" aria-selected="true" onclick="setSplashMode('verse')">✝ Word for Today</button><button type="button" role="tab" id="st-tip" aria-selected="false" onclick="setSplashMode('tip')">💡 Money tip</button></div>
       <div id="splash-verse" style="font-size:15px;color:var(--text);line-height:1.7;font-style:italic;margin-bottom:14px;min-height:7em;display:flex;align-items:center;justify-content:center">"..."</div>
       <div id="splash-ref" style="font-size:12px;color:var(--accent);font-weight:600;font-family:var(--font-d)"></div>
       <div class="verse-progress-track"><div class="verse-progress-fill" id="verse-prog" style="width:0%"></div></div>
-      <button type="button" class="verse-next" onclick="nextVerse()" aria-label="Show another verse">↻ Another verse</button>
+      <button type="button" class="verse-next" id="verse-next-btn" onclick="nextVerse()">↻ Another verse</button><button type="button" class="verse-next" id="splash-learn" style="display:none" onclick="splashLearnMore()">📚 Learn more</button>
     </div>
     <div id="splash-greeting" style="font-size:13px;color:var(--muted);margin-bottom:28px"></div>
     <button onclick="closeSplash()" style="background:var(--accent);color:#080808;border:none;padding:12px 36px;border-radius:10px;font-family:var(--font-d);font-size:14px;font-weight:700;cursor:pointer;transition:all .16s;letter-spacing:.02em" onmouseover="this.style.background='var(--accent-dim)'" onmouseout="this.style.background='var(--accent)'">
@@ -1711,6 +1712,10 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
       <span>Goals</span>
       <span class="nav-badge" id="nav-badge-goals">0</span>
+    </div>
+    <div class="nav-item" onclick="show('learn')" data-page="learn" data-tour="nav-learn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 5.5A1.5 1.5 0 013.5 4H10a2 2 0 012 2v14a2 2 0 00-2-2H3.5A1.5 1.5 0 012 16.5zM22 5.5A1.5 1.5 0 0020.5 4H14a2 2 0 00-2 2v14a2 2 0 012-2h6.5a1.5 1.5 0 001.5-1.5z"/></svg>
+      <span>Learn</span>
     </div>
     <div class="nav-sep" role="separator"></div>
     <div class="nav-item" onclick="show('settings')" data-page="settings">
@@ -1788,6 +1793,9 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
     <!-- BUDGET GOAL -->
     <div id="budget-goal-card"></div>
 
+    <!-- LEARN -->
+    <div id="dash-learn"></div>
+
     <!-- INCOME vs EXPENSE CHART -->
     <div class="card">
       <div class="card-hd">
@@ -1864,6 +1872,12 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
       </div>
       <div id="income-list"></div>
     </div>
+  </div>
+
+  <!-- ══ LEARN ══ -->
+  <div id="learn" class="section">
+    <div class="page-hd"><div class="page-title">Learn</div><div class="page-sub">Short lessons. Real money habits.</div></div>
+    <div id="learn-root"></div>
   </div>
 
   <!-- ══ BALANCES ══ -->
@@ -2372,6 +2386,10 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
     Goals
   </div>
+  <div class="bnav-item" onclick="show('learn')" data-page="learn" data-tour="nav-learn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 5.5A1.5 1.5 0 013.5 4H10a2 2 0 012 2v14a2 2 0 00-2-2H3.5A1.5 1.5 0 012 16.5zM22 5.5A1.5 1.5 0 0020.5 4H14a2 2 0 00-2 2v14a2 2 0 012-2h6.5a1.5 1.5 0 001.5-1.5z"/></svg>
+    Learn
+  </div>
 </div>
 
 <!-- TOAST -->
@@ -2602,7 +2620,7 @@ function showSplash(){
 }
 
 const MONTH_ORDER=['January','February','March','April','May','June','July','August','September','October','November','December'];
-const PAGE_TITLES={dashboard:'Dashboard',income:'Income',balances:'Balances',expenses:'Expenses',loans:'Loans',goals:'Goals & Budget',settings:'Settings',export:'Export'};
+const PAGE_TITLES={dashboard:'Dashboard',income:'Income',balances:'Balances',expenses:'Expenses',loans:'Loans',goals:'Goals & Budget',learn:'Learn',settings:'Settings',export:'Export'};
 const CAT_LABELS={food:'🍜 Food',transport:'🚌 Transport',shopping:'🛍️ Shopping',utilities:'💡 Utilities',health:'💊 Health',entertainment:'🎮 Entertainment','loan-payment':'💸 Loan Payment','other-exp':'📦 Other'};
 let expFilter='all';
 
@@ -2713,11 +2731,8 @@ function save(){
 
 // ── Cloud Sync (Firebase) ──────────────────────────────────
 let cloudUser=null;
-let cloudSyncTimer=null,cloudRetryTimer=null;
-let lastCloudUpdatedAt=0,lastCloudRev=0,cloudPushPending=false,cloudPushing=false,cloudPulling=false,lastCloudPullAt=0,cloudConflictOpen=false,cloudFailToasted=false;
-/* The uid whose cloud copy this device has SUCCESSFULLY read. Nothing may be written to the cloud
-   until this matches the signed-in user: writing before reading is how a blank/new device wipes an account. */
-let stateLoadedForUid=null;
+let cloudSyncTimer=null;
+let lastCloudUpdatedAt=0,cloudPushPending=false,cloudPushing=false,cloudPulling=false,lastCloudPullAt=0;
 
 function queueCloudPush(){
   if(!cloudUser)return;
@@ -2745,10 +2760,29 @@ function stripUndefined(val){
   return val;
 }
 
-/* Remember that THIS device's copy is already linked to a cloud account (and when/which revision it last matched),
+async function pushToCloud(){
+  if(!cloudUser)return;
+  cloudPushPending=false;cloudPushing=true;
+  setCloudSpinner(true);
+  try{
+    const ts=Date.now();
+    await fbDb.collection('users').doc(cloudUser.uid).set({data:stripUndefined(state),updatedAt:ts});
+    lastCloudUpdatedAt=ts;
+    markCloudLinked(cloudUser.uid,ts);
+  }catch(e){
+    console.error('Cloud sync failed',e);
+    toast('Cloud sync failed - check your connection','error');
+  }
+  cloudPushing=false;
+  setCloudSpinner(false);
+}
+
+let stateLoadedForUid=null;
+
+/* Remember that THIS device's copy is already linked to a cloud account (and when it last matched),
    so the "cloud vs device" question is only asked for a genuine first-time conflict. */
-function markCloudLinked(uid,at,rev){
-  try{localStorage.setItem('finCloudLinked',JSON.stringify({uid:uid,at:at||Date.now(),rev:rev||0}));}catch(e){}
+function markCloudLinked(uid,at){
+  try{localStorage.setItem('finCloudLinked',JSON.stringify({uid:uid,at:at||Date.now()}));}catch(e){}
 }
 function getCloudLinked(uid){
   try{const l=JSON.parse(localStorage.getItem('finCloudLinked')||'null');if(l&&l.uid===uid)return l;}catch(e){}
@@ -2756,169 +2790,66 @@ function getCloudLinked(uid){
 }
 function clearCloudLinked(){try{localStorage.removeItem('finCloudLinked');}catch(e){}}
 
-function hasLocalData(){
-  return !!state.username||(state.income&&state.income.length)||(state.expenses&&state.expenses.length)||
-    (state.loans&&state.loans.length)||(state.goals&&state.goals.length)||(state.wallets||[]).some(w=>w.balance);
-}
-
-/* Whenever one copy of the data is about to be replaced by another, keep the loser on this device
-   (last 2). Cheap insurance: nothing a person typed can vanish without a trace. */
-function keepSafetyCopy(reason,data){
-  try{
-    const k='finSafetyCopies';
-    let list=[];try{list=JSON.parse(localStorage.getItem(k)||'[]');}catch(e){}
-    list.unshift({at:Date.now(),reason:reason,uid:cloudUser&&cloudUser.uid||null,data:data});
-    list=list.slice(0,2);
-    try{localStorage.setItem(k,JSON.stringify(list));}
-    catch(e){localStorage.setItem(k,JSON.stringify(list.slice(0,1)));}
-  }catch(e){console.warn('Could not store a safety copy',e);}
-}
-
-async function pushToCloud(force){
-  if(!cloudUser)return;
-  // SAFETY 1: never write until this account's cloud copy has been read successfully.
-  if(stateLoadedForUid!==cloudUser.uid){cloudPushPending=true;return;}
-  // one write at a time; anything saved meanwhile is uploaded right after
-  if(cloudPushing){cloudPushPending=true;return;}
-  cloudPushPending=false;cloudPushing=true;
-  setCloudSpinner(true);
-  const uid=cloudUser.uid,ref=fbDb.collection('users').doc(uid);
-  const payload=stripUndefined(state); // snapshot now, so a later sign-out wipe can never leak into this write
-  const ts=Date.now();
-  let conflict=null,failed=false,newRev=0;
-  try{
-    await fbDb.runTransaction(async tx=>{
-      conflict=null;
-      const snap=await tx.get(ref);
-      const d=snap.exists?snap.data():null;
-      const rRev=(d&&d.rev)||0,rAt=(d&&d.updatedAt)||0;
-      // SAFETY 2: another device saved since we last synced -> never silently overwrite it
-      if(!force&&d&&d.data&&(rRev>lastCloudRev||rAt>lastCloudUpdatedAt)){conflict=d;return;}
-      newRev=rRev+1;
-      tx.set(ref,{data:payload,updatedAt:ts,rev:newRev});
-    });
-    if(!conflict&&cloudUser&&cloudUser.uid===uid){lastCloudUpdatedAt=ts;lastCloudRev=newRev;markCloudLinked(uid,ts,newRev);cloudFailToasted=false;}
-  }catch(e){
-    failed=true;
-    console.error('Cloud sync failed',e);
-    if(!cloudFailToasted){cloudFailToasted=true;toast('Cloud sync failed - will retry shortly','error');}
-  }
-  cloudPushing=false;
-  setCloudSpinner(false);
-  if(conflict){await resolveCloudConflict(conflict);return;}
-  clearTimeout(cloudSyncTimer);
-  if(failed){cloudPushPending=true;cloudSyncTimer=setTimeout(pushToCloud,20000);}
-  else if(cloudPushPending){cloudSyncTimer=setTimeout(pushToCloud,300);}
-}
-
-/* Another device saved newer data than what this device last saw. Let the person decide,
-   and keep the copy that loses on this device. */
-async function resolveCloudConflict(d){
-  if(cloudConflictOpen)return;
-  cloudConflictOpen=true;
-  try{
-    const raw=d.data,remote=(typeof raw==='string')?JSON.parse(raw):raw,remoteAt=d.updatedAt||0;
-    const useRemote=await showMergeChoice(remote,remoteAt);
-    lastCloudUpdatedAt=remoteAt;lastCloudRev=d.rev||0;
-    if(useRemote){
-      keepSafetyCopy('this-device-before-newer-cloud',JSON.parse(JSON.stringify(state)));
-      Object.keys(state).forEach(k=>delete state[k]);
-      Object.assign(state,defaultState(),remote);
-      localStorage.setItem('kwentadoV1',JSON.stringify(state));
-      markCloudLinked(cloudUser.uid,remoteAt||Date.now(),lastCloudRev);
-      try{render();updateSidebarUsername();}catch(e){}
-      toast('Loaded the newer data from your other device ✓');
-    }else{
-      keepSafetyCopy('cloud-before-this-device-overwrote-it',remote);
-      await pushToCloud(true);
-    }
-  }catch(e){console.error('Conflict resolution failed',e);}
-  cloudConflictOpen=false;
-}
-
-/* Returns true only if the cloud copy was read successfully (or the account is genuinely new). */
 async function loadStateForUser(user){
-  if(stateLoadedForUid===user.uid)return true; // already synced this session, avoid re-prompting on token refresh
+  if(stateLoadedForUid===user.uid)return; // already synced this session, avoid re-prompting on token refresh
   setCloudSpinner(true);
-  let ok=false;
   try{
     const doc=await fbDb.collection('users').doc(user.uid).get();
     if(doc.exists && doc.data().data){
-      const dd=doc.data(),raw=dd.data;
+      const raw=doc.data().data;
       const remote=(typeof raw==='string')?JSON.parse(raw):raw;
-      const remoteAt=dd.updatedAt||0;
-      lastCloudUpdatedAt=remoteAt;lastCloudRev=dd.rev||0;
-      const localHasData=hasLocalData();
+      lastCloudUpdatedAt=doc.data().updatedAt||0;
+      const localHasData=!!state.username||(state.income&&state.income.length)||(state.expenses&&state.expenses.length)||(state.wallets||[]).some(w=>w.balance);
+      const remoteAt=doc.data().updatedAt||0;
       const linked=getCloudLinked(user.uid);
       let useRemote=true;
       if(localHasData){
         if(linked){
           // Already connected to this account before: no question needed.
           // Cloud newer (edited on another device) -> take it; otherwise keep this device's copy.
-          useRemote=remoteAt>linked.at||(dd.rev||0)>(linked.rev||0);
+          useRemote=remoteAt>linked.at;
         }else{
-          useRemote=await showMergeChoice(remote,remoteAt);
+          useRemote=await showMergeChoice(remote,doc.data().updatedAt);
         }
       }
       if(useRemote){
-        if(localHasData&&JSON.stringify(state)!==JSON.stringify(remote))keepSafetyCopy('this-device-before-cloud-load',JSON.parse(JSON.stringify(state)));
         Object.keys(state).forEach(k=>delete state[k]);
         Object.assign(state,remote);
         localStorage.setItem('kwentadoV1',JSON.stringify(state));
-        markCloudLinked(user.uid,remoteAt||Date.now(),lastCloudRev);
-        stateLoadedForUid=user.uid;
+        markCloudLinked(user.uid,remoteAt||Date.now());
       }else{
-        if(!linked)keepSafetyCopy('cloud-before-this-device-overwrote-it',remote);
-        stateLoadedForUid=user.uid;
-        await pushToCloud(true);
+        await pushToCloud();
       }
     }else{
-      // The read SUCCEEDED and there is no document: a genuinely new account - seed the cloud
-      stateLoadedForUid=user.uid;
+      // brand-new account - seed the cloud with whatever's local (usually defaults)
       await pushToCloud();
     }
-    ok=true;
   }catch(e){
     console.error('Cloud load failed',e);
+    toast('Could not reach cloud data - working offline for now','error');
   }
+  stateLoadedForUid=user.uid;
   setCloudSpinner(false);
-  return ok;
-}
-
-/* Returning user opened the app without a connection: keep working from this device's copy,
-   then load + sync automatically as soon as the cloud is reachable again. */
-function startCloudRetry(){
-  clearInterval(cloudRetryTimer);
-  const tryNow=async()=>{
-    if(!cloudUser||stateLoadedForUid===cloudUser.uid){clearInterval(cloudRetryTimer);return;}
-    if(await loadStateForUser(cloudUser)){
-      clearInterval(cloudRetryTimer);
-      try{render();updateSidebarUsername();}catch(e){}
-      toast('Back online - your data is synced ✓');
-    }
-  };
-  cloudRetryTimer=setInterval(tryNow,30000);
-  window.addEventListener('online',tryNow,{once:true});
 }
 
 /* Another phone/tablet may have saved newer data while this one sat open. Without this,
    the stale copy would overwrite it on the next save. We re-check when the app comes
    back to the foreground (throttled) and only pull when nothing local is waiting to upload. */
 async function pullCloudIfNewer(){
-  if(!cloudUser||stateLoadedForUid!==cloudUser.uid||cloudPushPending||cloudPushing||cloudPulling)return;
+  if(!cloudUser||!stateLoadedForUid||cloudPushPending||cloudPushing||cloudPulling)return;
   if(Date.now()-lastCloudPullAt<15000)return;
   lastCloudPullAt=Date.now();cloudPulling=true;
   try{
     const doc=await fbDb.collection('users').doc(cloudUser.uid).get();
     if(doc.exists&&doc.data().data){
-      const at=doc.data().updatedAt||0,rev=doc.data().rev||0;
-      if((at>lastCloudUpdatedAt||rev>lastCloudRev)&&!cloudPushPending&&!cloudPushing){
+      const at=doc.data().updatedAt||0;
+      if(at>lastCloudUpdatedAt&&!cloudPushPending&&!cloudPushing){
         const raw=doc.data().data;
         const remote=(typeof raw==='string')?JSON.parse(raw):raw;
         Object.keys(state).forEach(k=>delete state[k]);
         Object.assign(state,defaultState(),remote);
-        lastCloudUpdatedAt=at;lastCloudRev=rev;
-        markCloudLinked(cloudUser.uid,at,rev);
+        lastCloudUpdatedAt=at;
+        markCloudLinked(cloudUser.uid,at);
         localStorage.setItem('kwentadoV1',JSON.stringify(state));
         render();updateSidebarUsername();
         toast('Updated with your latest data from another device ✓');
@@ -2928,7 +2859,7 @@ async function pullCloudIfNewer(){
   cloudPulling=false;
 }
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')pullCloudIfNewer();});
-window.addEventListener('online',()=>{pullCloudIfNewer();if(cloudUser&&cloudPushPending)pushToCloud();});
+window.addEventListener('online',pullCloudIfNewer);
 window.addEventListener('focus',pullCloudIfNewer);
 
 function updateAccountSettingsUI(){
@@ -2978,16 +2909,14 @@ function authSignOut(){
 }
 function doSignOut(){
   sessionStorage.removeItem('mtUnlocked');
-  // cancel anything queued for the account we're leaving, and block writes until the next account has loaded
-  clearTimeout(cloudSyncTimer);clearInterval(cloudRetryTimer);cloudPushPending=false;
-  stateLoadedForUid=null;lastCloudUpdatedAt=0;lastCloudRev=0;
+  stateLoadedForUid=null;
   // wipe this device's local copy so the next person gets a fresh app, not your leftover data
   Object.keys(state).forEach(k=>delete state[k]);
   Object.assign(state,defaultState());
   localStorage.removeItem('kwentadoV1');
   localStorage.removeItem('mtTutDone');
   clearCloudLinked();bioClear();
-  return fbAuth.signOut();
+  fbAuth.signOut();
 }
 
 async function authLinkToGoogle(){
@@ -3006,27 +2935,13 @@ async function authLinkToGoogle(){
 
 /* ── CENTRAL AUTH CONTROLLER ── */
 async function handleAuthState(user){
-  const prev=cloudUser;
   cloudUser=user;
-  // Uploads queued for the PREVIOUS account must never land in a different one.
-  if(!user||!prev||prev.uid!==user.uid){clearTimeout(cloudSyncTimer);cloudPushPending=false;stateLoadedForUid=null;}
   updateAccountSettingsUI();
   if(!user){
     showLoginScreen();
     return;
   }
-  const loaded=await loadStateForUser(user);
-  if(!loaded){
-    // We could NOT read this account's saved data. Carrying on with a blank state is exactly how
-    // existing data gets overwritten (the blank app asks to "sign up", saves, and wipes the cloud copy).
-    if(getCloudLinked(user.uid)&&hasLocalData()){
-      toast('You appear to be offline - showing the copy saved on this device. It will sync when you are back online.');
-      startCloudRetry();
-    }else{
-      showCloudLoadErrorScreen();
-      return;
-    }
-  }
+  await loadStateForUser(user);
   await migratePlaintextSecrets();
   if(!state.termsAccepted||state.termsAccepted.version!==LEGAL_VERSION){
     showTermsScreen();
@@ -3077,17 +2992,6 @@ function showConnectionErrorScreen(){
     <div style="font-size:16px;font-weight:700;margin-bottom:8px">Can't connect right now</div>
     <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:22px">FINUITY needs a connection to reach your account. Check your internet connection, then try again.</div>
     <button onclick="location.reload()" style="background:var(--accent);color:#080808;border:none;padding:11px 28px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">Retry</button>
-  </div>`;
-}
-function showCloudLoadErrorScreen(){
-  const overlay=document.getElementById('auth-overlay');
-  if(!overlay)return;
-  overlay.style.display='flex';
-  overlay.innerHTML=`<div style="max-width:340px;width:100%;text-align:center;padding:30px">
-    <div style="font-size:16px;font-weight:700;margin-bottom:8px">We couldn't load your saved data</div>
-    <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:22px">Your account has data in the cloud, but this device couldn't reach it. To keep it safe, FINUITY won't continue until it loads. Check your connection and try again.</div>
-    <button onclick="location.reload()" style="background:var(--accent);color:#080808;border:none;padding:11px 28px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:12px">Try again</button>
-    <div><button onclick="Promise.resolve(doSignOut()).finally(function(){location.reload()})" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;text-decoration:underline">Sign out</button></div>
   </div>`;
 }
 const state=loadState();
@@ -3259,7 +3163,7 @@ function populateReportYears(){
   [...ys].sort((a,b)=>b-a).forEach(y=>{const o=document.createElement('option');o.value='year-'+y;o.textContent='Year '+y;o.setAttribute('data-yr','1');sel.insertBefore(o,anchor);});
   if([...sel.options].some(o=>o.value===prev))sel.value=prev;
 }
-function render(){renderBalances();renderDash();renderIncome();renderExpenses();renderLoans();renderGoals();renderSettings();updateBadges();syncEyeButtons();renderGuestBanner();populateReportYears();}
+function render(){renderBalances();renderDash();renderIncome();renderExpenses();renderLoans();renderGoals();renderSettings();updateBadges();syncEyeButtons();renderGuestBanner();populateReportYears();try{if(window.FinLearn)FinLearn.render();}catch(e){}}
 function updateBadges(){
   document.getElementById('nav-badge-income').textContent=state.income.length;
   document.getElementById('nav-badge-expenses').textContent=state.expenses.length;
@@ -3790,9 +3694,9 @@ function openWalModal(mode,id){
   walBuildPickers();
   if(w){
     const st=walStyle(w),t=walType(w)||'ewallet',b=st.b;
-    WD={mode:mode,id:w.id,brand:b?b.k:(w.brand||''),label:w.label,type:t,c1:st.c1,c2:st.c2,dark:st.dark,logo:w.logo||'',manual:!!w.c1&&!b,typeTouched:true,nameTouched:true,auto:false,last:'',origCredit:t==='credit'};
+    WD={mode:mode,id:w.id,brand:b?b.k:(w.brand||''),label:w.label,type:t,c1:st.c1,c2:st.c2,dark:st.dark,logo:w.logo||'',manual:!!w.c1&&!b,typeTouched:true,nameTouched:true,auto:false,last:''};
     const shown=t==='credit'?Math.max(0,-(+w.balance||0)):(+w.balance||0);
-    WD.orig=shown;
+    WD.orig=shown;WD.origShown=shown;WD.origCredit=(t==='credit');
     document.getElementById('wal-bal').value=shown||'';
     document.getElementById('wal-limit').value=w.limit||'';
   }else{
@@ -3822,14 +3726,25 @@ function walName(v){
   if(!WD)return;WD.label=v;WD.nameTouched=true;
   if(!WD.manual){
     const b=walDetect(v);
-    if(b){walApply(b);WD.auto=true;
-      // "BPI Credit Card": keep the bank's colors but treat it as a credit card (usage bar, limit), not a debit card
-      if(!WD.typeTouched&&/credit\s?card|\bcredit\b|\bcc\b/i.test(v))WD.type='credit';}
+    if(b){walApply(b);WD.auto=true;}
     else if(WD.auto){WD.brand='';WD.c1=WAL_DEFAULT[0];WD.c2=WAL_DEFAULT[1];WD.dark=false;WD.auto=false;}
   }
   walSync();
 }
-function walPickType(t){if(!WD)return;WD.type=t;WD.typeTouched=true;walSync();}
+function walPickType(t){
+  if(!WD)return;
+  const was=WD.type==='credit';
+  WD.type=t;WD.typeTouched=true;
+  if(WD.mode==='edit'){
+    // "used credit" and "balance" mean opposite things, so a credit <-> non-credit switch needs a fresh amount
+    const el=document.getElementById('wal-bal');
+    if((t==='credit')!==WD.origCredit){
+      if(was===WD.origCredit)el.value='';
+      WD.orig=NaN;el.placeholder='Enter the current amount';
+    }else{WD.orig=WD.origShown;el.value=WD.origShown||'';el.placeholder='0.00';}
+  }
+  walSync();
+}
 function walPickColor(i){const s=WAL_SWATCHES[i];if(!s||!WD)return;WD.c1=s[0];WD.c2=s[1];WD.dark=!!s[2];WD.manual=true;WD.auto=false;walSync();}
 function walLogoRemove(){if(!WD)return;WD.logo='';walSync();}
 function walLogoPick(inp){
@@ -3877,10 +3792,8 @@ function walSave(){
   const limit=credit?(parseFloat(document.getElementById('wal-limit').value)||0):0;
   if(credit&&limit<0)return err('Credit limit cannot be negative.');
   const r2=function(x){return Math.round(x*100)/100;};
-  const changed=WD.mode==='add'||r2(num)!==r2(WD.orig);
-  // Credit stores "used credit" as a NEGATIVE balance, everything else as a positive one. If the type flips,
-  // the old number means something different, so never reinterpret it silently (that would invent or hide money).
-  if(WD.mode==='edit'&&(WD.type==='credit')!==!!WD.origCredit&&!changed)return err('You changed the account type. Please re-enter the balance for it.');
+  if(WD.mode==='edit'&&isNaN(WD.orig)&&raw==='')return err('Enter the current amount, because the card type changed.');
+  const changed=WD.mode==='add'||isNaN(WD.orig)||r2(num)!==r2(WD.orig);
   if(changed&&!credit&&num<0)return err('Balance cannot be negative.');
   const newBal=r2(credit?-Math.abs(num):num);
   if(!state.wallets)state.wallets=[];
@@ -4573,38 +4486,6 @@ async function saveEditLoan(){
   closeEditLoan();
   save();render();toast('Loan updated'+walletMsg+' ✓');
 }
-function toggleWalletRename(walletId){
-  const disp=document.getElementById('wname-edit-'+walletId);
-  if(!disp)return;
-  const showing=disp.style.display==='flex'||disp.style.display==='block';
-  disp.style.display=showing?'none':'flex';
-  if(!showing){
-    const inp=document.getElementById('wname-input-'+walletId);
-    if(inp){inp.focus();inp.select();}
-  }
-}
-function renameWallet(walletId){
-  const inp=document.getElementById('wname-input-'+walletId);
-  if(!inp)return;
-  const name=inp.value.trim();
-  if(!name){toast('Enter a wallet name','error');return;}
-  if(name.length>24){toast('Name too long (max 24 chars)','error');return;}
-  const w=(state.wallets||[]).find(x=>x.id===walletId);
-  if(!w)return;
-  const dupe=(state.wallets||[]).find(x=>x.id!==walletId&&x.label.toLowerCase()===name.toLowerCase());
-  if(dupe){toast('A wallet with that name already exists','error');return;}
-  w.label=name;
-  save();render();toast('Wallet renamed to '+name+' ✓');
-}
-function updateBalance(walletId){
-  const val=parseFloat(document.getElementById('bal-input-'+walletId).value);
-  if(isNaN(val)||val<0){toast('Enter a valid balance','error');return;}
-  const w=(state.wallets||[]).find(x=>x.id===walletId);
-  if(!w){toast('Wallet not found','error');return;}
-  w.balance=val;w.updated=today();
-  document.getElementById('bal-input-'+walletId).value='';
-  save();render();toast(w.label+' updated ✓');
-}
 async function confirmRemoveWallet(walletId){
   const w=(state.wallets||[]).find(x=>x.id===walletId);
   if(!w)return;
@@ -4618,21 +4499,6 @@ function removeWallet(walletId){
   if(!w)return;
   state.wallets=state.wallets.filter(x=>x.id!==walletId);
   save();render();toast(w.label+' wallet removed');
-}
-function addWallet(){
-  const nameEl=document.getElementById('new-wallet-name');
-  const balEl=document.getElementById('new-wallet-bal');
-  const name=(nameEl.value||'').trim();
-  const bal=parseFloat(balEl.value)||0;
-  if(!name){toast('Enter a wallet name','error');return;}
-  if(name.length>24){toast('Name too long (max 24 chars)','error');return;}
-  const id='w'+Date.now();
-  if(!state.wallets)state.wallets=[];
-  if(state.wallets.find(w=>w.label.toLowerCase()===name.toLowerCase())){toast('A wallet with that name already exists','error');return;}
-  state.wallets.push({id,label:name,balance:bal,updated:today()});
-  nameEl.value='';balEl.value='';
-  save();render();toast(name+' wallet added ✓');
-  window.dispatchEvent(new CustomEvent('fin:wallet-added',{detail:{id,name}}));
 }
 function settle(id){
   const l=state.loans.find(x=>x.id===id);
@@ -6429,26 +6295,48 @@ function initTheme(){
   applyAccent(a);
 }
 
-/* ── WORD FOR TODAY (a fresh verse every time the splash opens) ── */
-let verseTimer,verseProgTimer,verseProgVal=0;
+/* ── WORD FOR TODAY / MONEY TIP (alternates each time the splash opens) ── */
+let verseTimer,verseProgTimer,verseProgVal=0,splashMode='verse',splashTip=null;
 const VERSE_INTERVAL=30000;
 function initSplash(){
-  // New random verse each visit. pickVerse() never repeats until every verse has been seen,
-  // and still leans toward verses that suit the day (Sunday, payday, month start...).
-  showVerse(pickVerse('finSeenSplashVerses',0.7),true);startVerseTimer();
+  // Alternate: one visit shows a verse, the next shows a money tip.
+  let last='';try{last=localStorage.getItem('finSplashMode')||'';}catch(e){}
+  const mode=(last==='verse'&&window.FinLearn)?'tip':'verse';
+  try{localStorage.setItem('finSplashMode',mode);}catch(e){}
+  setSplashMode(mode,true);
   const h=new Date().getHours();
   const greet=h<12?'Good morning ☀️':h<17?'Good afternoon 🌤️':'Good evening 🌙';
   const nm=state.username?', '+state.username:'';document.getElementById('splash-greeting').textContent=greet+nm+' - here\'s your finances for today.';
   document.getElementById('splash-date').textContent=new Date().toLocaleDateString('en-PH',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 }
+function setSplashMode(m,instant){
+  if(m==='tip'&&!window.FinLearn)m='verse';
+  splashMode=m;
+  const tv=document.getElementById('st-verse'),tt=document.getElementById('st-tip'),b=document.getElementById('verse-next-btn');
+  if(tv){tv.classList.toggle('on',m==='verse');tv.setAttribute('aria-selected',m==='verse');}
+  if(tt){tt.classList.toggle('on',m==='tip');tt.setAttribute('aria-selected',m==='tip');}
+  if(b)b.textContent=m==='tip'?'↻ Another tip':'↻ Another verse';
+  showSplashCard(instant);startVerseTimer();
+}
+function showSplashCard(instant){
+  if(splashMode==='tip'&&window.FinLearn){splashTip=FinLearn.tipOfDay();showVerse({tip:1,text:splashTip.text,ref:splashTip.ref},instant);}
+  else{splashTip=null;showVerse(pickVerse('finSeenSplashVerses',0.7),instant);}
+}
 function showVerse(v,instant){
-  const vEl=document.getElementById('splash-verse'),rEl=document.getElementById('splash-ref');
+  const vEl=document.getElementById('splash-verse'),rEl=document.getElementById('splash-ref'),lb=document.getElementById('splash-learn');
   if(!vEl||!rEl||!v)return;
-  const set=()=>{vEl.textContent='"'+v.text+'"';rEl.textContent=' - '+v.ref;vEl.style.opacity='1';rEl.style.opacity='1'};
+  const set=()=>{
+    if(v.tip){vEl.textContent=v.text;vEl.style.fontStyle='normal';rEl.textContent=v.ref;}
+    else{vEl.textContent='"'+v.text+'"';vEl.style.fontStyle='italic';rEl.textContent=' - '+v.ref;}
+    if(lb)lb.style.display=v.tip?'':'none';
+    vEl.style.opacity='1';rEl.style.opacity='1';
+  };
   if(instant)set();else{vEl.style.transition=rEl.style.transition='opacity .4s';vEl.style.opacity='0';rEl.style.opacity='0';setTimeout(set,350)}
   verseProgVal=0;const p=document.getElementById('verse-prog');if(p)p.style.width='0%';
 }
-function nextVerse(){showVerse(pickVerse('finSeenSplashVerses',0.7));startVerseTimer();}
+function nextVerse(){showSplashCard(false);startVerseTimer();}
+function splashLearnMore(){if(window.FinLearn)FinLearn.open(splashTip&&splashTip.lesson);}
+function closeSplashNow(){const el=document.getElementById('welcome-splash');if(el&&el.style.display!=='none')closeSplash();}
 function startVerseTimer(){
   clearTimeout(verseTimer);clearInterval(verseProgTimer);verseProgVal=0;
   verseProgTimer=setInterval(()=>{verseProgVal+=100/(VERSE_INTERVAL/100);const el=document.getElementById('verse-prog');if(el)el.style.width=Math.min(verseProgVal,100)+'%'},100);
@@ -6719,7 +6607,7 @@ function acceptTermsAndContinue(){
   state.termsAccepted={accepted:true,version:LEGAL_VERSION,date:new Date().toISOString()};
   save();
   // Existing users re-accepting an updated version go straight back in; new users continue to profile setup.
-  if(state.username){handleAuthState(cloudUser);}else showOnboardingOrRegister();
+  if(state.username){stateLoadedForUid=cloudUser?cloudUser.uid:null;handleAuthState(cloudUser);}else showOnboardingOrRegister();
 }
 /* Right to erasure: delete cloud data, the account, and the local copy */
 async function deleteAccountAndData(){
@@ -7356,6 +7244,7 @@ window.finGuessCat=guessCat;   // lets the receipt scanner reuse the keyword cat
 })();
 </script>
 <script src="virtual-pet/pet-dialogue.js"></script>
+<script src="learn.js"></script>
 <script src="virtual-pet/pet.js"></script>
 <script>
 (function(){

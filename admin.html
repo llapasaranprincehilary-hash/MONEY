@@ -253,6 +253,7 @@
 
     <div class="stats" id="stat-pills"></div>
     <div class="onb-grid" id="onb-panel"></div>
+    <div class="onb-grid" id="learn-panel" style="grid-template-columns:1fr"></div>
 
     <div class="panel">
       <div class="toolbar">
@@ -563,7 +564,7 @@ async function loadAllUsers(){
     $('login-screen').style.display = 'none';
     $('app').style.display = 'block';
     renderStats();
-    renderOnboarding();
+    renderOnboarding();renderLearnStats();
     renderTable();
   }catch(err){
     $('login-screen').style.display = 'flex';
@@ -578,7 +579,7 @@ async function refreshUsers(showToast){
   try{
     await fetchUsers();
     renderStats();
-    renderOnboarding();
+    renderOnboarding();renderLearnStats();
     renderTable();
     if(showToast) toast('Refreshed');
   }catch(err){
@@ -596,6 +597,50 @@ function renderStats(){
     <div class="stat"><div class="sl">Users</div><div class="sv">${total}</div></div>
     <div class="stat"><div class="sl">Total entries</div><div class="sv">${entries.toLocaleString()}</div></div>
     <div class="stat"><div class="sl">Top balance</div><div class="sv">${top ? esc(top.username) : '—'}</div></div>`;
+}
+
+/* ===== LITERACY QUIZ RESULTS (pre / post) ===== */
+function lgamma(x){const c=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];let y=x,t=x+5.5;t-=(x+0.5)*Math.log(t);let s=1.000000000190015;for(let j=0;j<6;j++)s+=c[j]/++y;return -t+Math.log(2.5066282746310005*s/x);}
+function betacf(a,b,x){const M=200,E=3e-12,F=1e-300;let qab=a+b,qap=a+1,qam=a-1,c=1,d=1-qab*x/qap;if(Math.abs(d)<F)d=F;d=1/d;let h=d;for(let m=1;m<=M;m++){const m2=2*m;let aa=m*(b-m)*x/((qam+m2)*(a+m2));d=1+aa*d;if(Math.abs(d)<F)d=F;c=1+aa/c;if(Math.abs(c)<F)c=F;d=1/d;h*=d*c;aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));d=1+aa*d;if(Math.abs(d)<F)d=F;c=1+aa/c;if(Math.abs(c)<F)c=F;d=1/d;const del=d*c;h*=del;if(Math.abs(del-1)<E)break;}return h;}
+function ibeta(x,a,b){if(x<=0)return 0;if(x>=1)return 1;const bt=Math.exp(lgamma(a+b)-lgamma(a)-lgamma(b)+a*Math.log(x)+b*Math.log(1-x));return x<(a+1)/(a+b+2)?bt*betacf(a,b,x)/a:1-bt*betacf(b,a,1-x)/b;}
+function tTwoTailP(t,df){return ibeta(df/(df+t*t),df/2,0.5);}
+function learnRows(){
+  return allUsers.map(u=>{const l=u.fullData.learn||{},pre=l.pre||null,post=l.post||null;
+    return{uid:u.uid,username:u.username,pre:pre,post:post,done:Object.keys(l.done||{}).length,
+      gain:(pre&&post)?post.pct-pre.pct:null};}).filter(r=>r.pre||r.post||r.done);
+}
+function renderLearnStats(){
+  const el=$('learn-panel');if(!el)return;
+  const rows=learnRows(),pre=rows.filter(r=>r.pre),post=rows.filter(r=>r.post),both=rows.filter(r=>r.pre&&r.post);
+  const mean=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:0;
+  const sd=a=>{if(a.length<2)return 0;const m=mean(a);return Math.sqrt(a.reduce((x,y)=>x+(y-m)*(y-m),0)/(a.length-1));};
+  const g=both.map(r=>r.gain),n=both.length,mg=mean(g),sg=sd(g);
+  let tTxt='Need at least 2 users with both quizzes.';
+  if(n>=2){
+    if(sg===0)tTxt='All gains are identical, so t is undefined.';
+    else{const t=mg/(sg/Math.sqrt(n)),p=tTwoTailP(t,n-1),dz=mg/sg;
+      tTxt=`Paired t(${n-1}) = ${t.toFixed(2)}, two-tailed p ${p<0.001?'< .001':'= '+p.toFixed(3)}, Cohen's dz = ${dz.toFixed(2)}`;}
+  }
+  const card=(l,v,s)=>`<div class="stat"><div class="sl">${l}</div><div class="sv">${v}</div>${s?`<div class="ss">${s}</div>`:''}</div>`;
+  el.innerHTML=`<div class="onb-card" style="grid-column:1/-1">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px"><h4 style="margin:0">Financial literacy quiz: before vs after</h4>
+    <button class="btn" onclick="downloadLearnCSV()" ${rows.length?'':'disabled'}>Download CSV</button></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:12px">
+      ${card('Took Starter quiz',pre.length)}${card('Took Progress quiz',post.length)}${card('Took both (paired)',n)}
+      ${card('Avg Starter %',n?mean(both.map(r=>r.pre.pct)).toFixed(1):'-','paired users')}${card('Avg Progress %',n?mean(both.map(r=>r.post.pct)).toFixed(1):'-','paired users')}${card('Avg gain (pts)',n?(mg>0?'+':'')+mg.toFixed(1):'-',n>1?'SD '+sg.toFixed(1):'')}
+    </div>
+    <div class="onb-empty">${tTxt}</div>
+    <div class="onb-empty" style="margin-top:6px">CSV has one row per user with item-level answers (a1-a10 = Starter, b1-b10 = Progress, 1 = correct), lessons finished, and how many lessons were done before the Starter quiz.</div></div>`;
+}
+function downloadLearnCSV(){
+  const rows=learnRows(),A=[...Array(10)].map((_,i)=>'a'+(i+1)),Bq=[...Array(10)].map((_,i)=>'b'+(i+1));
+  const head=['username','uid','starter_pct','progress_pct','gain_pts','starter_score','progress_score','lessons_done','lessons_before_starter','starter_at','progress_at',...A,...Bq];
+  const q=v=>{v=v==null?'':String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
+  const lines=[head.join(',')].concat(rows.map(r=>{
+    const it={};[r.pre,r.post].forEach(x=>{(x&&x.items||[]).forEach(p=>it[p[0]]=p[1]);});
+    return[r.username,r.uid,r.pre?r.pre.pct:'',r.post?r.post.pct:'',r.gain==null?'':r.gain,r.pre?r.pre.score:'',r.post?r.post.score:'',r.done,r.pre&&r.pre.lessonsBefore!=null?r.pre.lessonsBefore:'',r.pre?r.pre.at:'',r.post?r.post.at:'',...A.map(k=>it[k]==null?'':it[k]),...Bq.map(k=>it[k]==null?'':it[k])].map(q).join(',');}));
+  const blob=new Blob([lines.join('\n')],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download='finuity-literacy-quiz-'+new Date().toISOString().slice(0,10)+'.csv';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);
 }
 
 function renderOnboarding(){
@@ -1012,7 +1057,7 @@ async function saveUser(){
     origJson = JSON.stringify(draft);
     await fetchUsers();
     renderStats();
-    renderOnboarding();
+    renderOnboarding();renderLearnStats();
     renderTable();
     renderDrawer();
     toast(wasNew ? 'User created' : 'Changes saved');
@@ -1037,7 +1082,7 @@ async function deleteUser(uid){
     closeDrawerNow();
     await fetchUsers();
     renderStats();
-    renderOnboarding();
+    renderOnboarding();renderLearnStats();
     renderTable();
     toast('User deleted');
   }catch(err){
