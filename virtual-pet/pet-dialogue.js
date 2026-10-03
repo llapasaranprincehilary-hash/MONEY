@@ -174,12 +174,12 @@
     const prevMonthYear = prevDate.getFullYear();
 
     const curExpenses = expenses.filter(e=>{
-      const d = new Date(e.date);
+      const d = (typeof ldate==='function'?ldate(e.date):new Date(e.date));
       return !isNaN(d) && d.getMonth()===curMonth && d.getFullYear()===curYear;
     });
     const curExp = curExpenses.reduce((a,b)=>a+b.amount,0);
     const prevExp = expenses.filter(e=>{
-      const d = new Date(e.date);
+      const d = (typeof ldate==='function'?ldate(e.date):new Date(e.date));
       return !isNaN(d) && d.getMonth()===prevDate.getMonth() && d.getFullYear()===prevMonthYear;
     }).reduce((a,b)=>a+b.amount,0);
 
@@ -204,7 +204,7 @@
       const mName = md.toLocaleString('en-US',{month:'long'});
       const mYear = md.getFullYear();
       const mInc = income.filter(i=>i.month===mName && i.year===mYear).reduce((a,b)=>a+b.amount,0);
-      const mExp = expenses.filter(e=>{ const d=new Date(e.date); return !isNaN(d) && d.getMonth()===md.getMonth() && d.getFullYear()===mYear; }).reduce((a,b)=>a+b.amount,0);
+      const mExp = expenses.filter(e=>{ const d=(typeof ldate==='function'?ldate(e.date):new Date(e.date)); return !isNaN(d) && d.getMonth()===md.getMonth() && d.getFullYear()===mYear; }).reduce((a,b)=>a+b.amount,0);
       trailingIncome += mInc; trailingExp += mExp;
       if(mInc>0) monthsWithIncome++;
     }
@@ -656,10 +656,6 @@
     };
   }
 
-  function getWakeLine(tone){
-    return { text: pick(toneSet(tone).wake) };
-  }
-
   /* ---------- 4. financial tips knowledge base ----------
      General personal-finance education, not personalized advice - 
      Fin never tells the user what to specifically do with their money.
@@ -1037,7 +1033,7 @@
     const now = new Date();
     const md = new Date(now.getFullYear(), now.getMonth()-monthsBack, 1);
     const expenses = (appState().expenses||[]).filter(e=>{
-      const d = new Date(e.date);
+      const d = (typeof ldate==='function'?ldate(e.date):new Date(e.date));
       return !isNaN(d) && d.getMonth()===md.getMonth() && d.getFullYear()===md.getFullYear();
     });
     if(!expenses.length) return null;
@@ -1056,7 +1052,7 @@
     const lastYear = now.getFullYear()-1;
     const allExpenses = appState().expenses||[];
     const sameMonthLastYear = allExpenses.filter(e=>{
-      const d = new Date(e.date);
+      const d = (typeof ldate==='function'?ldate(e.date):new Date(e.date));
       return !isNaN(d) && d.getMonth()===now.getMonth() && d.getFullYear()===lastYear;
     });
     if(sameMonthLastYear.length<2) return null;
@@ -1070,7 +1066,7 @@
     const otherMonthsTotals = {};
     const otherMonthsSeen = new Set();
     allExpenses.forEach(e=>{
-      const d = new Date(e.date);
+      const d = (typeof ldate==='function'?ldate(e.date):new Date(e.date));
       if(isNaN(d) || d.getFullYear()!==lastYear || d.getMonth()===now.getMonth() || e.cat!==topCat) return;
       otherMonthsTotals[d.getMonth()] = (otherMonthsTotals[d.getMonth()]||0) + e.amount;
       otherMonthsSeen.add(d.getMonth());
