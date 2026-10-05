@@ -147,7 +147,7 @@
     const timeOfDay = hour<5 ? 'night' : hour<12 ? 'morning' : hour<17 ? 'afternoon' : hour<21 ? 'evening' : 'night';
 
     const todayExpenses = todayStr ? expenses.filter(e=>e.date===todayStr) : [];
-    const loggedExpenseToday = todayExpenses.length>0;
+    const loggedExpenseToday = todayExpenses.length>0 || !!(window.FinStreak && window.FinStreak.loggedToday && window.FinStreak.loggedToday());
 
     const unsettledLoans = loans.filter(l=>!l.settled);
     const payable = unsettledLoans.filter(l=>l.type==='payable');
@@ -258,7 +258,7 @@
 
     const nearGoal = goals.find(g=>g.target>0 && g.saved<g.target && (g.saved/g.target)>=0.9);
 
-    const streakDays = safe(()=>computeStreak(expenses, todayStr), 0);
+    const streakDays = safe(()=>((window.FinStreak && window.FinStreak.current) ? window.FinStreak.current() : computeStreak(expenses, todayStr)), 0);
 
     // Trailing 7-day window, used for the weekly recap.
     let weeklyExpenseTotal = 0, weeklyTopCategory = null, weekExpenseCount = 0, weekKey = null;

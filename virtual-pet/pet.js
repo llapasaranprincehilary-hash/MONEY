@@ -1082,6 +1082,7 @@
     try{ return JSON.parse(localStorage.getItem(LS_BADGES)||'[]'); }catch(e){ return []; }
   }
   function awardBadge(id){
+    try{ if(window.FinStreak) window.FinStreak.award(id); }catch(e){}   // one shared badge shelf (Settings > Streak & Badges)
     try{
       var list = getBadges();
       if(list.indexOf(id)===-1){
@@ -1258,6 +1259,7 @@
     var ctx = safeCtx();
     if(!ctx.streakDays) return;
     checkPersonalBests(ctx);
+    if(window.FinStreak) return;   // the streak coach celebrates milestones now
     if(getCelebratedStreaks().indexOf(ctx.streakDays)!==-1) return;
     var msg = window.FinPetDialogue.getStreakCelebration(ctx.streakDays);
     if(!msg) return;
@@ -2246,6 +2248,36 @@
       if(!els.root || pet.tour || els.root.classList.contains('fin-minimized')) return false;
       showBubble(msg);
       return true;
+    },
+    // ---- used by the coach layer (virtual-pet/pet-coach.js): a kind, teacher-style message ----
+    // Returns false (and says nothing) when Fin shouldn't speak: Quiet mode, tour, minimized, sulking,
+    // another message on screen, or he just spoke. Priority messages (milestones) wait a shorter time.
+    coach: function(msg, opt){
+      opt = opt || {};
+      try{
+        if(!msg || !els.root || pet.tour || els.root.classList.contains('fin-minimized') || isSulking()) return false;
+        // not behind the welcome splash or a sign-in screen
+        var cover = document.getElementById('welcome-splash'), auth = document.getElementById('auth-overlay');
+        if((cover && cover.style.display !== 'none' && getComputedStyle(cover).display !== 'none') || (auth && getComputedStyle(auth).display !== 'none')) return false;
+        var s = getSettings();
+        if(s.frequency==='quiet') return false;
+        var now = Date.now(), gap = opt.priority ? 7000 : (s.frequency==='chatty' ? 20000 : 40000);
+        if(now-(pet.lastCoachAt||0) < gap) return false;
+        // A reply to what the person just did may replace a passive bubble (idle chatter, an older tip),
+        // but never a menu, a text box, or anything they are hovering over or reading.
+        if(els.bubble.classList.contains('fin-show') && !pet.reactionShowing){
+          var nBtn = els.bubbleActions ? els.bubbleActions.querySelectorAll('button').length : 0;
+          var typing = els.inputRow && els.inputRow.classList.contains('fin-show');
+          var hovered = false; try{ hovered = els.bubble.matches(':hover') || els.bubble.contains(document.activeElement); }catch(e){}
+          if(typing || hovered || nBtn >= 4) return false;
+          hideBubble();
+        }
+        if(pet.queueBusy || pet.bubbleQueue.length) return false;
+        pet.lastCoachAt = now; pet.lastAutoAt = now;
+        resetIdle();
+        queueBubble(msg, opt.delay || 700);
+        return true;
+      }catch(e){ return false; }
     },
     setMood: function(mood, autoRevertMs){ setMood(mood, autoRevertMs); },
     annoy: function(stage){ triggerAnnoyance(stage===undefined ? 1 : stage); }, // e.g. FinPet.annoy(2) to preview the sulk

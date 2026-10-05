@@ -137,6 +137,8 @@
     try{ window.show(step.page); }catch(e){ return false; }
     return true;
   }
+  // optional step.before() / step.after(): open a sheet, close a settings panel, etc.
+  function hook(step, name){ if(step && typeof step[name] === 'function'){ try{ step[name](); }catch(e){} } }
   function blocked(){
     var list = document.querySelectorAll(BLOCKING_UI);
     for(var i=0;i<list.length;i++){
@@ -270,10 +272,27 @@
   }
   // Bring the target into the comfortable part of the screen, leaving room
   // for the bubble. Returns true if it scrolled.
+  // Sticky bars pinned under the header (the phone Money tab strip) hide anything scrolled beneath them,
+  // so the "safe" top edge has to sit below them too.
+  function topInset(){
+    var top = C.topSafe;
+    try{
+      var bars = document.querySelectorAll('.money-tabs');
+      for(var i=0;i<bars.length;i++){
+        var b = bars[i];
+        if(!isVisible(b)) continue;
+        var pos = getComputedStyle(b).position;
+        if(pos !== 'sticky' && pos !== 'fixed') continue;
+        var br = b.getBoundingClientRect();
+        if(br.bottom > top && br.bottom < vpH()*0.4) top = Math.ceil(br.bottom) + 8;
+      }
+    }catch(e){}
+    return top;
+  }
   function ensureVisible(el, ch){
     if(isPinned(el)) return false;
     var vw = vpW(), vh = vpH();
-    var top = C.topSafe, bottom = vh - C.bottomSafe, avail = bottom - top;
+    var top = topInset(), bottom = vh - C.bottomSafe, avail = bottom - top;
     var r = el.getBoundingClientRect();
     var roomAbove = r.top - top, roomBelow = bottom - r.bottom;
     var need = ch + C.gap + 6;
@@ -298,7 +317,11 @@
   function targetBox(){
     var r = S.el.getBoundingClientRect();
     var pad = (S.step && S.step.padding != null) ? S.step.padding : C.padding;
-    return mk(r.left - pad, r.top - pad, r.width + pad*2, r.height + pad*2);
+    var h = r.height;
+    // tall targets (long forms) on phones: spotlight only the top part so the bubble has room and the fields stay readable
+    var cap = S.step && S.step.mobileCap;
+    if(cap && isNarrow() && h > vpH()*cap) h = Math.round(vpH()*cap);
+    return mk(r.left - pad, r.top - pad, r.width + pad*2, h + pad*2);
   }
   function holeRect(){
     var vw = vpW(), vh = vpH(), T = targetBox();
@@ -606,9 +629,11 @@
     clearTimeout(S.advT); clearTimeout(S.inT);
     if(i >= S.steps.length){ finish(); return; }
     if(i < 0) i = 0;
-    var step = S.steps[i];
+    var step = S.steps[i], prevStep = S.step;
+    if(prevStep && prevStep !== step) hook(prevStep, 'after');
     S.idx = i; S.dir = dir; S.step = step;
     var changed = ensurePage(step);
+    hook(step, 'before');
     setTimeout(function(){
       waitForTarget(step, token, function(el){
         if(token !== S.token || !S.active) return;
@@ -693,7 +718,11 @@
     }
     var steps = (window.FinTourSteps || []).filter(function(st){
       if(!st) return false;
+      // `requires`: only include the step when this element is on screen (e.g. '#bottom-nav' = phone layout)
+      if(st.requires){ var rq = document.querySelector(st.requires); if(!rq || !isVisible(rq)) return false; }
+      if(st.late) return true;   // `late`: the target is drawn only after the step's page opens (e.g. the Learn page)
       var list = queryAll(st);
+      if(typeof st.before === 'function' && list.length) return true;   // target is inside something the step opens itself
       for(var i=0;i<list.length;i++) if(potentiallyVisible(list[i])) return true;
       return false;
     });
@@ -711,6 +740,7 @@
     if(!S.active) return;
     S.active = false;
     S.token++;
+    hook(S.step, 'after');
     unbind();
     destroyUI();
     petRelease();

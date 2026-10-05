@@ -33,10 +33,21 @@
                             area. Default: true for click/input, false for next.
      padding      (number)  extra px of spotlight around the target (default 8).
 
+     mobileCap    (number)  optional, 0-1. On phones, spotlight only this fraction of the screen height
+                            for very tall targets (long forms), so the bubble never covers the fields.
+     late         (boolean) optional. Keep the step even if its target is not on the page yet
+                            (it is drawn after the step's page opens).
+     requires     (string)  optional CSS selector. The step is only used when that element is
+                            on screen, e.g. '#bottom-nav' limits a step to the phone layout.
+     before       (function) optional, runs when the step opens (e.g. open the More sheet).
+     after        (function) optional, runs when the step is left (e.g. close it again).
+
    Steps whose target is missing from the page are dropped/skipped, so it is
-   safe to leave steps in here for features you might remove later.
+   safe to leave steps in here for features you might remove later. Desktop and
+   phone steps live in ONE list: whichever targets are visible are the ones shown.
    ============================================================ */
 window.FinTourSteps = [
+  /* ---------- the basics ---------- */
   {
     target: 'hero-balance',
     page: 'dashboard',
@@ -61,11 +72,62 @@ window.FinTourSteps = [
     placement: 'bottom',
     action: 'next'
   },
+
+  /* ---------- finding your way around: desktop menu ---------- */
+  {
+    target: 'sidebar-nav',
+    page: 'dashboard',
+    title: 'Your map',
+    description: 'This menu is the whole app: Dashboard, Income, Balances, Expenses, Loans, Goals, Learn and Settings. I\u2019ll show you each one.',
+    placement: 'right',
+    action: 'next',
+    padding: 4
+  },
+
+  /* ---------- finding your way around: phone bottom bar ---------- */
+  {
+    target: 'bottom-nav',
+    page: 'dashboard',
+    title: 'Your five buttons',
+    description: 'These five buttons run the whole app: Home, Money, the + in the middle, Learn and More. Let\u2019s tap through them one by one.',
+    placement: 'top',
+    action: 'next',
+    padding: 4
+  },
+  {
+    target: 'nav-home',
+    page: 'dashboard',
+    title: 'Home',
+    description: 'Home is your dashboard: balance, this month\u2019s snapshot, your streak and charts. Tap it any time to come back here.',
+    placement: 'right',
+    mobilePlacement: 'top',
+    action: 'next'
+  },
+  {
+    target: 'nav-money',
+    title: 'Money',
+    description: 'Everything about your money is behind this button: income, spending, loans, wallets and goals. Tap it to open.',
+    placement: 'top',
+    action: 'click'
+  },
+  {
+    target: 'money-tabs',
+    page: 'expenses',
+    requires: '#bottom-nav',
+    title: 'Five money tabs',
+    description: 'Income, Spend, Loans, Wallets and Goals sit together on this bar. Tap any tab to jump between them.',
+    placement: 'bottom',
+    action: 'next',
+    padding: 4
+  },
+
+  /* ---------- wallets ---------- */
   {
     target: 'nav-balances',
-    title: 'Open Balances',
-    description: 'Wallets live here. Click Balances to see them.',
+    title: 'Open Wallets',
+    description: 'Every account you own lives here. Tap Wallets to see them.',
     placement: 'right',
+    mobilePlacement: 'bottom',
     action: 'click'
   },
   {
@@ -76,30 +138,38 @@ window.FinTourSteps = [
     placement: 'top',
     action: 'next'
   },
+
+  /* ---------- income ---------- */
   {
     target: 'nav-income',
     title: 'Now, income',
-    description: 'Click Income to record money coming in.',
+    description: 'Tap Income to record money coming in.',
     placement: 'right',
+    mobilePlacement: 'bottom',
     action: 'click'
   },
   {
     target: 'income-form',
+    mobileCap: 0.36,
     page: 'income',
     title: 'Log your income',
     description: 'Pick the month, the type (salary, bonus...), the amount and which wallet it goes into. Your dashboard charts are built from these entries.',
     placement: 'bottom',
     action: 'next'
   },
+
+  /* ---------- spending ---------- */
   {
     target: 'nav-expenses',
     title: 'Track spending',
-    description: 'Click Expenses to log what you spend.',
+    description: 'Tap Spend to log what you spend.',
     placement: 'right',
+    mobilePlacement: 'bottom',
     action: 'click'
   },
   {
     target: 'expense-form',
+    mobileCap: 0.36,
     page: 'expenses',
     title: 'Log an expense',
     description: 'Describe it, add the amount, choose a category and the wallet it came out of. That wallet\u2019s balance updates automatically.',
@@ -117,17 +187,39 @@ window.FinTourSteps = [
   {
     target: 'quick-log',
     page: 'expenses',
-    title: 'Quick Log Expense',
-    description: 'See this + button? Tap it from any page to log an expense in a few seconds, no need to open the full form.',
+    title: 'The + button: Quick Log',
+    description: 'This + logs an expense in a few seconds from any page. Just type it like a text: \u201ctaxi 500 gcash\u201d.',
     placement: 'left',
     mobilePlacement: 'top',
     action: 'next'
   },
+
+  /* ---------- loans ---------- */
+  {
+    target: 'nav-loans',
+    title: 'Loans',
+    description: 'Tap Loans to track who you owe and who owes you.',
+    placement: 'right',
+    mobilePlacement: 'bottom',
+    action: 'click'
+  },
+  {
+    target: 'loan-form',
+    mobileCap: 0.36,
+    page: 'loans',
+    title: 'Add a loan',
+    description: 'Write down every utang, even small ones, with the person and the amount. When you pay or get paid back, log it here and the balance updates.',
+    placement: 'top',
+    action: 'next'
+  },
+
+  /* ---------- goals ---------- */
   {
     target: 'nav-goals',
     title: 'Budget and goals',
-    description: 'Click Goals to set a monthly limit and save toward things you want.',
+    description: 'Tap Goals to set a monthly limit and save toward things you want.',
     placement: 'right',
+    mobilePlacement: 'bottom',
     action: 'click'
   },
   {
@@ -138,13 +230,77 @@ window.FinTourSteps = [
     placement: 'bottom',
     action: 'next'
   },
+
+  /* ---------- learn ---------- */
   {
-    target: 'help-button',
-    page: 'dashboard',
-    title: 'Need me again?',
-    description: 'Tap this ? button any time to replay the tour. You can also tap me for tips. That\u2019s it, you\u2019re ready!',
+    target: 'nav-learn',
+    title: 'Learn',
+    description: 'Short lessons that teach real money skills, with a quiz to see how much you grow. Tap Learn to open it.',
+    placement: 'right',
+    mobilePlacement: 'top',
+    action: 'click'
+  },
+  {
+    target: 'learn-hero',
+    late: true,
+    page: 'learn',
+    title: 'Your learning level',
+    description: 'Finish lessons to level up, from Money newbie all the way to Money Pro. Each lesson takes about two minutes.',
     placement: 'bottom',
     action: 'next'
+  },
+  {
+    target: 'learn-quiz',
+    late: true,
+    page: 'learn',
+    title: 'Before and after quiz',
+    description: 'Take the Starter Quiz first, then the Progress Quiz after a few lessons. It shows you how much you have learned.',
+    placement: 'bottom',
+    action: 'next'
+  },
+
+  /* ---------- settings, streak and badges ---------- */
+  {
+    target: 'nav-settings',
+    title: 'Settings',
+    description: 'Tap Settings for your profile, security, backups and more.',
+    placement: 'right',
+    action: 'click'
+  },
+  {
+    target: 'nav-more',
+    title: 'More',
+    description: 'Settings, exports and this tour live under More. Tap it.',
+    placement: 'top',
+    action: 'click'
+  },
+  {
+    target: 'more-settings',
+    requires: '#bottom-nav',
+    title: 'Open Settings',
+    description: 'Tap Settings to see your profile, security, backups and your streak.',
+    placement: 'top',
+    action: 'click',
+    before: function(){ try{ if(typeof openMoreSheet === 'function') openMoreSheet(); }catch(e){} },
+    after: function(){ try{ if(typeof closeMoreSheet === 'function') closeMoreSheet(); }catch(e){} }
+  },
+  {
+    target: 'streak-card',
+    page: 'settings',
+    title: 'Your streak and badges',
+    description: 'Log something each day to grow your streak. Miss a day and a free rest day has you covered. Tap this card to see your badges.',
+    placement: 'bottom',
+    action: 'next',
+    before: function(){ try{ if(typeof closeSetPanel === 'function') closeSetPanel(); }catch(e){} }
+  },
+  {
+    target: 'help-button',
+    page: 'settings',
+    title: 'Need me again?',
+    description: 'Tap Guided tour any time to replay this. You can also tap me for tips. That\u2019s it, you\u2019re ready!',
+    placement: 'bottom',
+    action: 'next',
+    before: function(){ try{ if(typeof closeSetPanel === 'function') closeSetPanel(); }catch(e){} }
   }
 ];
 
