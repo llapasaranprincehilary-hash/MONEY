@@ -6738,7 +6738,7 @@ terms:[
 ['Suspension and Ending Use',`We may suspend or end access if you breach these Terms or to protect the App or other users. You may stop at any time and permanently delete your account and data in Settings (Legal and Data). Sections that by nature should survive (ownership, disclaimers, liability, governing law) continue after termination.`],
 ['Changes to These Terms',`We may update these Terms or the Privacy Policy. When we make a material change we will show the new version in the App and ask you to accept it again before you continue. Continued use after the notice period means you accept the update.`],
 ['Governing Law and Disputes',`These Terms are governed by the laws of the Republic of the Philippines. Please contact us first so we can try to resolve any concern in good faith; failing that, disputes go to the proper courts of the Philippines.`],
-['General',`If any provision is unenforceable, the rest remains in force. Our failure to enforce a right is not a waiver. These Terms and the Privacy Policy are the entire agreement between you and us about the App. Contact: ${LEGAL_EMAIL}.`]
+['General',`If any provision is unenforceable, the rest remains in force. Our failure to enforce a right is not a waiver. These Terms and the Privacy Policy are the entire agreement between you and us about the App. Contact: ${PCPSERVICE@gmail.com}.`]
 ],
 privacy:[
 ['Who We Are',`${PCP-IS_SOLUTIONS} is the Personal Information Controller of FINUITY. Privacy contact / Data Protection Officer: ${PCPSERVICE@gmail.com}. This policy follows the Data Privacy Act of 2012 (Republic Act No. 10173), its Implementing Rules and Regulations, and issuances of the National Privacy Commission (NPC).`],
@@ -6753,10 +6753,10 @@ privacy:[
 ['Other People\'s Data',`If you enter details about others (such as a person who owes you money), do so only as needed for your personal records and keep them accurate. You are responsible for that entry.`],
 ['Children',`The App is not directed to children. Users under 18 need a parent or guardian to accept these documents and supervise. If we learn we hold a minor's data without proper consent, we will delete it on request.`],
 ['Cookies and Local Storage',`We use browser storage and Firebase tokens that are strictly necessary to keep you signed in and remember settings. We do not use advertising or tracking cookies.`],
-['Changes and Contact',`We will update this policy when practices or the law change, show the new version, and ask for acceptance again where required. Questions, requests or complaints: ${LEGAL_EMAIL}.`]
+['Changes and Contact',`We will update this policy when practices or the law change, show the new version, and ask for acceptance again where required. Questions, requests or complaints: ${PCPSERVICE@gmail.com}.`]
 ]};
 function legalHTML(tab){
-  const title=tab==='terms'?'Terms of Use':'Privacy Policy';
+  const title=tab==='terms'?'Terms of Use':'Privacy Policy';               
   const head=`<p style="color:var(--muted);margin-bottom:14px"><b style="color:var(--text)">${title}</b><br>Version ${LEGAL_VERSION} · Last updated ${LEGAL_UPDATED}</p>`;
   return head+LEGAL_DOCS[tab].map((sec,i)=>`<p style="font-weight:700;margin-bottom:4px">${i+1}. ${sec[0]}</p><p style="margin-bottom:12px">${sec[1]}</p>`).join('')+`<p style="margin:16px 0 0;padding-top:12px;border-top:1px dashed var(--border2);color:var(--muted);font-size:11.5px;text-align:center"> - End of ${title} - </p>`;
 }
