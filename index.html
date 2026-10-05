@@ -1114,6 +1114,7 @@ label.fa-row{cursor:pointer}
      except by calling the app's own existing functions. -->
 <link rel="stylesheet" href="virtual-pet/pet.css">
 <link rel="stylesheet" href="learn.css">
+<link rel="stylesheet" href="streak.css">
 <link rel="stylesheet" href="virtual-pet/tour.css">
 <script>
 /* Instant lock: if this device has a PIN and the session isn't unlocked yet, hide the app
@@ -1721,9 +1722,9 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
       <div class="logo-text">FIN<span>UITY</span></div>
     </div>
   </div>
-  <div class="sb-nav">
+  <div class="sb-nav" data-tour="sidebar-nav">
     <div class="nav-lbl">Menu</div>
-    <div class="nav-item active" onclick="show('dashboard')" data-page="dashboard">
+    <div class="nav-item active" onclick="show('dashboard')" data-page="dashboard" data-tour="nav-home">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
       <span>Dashboard</span>
     </div>
@@ -1741,7 +1742,7 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
       <span>Expenses</span>
       <span class="nav-badge" id="nav-badge-expenses">0</span>
     </div>
-    <div class="nav-item" onclick="show('loans')" data-page="loans">
+    <div class="nav-item" onclick="show('loans')" data-page="loans" data-tour="nav-loans">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 11l4-4-4-4M7 13l-4 4 4 4M21 7H9M15 17H3"/></svg>
       <span>Loans</span>
       <span class="nav-badge" id="nav-badge-loans">0</span>
@@ -1756,7 +1757,7 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
       <span>Learn</span>
     </div>
     <div class="nav-sep" role="separator"></div>
-    <div class="nav-item" onclick="show('settings')" data-page="settings">
+    <div class="nav-item" onclick="show('settings')" data-page="settings" data-tour="nav-settings">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
       <span>Settings</span>
     </div>
@@ -1809,6 +1810,8 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
       <div class="page-sub" id="dash-date"></div>
     </div>
 
+
+    <div id="dash-streak"></div>
 
     <!-- THIS MONTH SNAPSHOT -->
     <div class="snapshot-card" id="month-snapshot"></div>
@@ -2027,7 +2030,7 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
       </div>
     </div>
     <div style="height:14px"></div>
-    <div class="card">
+    <div class="card" data-tour="loan-form">
       <div class="card-hd"><div class="card-title">Add Loan</div></div>
       <div class="form-row">
         <div class="form-group"><label>Person</label><input type="text" id="loan-name" placeholder="Name"></div>
@@ -2113,6 +2116,8 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
           </div>
         </div>
 
+        <div id="streak-card"></div>
+
         <div class="set-sync" id="set-sync" style="display:none">
           <div class="set-sync-ic" id="set-sync-ic">☁️</div>
           <div class="set-sync-txt">
@@ -2145,6 +2150,7 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
           <button class="set-back" onclick="closeSetPanel()" aria-label="Back"><svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
           <div class="set-topbar-title" id="set-detail-title"></div>
         </div>
+      <div class="set-panel single" data-panel="streak"><div id="streak-panel"></div></div>
       <div class="set-panel single" data-panel="personal">
     <!-- ACCOUNT -->
     <div class="card" style="margin-bottom:14px">
@@ -2398,8 +2404,8 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
 </div><!-- /shell -->
 
 <!-- MOBILE BOTTOM NAV -->
-<div class="bottom-nav" id="bottom-nav">
-  <div class="bnav-item active" onclick="show('dashboard')" data-page="dashboard">
+<div class="bottom-nav" id="bottom-nav" data-tour="bottom-nav">
+  <div class="bnav-item active" onclick="show('dashboard')" data-page="dashboard" data-tour="nav-home">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
     Home
   </div>
@@ -2414,7 +2420,7 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 5.5A1.5 1.5 0 013.5 4H10a2 2 0 012 2v14a2 2 0 00-2-2H3.5A1.5 1.5 0 012 16.5zM22 5.5A1.5 1.5 0 0020.5 4H14a2 2 0 00-2 2v14a2 2 0 012-2h6.5a1.5 1.5 0 001.5-1.5z"/></svg>
     Learn
   </div>
-  <div class="bnav-item" onclick="openMoreSheet()" data-group="more">
+  <div class="bnav-item" onclick="openMoreSheet()" data-group="more" data-tour="nav-more">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/></svg>
     More
   </div>
@@ -2436,7 +2442,7 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
 <div id="more-sheet" class="fn-sheet-wrap" aria-hidden="true" onclick="if(event.target===this)closeMoreSheet()">
   <div class="fn-sheet" role="dialog" aria-modal="true" aria-label="More">
     <div class="fn-grab"></div>
-    <button type="button" class="more-row" onclick="show('settings')"><span class="more-ic">⚙️</span><span>Settings</span><span class="more-chev">›</span></button>
+    <button type="button" class="more-row" data-tour="more-settings" onclick="show('settings')"><span class="more-ic">⚙️</span><span>Settings</span><span class="more-chev">›</span></button>
     <button type="button" class="more-row" onclick="show('export')"><span class="more-ic">📤</span><span>Export &amp; reports</span><span class="more-chev">›</span></button>
     <button type="button" class="more-row" onclick="closeMoreSheet();window.FinTour&&window.FinTour.start(true)"><span class="more-ic">❓</span><span>Take a tour</span><span class="more-chev">›</span></button>
   </div>
@@ -3188,7 +3194,7 @@ function toast(msg,type='ok'){
 }
 
 /* ── Settings menu navigation ── */
-const SET_TITLES={personal:'Personal Information',appearance:'Appearance',region:'Language & Currency',security:'PIN & Security',auto:'Automation & Recurring',data:'Data & Backup',legal:'Privacy & Legal',about:'About'};
+const SET_TITLES={streak:'Streak & Badges',personal:'Personal Information',appearance:'Appearance',region:'Language & Currency',security:'PIN & Security',auto:'Automation & Recurring',data:'Data & Backup',legal:'Privacy & Legal',about:'About'};
 function openSetPanel(key){
   const home=document.getElementById('set-home'),det=document.getElementById('set-detail');
   if(!home||!det)return;
@@ -3307,7 +3313,7 @@ function populateReportYears(){
   [...ys].sort((a,b)=>b-a).forEach(y=>{const o=document.createElement('option');o.value='year-'+y;o.textContent='Year '+y;o.setAttribute('data-yr','1');sel.insertBefore(o,anchor);});
   if([...sel.options].some(o=>o.value===prev))sel.value=prev;
 }
-function render(){renderBalances();renderDash();renderIncome();renderExpenses();renderLoans();renderGoals();renderSettings();updateBadges();syncEyeButtons();renderGuestBanner();populateReportYears();try{if(window.FinLearn)FinLearn.render();}catch(e){}}
+function render(){renderBalances();renderDash();renderIncome();renderExpenses();renderLoans();renderGoals();renderSettings();updateBadges();syncEyeButtons();renderGuestBanner();populateReportYears();try{if(window.FinLearn)FinLearn.render();}catch(e){}try{if(window.FinStreak)FinStreak.tick();}catch(e){}}
 function updateBadges(){
   document.getElementById('nav-badge-income').textContent=state.income.length;
   document.getElementById('nav-badge-expenses').textContent=state.expenses.length;
@@ -3952,8 +3958,10 @@ function walSave(){
   if(WD.mode==='edit'){w.label=name;w.brand=WD.brand;w.type=WD.type;w.c1=WD.c1;w.c2=WD.c2;w.dark=WD.dark;w.logo=WD.logo;}
   w.limit=limit;
   if(changed){w.balance=newBal;w.updated=today();}
+  const balChanged=changed;
   const wasBal=WD.mode==='bal';
   save();closeWalModal();render();toast(wasBal?w.label+' updated ✓':'Saved ✓');
+  if(balChanged)window.dispatchEvent(new CustomEvent('fin:balance-updated',{detail:{id:w.id,label:w.label,amount:newBal}}));
 }
 
 /* income rows: a little icon per type */
@@ -6738,10 +6746,10 @@ terms:[
 ['Suspension and Ending Use',`We may suspend or end access if you breach these Terms or to protect the App or other users. You may stop at any time and permanently delete your account and data in Settings (Legal and Data). Sections that by nature should survive (ownership, disclaimers, liability, governing law) continue after termination.`],
 ['Changes to These Terms',`We may update these Terms or the Privacy Policy. When we make a material change we will show the new version in the App and ask you to accept it again before you continue. Continued use after the notice period means you accept the update.`],
 ['Governing Law and Disputes',`These Terms are governed by the laws of the Republic of the Philippines. Please contact us first so we can try to resolve any concern in good faith; failing that, disputes go to the proper courts of the Philippines.`],
-['General',`If any provision is unenforceable, the rest remains in force. Our failure to enforce a right is not a waiver. These Terms and the Privacy Policy are the entire agreement between you and us about the App. Contact: ${PCPSERVICE@gmail.com}.`]
+['General',`If any provision is unenforceable, the rest remains in force. Our failure to enforce a right is not a waiver. These Terms and the Privacy Policy are the entire agreement between you and us about the App. Contact: ${LEGAL_EMAIL}.`]
 ],
 privacy:[
-['Who We Are',`${PCP-IS_SOLUTIONS} is the Personal Information Controller of FINUITY. Privacy contact / Data Protection Officer: ${PCPSERVICE@gmail.com}. This policy follows the Data Privacy Act of 2012 (Republic Act No. 10173), its Implementing Rules and Regulations, and issuances of the National Privacy Commission (NPC).`],
+['Who We Are',`${LEGAL_DEV} is the Personal Information Controller of FINUITY. Privacy contact / Data Protection Officer: ${LEGAL_EMAIL}. This policy follows the Data Privacy Act of 2012 (Republic Act No. 10173), its Implementing Rules and Regulations, and issuances of the National Privacy Commission (NPC).`],
 ['Personal Data We Handle',`<b>Account data:</b> email address, sign-in method (Google, email/password or guest), display name, and a unique account ID.<br><b>Data you enter:</b> income, expenses, wallet names and balances, loans (including names of people and notes), savings goals, budget limit, notes, and app settings.<br><b>Security data:</b> a salted hash of your PIN, your recovery question, and a salted hash of your answer (we cannot read either).<br><b>Technical data:</b> authentication tokens and data your browser stores (localStorage/sessionStorage: theme, tutorial status, unlock state). Google may receive your IP address and device details when you sign in, sync, or load fonts.<br><b>We do not collect:</b> bank or e-wallet credentials, card numbers, precise location, contacts, photos, or microphone/camera data, and we do not run advertising or third-party analytics.`],
 ['Why We Use It and Our Legal Basis',`We process data to (1) create and secure your account, (2) store, sync and display your records across your devices, (3) provide backups, exports and reports you request, and (4) keep the service safe and fix problems. Our bases under Section 12 of the Data Privacy Act are your <b>consent</b> (given when you accept these documents), performance of the service you asked for, and our legitimate interest in security and reliability. We do not sell your data, use it for profiling or advertising, or make automated decisions about you.`],
 ['Where Your Data Is Kept',`A copy is stored in your browser on your device. If you use an account, a copy is also stored in Google Cloud Firestore under your account ID. Google servers may be located outside the Philippines, so your data may be transferred and processed abroad; Google acts as our processor under its own security and data-protection commitments, and we remain accountable for your data.`],
@@ -6753,10 +6761,10 @@ privacy:[
 ['Other People\'s Data',`If you enter details about others (such as a person who owes you money), do so only as needed for your personal records and keep them accurate. You are responsible for that entry.`],
 ['Children',`The App is not directed to children. Users under 18 need a parent or guardian to accept these documents and supervise. If we learn we hold a minor's data without proper consent, we will delete it on request.`],
 ['Cookies and Local Storage',`We use browser storage and Firebase tokens that are strictly necessary to keep you signed in and remember settings. We do not use advertising or tracking cookies.`],
-['Changes and Contact',`We will update this policy when practices or the law change, show the new version, and ask for acceptance again where required. Questions, requests or complaints: ${PCPSERVICE@gmail.com}.`]
+['Changes and Contact',`We will update this policy when practices or the law change, show the new version, and ask for acceptance again where required. Questions, requests or complaints: ${LEGAL_EMAIL}.`]
 ]};
 function legalHTML(tab){
-  const title=tab==='terms'?'Terms of Use':'Privacy Policy';               
+  const title=tab==='terms'?'Terms of Use':'Privacy Policy';
   const head=`<p style="color:var(--muted);margin-bottom:14px"><b style="color:var(--text)">${title}</b><br>Version ${LEGAL_VERSION} · Last updated ${LEGAL_UPDATED}</p>`;
   return head+LEGAL_DOCS[tab].map((sec,i)=>`<p style="font-weight:700;margin-bottom:4px">${i+1}. ${sec[0]}</p><p style="margin-bottom:12px">${sec[1]}</p>`).join('')+`<p style="margin:16px 0 0;padding-top:12px;border-top:1px dashed var(--border2);color:var(--muted);font-size:11.5px;text-align:center"> - End of ${title} - </p>`;
 }
@@ -7471,7 +7479,9 @@ window.finGuessCat=guessCat;   // lets the receipt scanner reuse the keyword cat
 </script>
 <script src="virtual-pet/pet-dialogue.js"></script>
 <script src="learn.js"></script>
+<script src="streak.js"></script>
 <script src="virtual-pet/pet.js"></script>
+<script src="virtual-pet/pet-coach.js"></script>
 <script>
 (function(){
 var W=window,L=function(k,v){try{return v===undefined?localStorage.getItem(k):localStorage.setItem(k,v)}catch(e){}};
@@ -7596,10 +7606,10 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <script>
 /* Money sub-tabs (phones): Income / Spend / Loans / Wallets / Goals share one bar on top of each page */
 (function(){
-  var T=[['income','Income','nav-income'],['expenses','Spend','nav-expenses'],['loans','Loans',''],['balances','Wallets','nav-balances'],['goals','Goals','nav-goals']];
+  var T=[['income','Income','nav-income'],['expenses','Spend','nav-expenses'],['loans','Loans','nav-loans'],['balances','Wallets','nav-balances'],['goals','Goals','nav-goals']];
   T.forEach(function(t){
     var sec=document.getElementById(t[0]);if(!sec)return;
-    var bar=document.createElement('div');bar.className='money-tabs';bar.setAttribute('role','tablist');bar.setAttribute('aria-label','Money');
+    var bar=document.createElement('div');bar.className='money-tabs';bar.setAttribute('data-tour','money-tabs');bar.setAttribute('role','tablist');bar.setAttribute('aria-label','Money');
     bar.innerHTML=T.map(function(x){
       return '<button type="button" class="mt-tab'+(x[0]===t[0]?' active':'')+'" role="tab" data-page="'+x[0]+'"'+(x[2]?' data-tour="'+x[2]+'"':'')+' onclick="show(\''+x[0]+'\')">'+x[1]+'</button>';
     }).join('');

@@ -241,17 +241,17 @@ function render(){
 /* home */
 function viewHome(){
   var L=LS(),n=doneCount(),lv=level(n),pre=L.pre,post=L.post,h='';
-  h+='<div class="lrn-hero"><div class="lrn-lv"><span class="lrn-lv-e">'+lv.e+'</span><div><div class="lrn-lv-n">'+lv.n+'</div><div class="lrn-lv-s">'+n+' of '+LESSONS.length+' lessons done</div></div></div>'
+  h+='<div class="lrn-hero" data-tour="learn-hero"><div class="lrn-lv"><span class="lrn-lv-e">'+lv.e+'</span><div><div class="lrn-lv-n">'+lv.n+'</div><div class="lrn-lv-s">'+n+' of '+LESSONS.length+' lessons done</div></div></div>'
     +'<div class="lrn-bar"><i style="width:'+Math.round(n/LESSONS.length*100)+'%"></i></div></div>';
   // quiz banner
   if(!pre){
-    h+='<div class="lrn-ban"><div class="lrn-ban-t"><b>Take the Starter Quiz first</b><span>10 questions, about '+QUIZ_MIN.pre+'. No pressure. It shows where you are starting, so we can see how much you grow.</span></div><button class="lrn-btn" onclick="FinLearn.startQuiz(\'pre\')">Start quiz</button></div>';
+    h+='<div class="lrn-ban" data-tour="learn-quiz"><div class="lrn-ban-t"><b>Take the Starter Quiz first</b><span>10 questions, about '+QUIZ_MIN.pre+'. No pressure. It shows where you are starting, so we can see how much you grow.</span></div><button class="lrn-btn" onclick="FinLearn.startQuiz(\'pre\')">Start quiz</button></div>';
   }else if(!post){
     var ready=n>=POST_UNLOCK;
-    h+='<div class="lrn-ban'+(ready?'':' off')+'"><div class="lrn-ban-t"><b>Progress Quiz</b><span>'+(ready?'You are ready. Same topics, new questions. See how far you have come.':'Finish '+(POST_UNLOCK-n)+' more lesson'+(POST_UNLOCK-n===1?'':'s')+' to unlock. Starter score: '+pre.pct+'%.')+'</span></div>'+(ready?'<button class="lrn-btn" onclick="FinLearn.startQuiz(\'post\')">Take it</button>':'<span class="lrn-lock">🔒</span>')+'</div>';
+    h+='<div class="lrn-ban'+(ready?'':' off')+'" data-tour="learn-quiz"><div class="lrn-ban-t"><b>Progress Quiz</b><span>'+(ready?'You are ready. Same topics, new questions. See how far you have come.':'Finish '+(POST_UNLOCK-n)+' more lesson'+(POST_UNLOCK-n===1?'':'s')+' to unlock. Starter score: '+pre.pct+'%.')+'</span></div>'+(ready?'<button class="lrn-btn" onclick="FinLearn.startQuiz(\'post\')">Take it</button>':'<span class="lrn-lock">🔒</span>')+'</div>';
   }else{
     var d=post.pct-pre.pct;
-    h+='<div class="lrn-ban done"><div class="lrn-ban-t"><b>Starter '+pre.pct+'%  →  Progress '+post.pct+'%</b><span>'+(d>0?'You gained '+d+' points. That is real learning.':d===0?'Holding steady. Revisit a lesson to push higher.':'Down a bit. Retry a lesson and see what changed.')+'</span></div><button class="lrn-btn ghost" onclick="FinLearn.showResult(\'post\')">View</button></div>';
+    h+='<div class="lrn-ban done" data-tour="learn-quiz"><div class="lrn-ban-t"><b>Starter '+pre.pct+'%  →  Progress '+post.pct+'%</b><span>'+(d>0?'You gained '+d+' points. That is real learning.':d===0?'Holding steady. Revisit a lesson to push higher.':'Down a bit. Retry a lesson and see what changed.')+'</span></div><button class="lrn-btn ghost" onclick="FinLearn.showResult(\'post\')">View</button></div>';
   }
   // insights
   var ins=insights().slice(0,3);
