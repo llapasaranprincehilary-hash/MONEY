@@ -1,0 +1,33 @@
+/* FINUITY layout polish: tidy actions, compact tabs, no duplicate titles */
+.row-more{flex:none;width:34px;height:34px;border-radius:50%;border:1px solid var(--border2);background:var(--surface2);color:var(--muted);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;transition:border-color .15s,color .15s,background .15s}
+.row-more:hover,.row-more:focus-visible{border-color:var(--accent);color:var(--accent)}
+.row-more:active{transform:scale(.94)}
+.row-more .ic{width:18px;height:18px}
+.entry .right{flex-wrap:nowrap}
+.wc-menu button{display:flex;align-items:center;gap:11px}
+.wc-menu button .ic{width:17px;height:17px;color:var(--muted);flex:none}
+.wc-menu button:hover:not(:disabled) .ic{color:var(--accent)}
+.wc-menu button.danger .ic{color:var(--red)}
+.adj-row{display:flex;gap:8px;align-items:center;padding:8px 10px;background:var(--surface2);border-radius:var(--r-xs);border:1px solid var(--border2)}
+.adj-row .btn{display:inline-flex;align-items:center;gap:6px}
+@media (max-width:520px){
+  .adj-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px}
+  .adj-row>span{display:none}
+  .adj-row>input{grid-column:1/-1;width:100%;padding:9px 11px!important;font-size:14px!important}
+  .adj-row .btn{justify-content:center;padding:9px 10px!important;font-size:13px}
+}
+.filter-bar .pill{display:inline-flex;align-items:center;gap:6px;flex:none;white-space:nowrap}
+@media (max-width:900px){
+  .filter-bar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-left:-16px;margin-right:-16px;padding:2px 16px 6px;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 16px,#000 calc(100% - 28px),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 16px,#000 calc(100% - 28px),transparent 100%)}
+  .filter-bar::-webkit-scrollbar{display:none}
+  .money-tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;overflow:visible}
+  .mt-tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:52px;padding:7px 2px;border-radius:16px;font-size:11px;letter-spacing:.01em}
+  .mt-tab .ic{width:19px;height:19px}
+  .section:not(#dashboard) > .page-hd .page-title{display:none}
+  .section:not(#dashboard) > .page-hd{margin-bottom:14px}
+  .section:not(#dashboard) > .page-hd .page-sub{font-size:13px;color:var(--muted)}
+  /* Wallets: with the big title gone, the hide-balances eye sits at the right of the subtitle line */
+  #balances > .page-hd{position:relative}
+  #balances .bal-hd{position:absolute;right:0;top:-4px;z-index:1}
+  #balances > .page-hd .page-sub{padding-right:48px;min-height:34px}
+}

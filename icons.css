@@ -1,0 +1,25 @@
+/* FINUITY icons */
+.ic{width:1.15em;height:1.15em;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.2em;display:inline-block}
+.ic-lg{width:1.6em;height:1.6em}
+/* a soft rounded plate behind a big icon (empty states, dialogs, lock screens) */
+.ic-plate{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:18px;background:var(--accent-bg);border:1px solid rgba(var(--accent-rgb),.25);color:var(--accent);margin-bottom:12px}
+.ic-plate .ic{width:26px;height:26px;stroke-width:1.7}
+.ic-plate.warn{background:rgba(251,191,36,.12);border-color:rgba(251,191,36,.3);color:#fbbf24}
+.ic-plate.bad{background:rgba(248,113,113,.1);border-color:rgba(248,113,113,.3);color:var(--red)}
+.ic-plate.lg{width:76px;height:76px;border-radius:24px;margin-bottom:18px}
+.ic-plate.lg .ic{width:36px;height:36px}
+/* category icons: one hue each so they are recognised at a glance */
+.cat-ic{display:inline;white-space:nowrap}
+.cat-ic .ic{width:1.05em;height:1.05em;margin-right:.4em;vertical-align:-.18em;color:var(--cc,currentColor)}
+.cat-food{--cc:#fbbf24}.cat-transport{--cc:#60a5fa}.cat-shopping{--cc:#c084fc}.cat-utilities{--cc:#2dd4bf}
+.cat-health{--cc:#fb7185}.cat-entertainment{--cc:#4ade80}.cat-loan-payment{--cc:#94a3b8}.cat-other-exp{--cc:#a1a1aa}
+/* places that used to hold an emoji */
+div.empty-icon{display:flex;align-items:center;justify-content:center;width:54px;height:54px;margin:0 auto 12px;border-radius:17px;opacity:1;font-size:24px;color:var(--accent);background:var(--accent-bg);border:1px solid rgba(var(--accent-rgb),.22)}
+div.empty-icon .ic{width:24px;height:24px}
+#confirm-icon{display:flex;justify-content:center;margin-bottom:14px}
+.set-sync-ic,.gs-ico,.more-ic{display:inline-flex;align-items:center;justify-content:center}
+.pwa-install-icon .ic{width:22px;height:22px;color:var(--accent)}
+.splash-tabs button,.verse-next{display:inline-flex;align-items:center;gap:6px}
+/* Fin */
+.fin-bubble-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.fin-bubble-close .ic{width:14px;height:14px}

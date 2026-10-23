@@ -113,3 +113,11 @@
 /* keep the floating + out of the way while learning, and leave room above the mobile nav */
 body[data-page="learn"] #fa-fab{display:none !important}
 #learn-root{padding-bottom:96px}
+
+/* icons in Learn */
+.lrn-card .lrn-card-e{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:14px;background:var(--accent-bg);border:1px solid rgba(var(--accent-rgb),.22);color:var(--accent);font-size:22px;line-height:1}
+.lrn-hero .lrn-lv-e,.lrn-rd .lrn-rd-e,.lrn-in .lrn-in-i,.dl-card .dl-e{color:var(--accent)}
+.lrn-rd .lrn-big{display:inline-flex;align-items:center;justify-content:center;width:84px;height:84px;border-radius:26px;background:var(--accent-bg);border:1px solid rgba(var(--accent-rgb),.25);color:var(--accent);font-size:40px;margin-bottom:12px}
+.lrn-ban .lrn-lock{color:var(--muted)}
+.lrn-ri b .ic{width:1em;height:1em;stroke-width:2.4}
+.lrn-link{display:inline-flex;align-items:center;gap:6px}

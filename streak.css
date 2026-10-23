@@ -67,8 +67,15 @@
 .st-badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
 .st-b{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:14px;border-radius:16px;background:var(--surface);border:1px solid var(--border);opacity:.62}
 .st-b.got{opacity:1;border-color:rgba(var(--accent-rgb),.35);background:linear-gradient(135deg,rgba(var(--accent-rgb),.08),var(--surface))}
-.st-b-i{font-size:26px;line-height:1;margin-bottom:4px;filter:grayscale(1)}
-.st-b.got .st-b-i{filter:none}
+/* badge medals: a coloured tile per category, grey when locked */
+.st-b-i{display:flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:15px;margin-bottom:6px;background:var(--surface3);color:var(--muted2);font-size:22px}
+.st-b.got .st-b-i{background:linear-gradient(135deg,var(--bc1),var(--bc2));color:#fff;box-shadow:0 8px 18px -8px var(--bc2)}
+.c-getting-started{--bc1:#4ade80;--bc2:#16a34a}.c-streaks{--bc1:#ffb347;--bc2:#ff7a18}.c-habits{--bc1:#60a5fa;--bc2:#2563eb}
+.c-money-wins{--bc1:#fcd34d;--bc2:#d97706}.c-learning{--bc1:#c084fc;--bc2:#7c3aed}
+.st-chip-i{display:inline-flex;color:var(--muted)}.st-chip.lit .st-chip-i{color:#ff9a3c}
+.st-flame{color:var(--muted2)}.st-card.lit .st-flame{color:#ff9a3c}
+.st-ring-e{color:var(--muted2)}.st-hero.lit .st-ring-e{color:#ff9a3c}
+.st-d i .ic,.st-cd .ic{width:12px;height:12px;stroke-width:2.6}
 .st-b-t{font-family:var(--font-d);font-weight:700;font-size:13.5px}
 .st-b-h{font-size:11px;color:var(--muted);line-height:1.4}
 .st-new{position:absolute;top:10px;right:10px;font-size:9px;font-weight:800;letter-spacing:.08em;color:#2a1200;background:#ffb347;border-radius:99px;padding:2px 7px}

@@ -7,6 +7,7 @@
 var W=window;
 function S(){try{return state}catch(e){return{}}}
 function $(id){return document.getElementById(id)}
+function ic(n){return window.FinIcons?FinIcons.ic(n):''}
 function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 function pad(n){return n<10?'0'+n:''+n}
 function iso(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
@@ -22,24 +23,24 @@ var MILESTONES=[3,7,14,30,60,100];
 
 /* ───────── badge catalogue (ids marked * are shared with Fin's older badge shelf) ───────── */
 var DEFS=[
- {id:'first-log',icon:'📝',label:'First entry',hint:'Log your first income or expense',cat:'Getting started'},
- {id:'first-month-budgeted',icon:'🎯',label:'Budget set',hint:'Set a monthly spending limit',cat:'Getting started'},
- {id:'first-goal',icon:'🌠',label:'Dreamer',hint:'Create your first savings goal',cat:'Getting started'},
- {id:'streak-3',icon:'🌱',label:'Warm-up',hint:'Log 3 days in a row',cat:'Streaks'},
- {id:'streak-7',icon:'🔥',label:'One week strong',hint:'Log 7 days in a row',cat:'Streaks'},
- {id:'streak-14',icon:'⚡',label:'Two-week habit',hint:'Log 14 days in a row',cat:'Streaks'},
- {id:'streak-30',icon:'⭐',label:'Habit formed',hint:'Log 30 days in a row',cat:'Streaks'},
- {id:'streak-60',icon:'💎',label:'Diamond focus',hint:'Log 60 days in a row',cat:'Streaks'},
- {id:'streak-100',icon:'👑',label:'Money royalty',hint:'Log 100 days in a row',cat:'Streaks'},
- {id:'entries-25',icon:'📒',label:'25 entries',hint:'Log 25 incomes or expenses',cat:'Habits'},
- {id:'entries-100',icon:'🗂️',label:'100 entries',hint:'Log 100 incomes or expenses',cat:'Habits'},
- {id:'goal-hit',icon:'🏆',label:'Goal reached',hint:'Fully fund a savings goal',cat:'Money wins'},
- {id:'loan-free',icon:'🏁',label:'Debt-free',hint:'Pay off a loan in full',cat:'Money wins'},
- {id:'best-saver',icon:'📈',label:'Best saving month',hint:'Beat your own best savings rate',cat:'Money wins'},
- {id:'first-lesson',icon:'📚',label:'Student of money',hint:'Finish your first lesson',cat:'Learning'},
- {id:'all-lessons',icon:'🎓',label:'Graduate',hint:'Finish all 7 lessons',cat:'Learning'},
- {id:'quiz-starter',icon:'🧭',label:'Baseline set',hint:'Take the Starter Quiz',cat:'Learning'},
- {id:'quiz-gain',icon:'🚀',label:'Level up',hint:'Score higher on the Progress Quiz',cat:'Learning'}
+ {id:'first-log',icon:'edit',label:'First entry',hint:'Log your first income or expense',cat:'Getting started'},
+ {id:'first-month-budgeted',icon:'target',label:'Budget set',hint:'Set a monthly spending limit',cat:'Getting started'},
+ {id:'first-goal',icon:'sparkle',label:'Dreamer',hint:'Create your first savings goal',cat:'Getting started'},
+ {id:'streak-3',icon:'sprout',label:'Warm-up',hint:'Log 3 days in a row',cat:'Streaks'},
+ {id:'streak-7',icon:'flame',label:'One week strong',hint:'Log 7 days in a row',cat:'Streaks'},
+ {id:'streak-14',icon:'bolt',label:'Two-week habit',hint:'Log 14 days in a row',cat:'Streaks'},
+ {id:'streak-30',icon:'star',label:'Habit formed',hint:'Log 30 days in a row',cat:'Streaks'},
+ {id:'streak-60',icon:'diamond',label:'Diamond focus',hint:'Log 60 days in a row',cat:'Streaks'},
+ {id:'streak-100',icon:'crown',label:'Money royalty',hint:'Log 100 days in a row',cat:'Streaks'},
+ {id:'entries-25',icon:'list',label:'25 entries',hint:'Log 25 incomes or expenses',cat:'Habits'},
+ {id:'entries-100',icon:'clipboard',label:'100 entries',hint:'Log 100 incomes or expenses',cat:'Habits'},
+ {id:'goal-hit',icon:'trophy',label:'Goal reached',hint:'Fully fund a savings goal',cat:'Money wins'},
+ {id:'loan-free',icon:'flag',label:'Debt-free',hint:'Pay off a loan in full',cat:'Money wins'},
+ {id:'best-saver',icon:'trend-up',label:'Best saving month',hint:'Beat your own best savings rate',cat:'Money wins'},
+ {id:'first-lesson',icon:'book',label:'Student of money',hint:'Finish your first lesson',cat:'Learning'},
+ {id:'all-lessons',icon:'graduation',label:'Graduate',hint:'Finish all 7 lessons',cat:'Learning'},
+ {id:'quiz-starter',icon:'compass',label:'Baseline set',hint:'Take the Starter Quiz',cat:'Learning'},
+ {id:'quiz-gain',icon:'rocket',label:'Level up',hint:'Score higher on the Progress Quiz',cat:'Learning'}
 ];
 var DMAP={};DEFS.forEach(function(d){DMAP[d.id]=d});
 var CATS=['Getting started','Streaks','Habits','Money wins','Learning'];
@@ -56,8 +57,8 @@ function ST(){
 // existing users start with the history they already have, so day one is not "0"
 function bootstrap(st){
   var s=S(),set={};
-  (s.expenses||[]).forEach(function(e){if(validIso(e.date))set[e.date]=1});
-  (s.income||[]).forEach(function(e){if(validIso(e.dateAdded))set[e.dateAdded]=1});
+  (s.expenses||[]).forEach(function(e){if(!e.recurring&&validIso(e.date))set[e.date]=1});      // recurring bills are filled in automatically
+  (s.income||[]).forEach(function(e){if(!e.autoId&&validIso(e.dateAdded))set[e.dateAdded]=1});
   st.days=Object.keys(set).sort().slice(-KEEP_DAYS);
   st.total=st.days.length;
   st.seeded=false;
@@ -90,7 +91,8 @@ function calc(){
   else if(set[y]){cur=run(set,y);mode='open'}
   else if(set[y2]){var n2=run(set,y2);if(n2>=3){cur=n2;mode='rest'}}
   var best=st.best||0;
-  st.days.forEach(function(d){var r=run(set,d);if(r>best)best=r});
+  // the full history is scanned once (first run / old backups); after that "best" is kept up to date as days are logged
+  if(!st.bestDone){st.days.forEach(function(d){var r=run(set,d);if(r>best)best=r});st.bestDone=true;st.best=best}
   if(cur>best)best=cur;
   var v={current:cur,best:best,total:Math.max(st.total||0,st.days.length),loggedToday:!!set[t],state:mode,atRisk:cur>0&&!set[t],set:set,today:t};
   memo={key:key,val:v};return v;
@@ -139,7 +141,7 @@ function award(id,silent){
   if(!silent){
     var d=DMAP[id];
     st.fresh=(st.fresh||[]).concat([id]).slice(-6);
-    try{toast('🏅 Badge unlocked: '+d.label)}catch(e){}
+    try{toast('Badge unlocked: '+d.label)}catch(e){}
     emit('fin:badge',{id:id,label:d.label,icon:d.icon,hint:d.hint});
   }
   render();
@@ -147,7 +149,7 @@ function award(id,silent){
 }
 function evalBadges(silent){
   var s=S(),st=ST();if(!st)return;
-  var c=calc(),L=(s.learn&&s.learn.done)?Object.keys(s.learn.done).length:0,ent=(s.expenses||[]).length+(s.income||[]).length;
+  var c=calc(),L=(s.learn&&s.learn.done)?Object.keys(s.learn.done).length:0,ent=(s.expenses||[]).filter(function(e){return !e.recurring}).length+(s.income||[]).filter(function(e){return !e.autoId}).length;
   var chk=[
     ['first-log',st.total>=1||st.days.length>=1],
     ['first-month-budgeted',(+s.budgetLimit||0)>0],
@@ -178,7 +180,7 @@ function weekDots(c){
   var t=td(),h='';
   for(var i=6;i>=0;i--){
     var d=addDays(t,-i),on=!!c.set[d],isT=i===0,rest=!on&&!isT&&c.set[addDays(d,-1)]&&c.set[addDays(d,1)];
-    h+='<span class="st-d'+(on?' on':'')+(isT?' today':'')+(rest?' rest':'')+'" title="'+d+'"><i>'+(on?'✓':rest?'🛡':'')+'</i><b>'+DOW[parse(d).getDay()]+'</b></span>';
+    h+='<span class="st-d'+(on?' on':'')+(isT?' today':'')+(rest?' rest':'')+'" title="'+d+'"><i>'+(on?ic('check'):rest?ic('shield'):'')+'</i><b>'+DOW[parse(d).getDay()]+'</b></span>';
   }
   return h;
 }
@@ -192,7 +194,7 @@ function renderCard(){
   var el=$('streak-card');if(!el)return;
   var c=calc(),st=ST(),n=Object.keys((st&&st.badges)||{}).length;
   var h='<button type="button" class="st-card'+(c.current>0?' lit':'')+'" onclick="FinStreak.open()" data-tour="streak-card" aria-label="Streak and badges">'
-   +'<span class="st-flame" aria-hidden="true">'+(c.current>0?'🔥':'🌫️')+'</span>'
+   +'<span class="st-flame" aria-hidden="true">'+ic('flame')+'</span>'
    +'<span class="st-main"><span class="st-num">'+c.current+'<small>'+(c.current===1?' day streak':' day streak')+'</small></span>'
    +'<span class="st-sub">Best '+c.best+' · '+n+' of '+DEFS.length+' badges</span>'
    +'<span class="st-week">'+weekDots(c)+'</span></span>'
@@ -203,7 +205,7 @@ function renderChip(){
   var el=$('dash-streak');if(!el)return;
   var c=calc(),h='';
   if(c.current>0||c.total>0){
-    h='<button type="button" class="st-chip'+(c.atRisk?' risk':'')+(c.current>0?' lit':'')+'" onclick="FinStreak.openFromAnywhere()"><span>'+(c.current>0?'🔥':'🌫️')+'</span><b>'+c.current+'-day streak</b><em>'+(c.state==='today'?'logged today ✓':c.atRisk?'log today to keep it':'log today to start')+'</em></button>';
+    h='<button type="button" class="st-chip'+(c.atRisk?' risk':'')+(c.current>0?' lit':'')+'" onclick="FinStreak.openFromAnywhere()"><span class="st-chip-i">'+ic('flame')+'</span><b>'+c.current+'-day streak</b><em>'+(c.state==='today'?'logged today ✓':c.atRisk?'log today to keep it':'log today to start')+'</em></button>';
   }
   if(el._h!==h){el._h=h;el.innerHTML=h}
 }
@@ -211,7 +213,7 @@ function renderPanel(){
   var el=$('streak-panel');if(!el)return;
   var c=calc(),st=ST(),t=td(),h='';
   var earned=st.badges,n=Object.keys(earned).length,nm=nextMilestone(c.current);
-  h+='<div class="st-hero'+(c.current>0?' lit':'')+'"><div class="st-ring"><span class="st-ring-e">'+(c.current>0?'🔥':'🌫️')+'</span><b>'+c.current+'</b><small>day streak</small></div><p class="st-status">'+esc(statusLine(c))+'</p>';
+  h+='<div class="st-hero'+(c.current>0?' lit':'')+'"><div class="st-ring"><span class="st-ring-e">'+ic('flame')+'</span><b>'+c.current+'</b><small>day streak</small></div><p class="st-status">'+esc(statusLine(c))+'</p>';
   if(nm){var prevM=0;MILESTONES.forEach(function(m){if(m<=c.current)prevM=m});var pct=Math.round((c.current-prevM)/(nm-prevM)*100);
     h+='<div class="st-next"><div class="st-next-t">'+(nm-c.current)+' more day'+((nm-c.current)===1?'':'s')+' to <b>'+badgeForStreak(nm)+'</b></div><div class="st-bar"><i style="width:'+pct+'%"></i></div></div>'}
   h+='</div>';
@@ -221,7 +223,7 @@ function renderPanel(){
   // align to weeks: begin on a Sunday 4 weeks before this week's Sunday
   var sunday=addDays(t,-parse(t).getDay()),begin=addDays(sunday,-28);
   for(var i=0;i<35;i++){var d=addDays(begin,i),on=!!c.set[d],fut=d>t,rest=!on&&!fut&&c.set[addDays(d,-1)]&&c.set[addDays(d,1)];
-    h+='<span class="st-cd'+(on?' on':'')+(d===t?' today':'')+(fut?' fut':'')+(rest?' rest':'')+'" title="'+d+'">'+(on?'✓':rest?'🛡':'')+'</span>'}
+    h+='<span class="st-cd'+(on?' on':'')+(d===t?' today':'')+(fut?' fut':'')+(rest?' rest':'')+'" title="'+d+'">'+(on?ic('check'):rest?ic('shield'):'')+'</span>'}
   h+='</div><div class="st-legend"><span><i class="on"></i>Logged</span><span><i class="rest"></i>Rest day</span><span><i class="today"></i>Today</span></div>';
   h+='<details class="st-how"><summary>How streaks work</summary><p>Log any income, expense, loan payment, goal saving or balance update and the day counts. Missing a single day will not reset you: you get one free <b>rest day</b> each week. Streaks reward showing up, not being perfect.</p></details>';
   // badges
@@ -230,12 +232,12 @@ function renderPanel(){
     var list=DEFS.filter(function(d){return d.cat===cat});
     h+='<div class="st-cat">'+cat+'</div><div class="st-badges">'+list.map(function(d){
       var got=earned[d.id],isNew=got&&(st.fresh||[]).indexOf(d.id)>-1;
-      return '<div class="st-b'+(got?' got':'')+'" title="'+esc(d.hint)+'"><span class="st-b-i">'+(got?d.icon:'🔒')+'</span><span class="st-b-t">'+esc(d.label)+'</span><span class="st-b-h">'+(got?'Earned '+esc(fmtShort(got)):esc(d.hint))+'</span>'+(isNew?'<span class="st-new">NEW</span>':'')+'</div>'}).join('')+'</div>';
+      return '<div class="st-b c-'+d.cat.toLowerCase().replace(/[^a-z]+/g,'-')+(got?' got':'')+'" title="'+esc(d.hint)+'"><span class="st-b-i">'+ic(got?d.icon:'lock')+'</span><span class="st-b-t">'+esc(d.label)+'</span><span class="st-b-h">'+(got?'Earned '+esc(fmtShort(got)):esc(d.hint))+'</span>'+(isNew?'<span class="st-new">NEW</span>':'')+'</div>'}).join('')+'</div>';
   });
   if(el._h!==h){el._h=h;el.innerHTML=h}
   if(st.fresh&&st.fresh.length){st.fresh=[]}   // shown once
 }
-function badgeForStreak(n){var d=DMAP['streak-'+n];return d?d.icon+' '+d.label:n+' days'}
+function badgeForStreak(n){var d=DMAP['streak-'+n];return d?ic(d.icon)+' '+esc(d.label):n+' days'}
 function fmtShort(s){try{return parse(s).toLocaleDateString('en-PH',{month:'short',day:'numeric'})}catch(e){return s}}
 function render(){try{renderCard();renderChip();var p=$('set-detail');if(p&&p.style.display!=='none'&&document.querySelector('#set-detail .set-panel.open[data-panel="streak"]'))renderPanel()}catch(e){console.error('streak',e)}}
 
@@ -251,7 +253,7 @@ function init(){
   LOG_EVENTS.forEach(function(ev){
     W.addEventListener(ev,function(e){
       var d=(e&&e.detail)||{};
-      if(d.recurring||d.auto)return;            // automatic entries are not the person showing up
+      if(d.auto)return;                          // automatic entries are not the person showing up (the manual "log this bill now" button is)
       log(ev.replace('fin:',''));
       evalBadges(false);
     });

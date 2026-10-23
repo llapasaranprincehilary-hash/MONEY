@@ -1070,6 +1070,7 @@ label.fa-row{cursor:pointer}
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="icons.js"></script>
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyBMkUBMpcKy7kMEReov933RIJsKMztB9NA",
@@ -1113,8 +1114,10 @@ label.fa-row{cursor:pointer}
      and the virtual-pet/ folder. Does not touch app state or navigation
      except by calling the app's own existing functions. -->
 <link rel="stylesheet" href="virtual-pet/pet.css">
+<link rel="stylesheet" href="icons.css">
 <link rel="stylesheet" href="learn.css">
 <link rel="stylesheet" href="streak.css">
+<link rel="stylesheet" href="ux.css">
 <link rel="stylesheet" href="virtual-pet/tour.css">
 <script>
 /* Instant lock: if this device has a PIN and the session isn't unlocked yet, hide the app
@@ -1414,7 +1417,7 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
 
         <div id="pwa-install-banner" style="display:none;width:100%;margin-bottom:18px;background:var(--accent-bg);border:1px solid rgba(var(--accent-rgb),.3);border-radius:12px;padding:12px 14px;text-align:left">
           <div style="display:flex;align-items:center;gap:10px">
-            <div style="font-size:20px;flex-shrink:0">📲</div>
+            <div class="ic-plate"><svg class="ic" aria-hidden="true"><use href="#i-phone"/></svg></div>
             <div style="flex:1;min-width:0">
               <div style="font-size:13px;font-weight:700;color:var(--text)">Install FINUITY</div>
               <div id="pwa-install-sub" style="font-size:11px;color:var(--muted)">Get it as an app on your home screen - faster, works offline.</div>
@@ -1516,7 +1519,7 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
 
   <!-- STEP: REGISTER (new user) -->
   <div id="auth-register" class="pin-box" style="display:none">
-    <div style="font-size:32px;margin-bottom:14px">👋</div>
+    <div class="ic-plate"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg></div>
     <div class="pin-title">Welcome to <span style="color:var(--accent)">FINUITY</span></div>
     <div class="pin-sub" style="margin-bottom:22px">Just set a 4-digit PIN for this device</div>
     <div style="text-align:left;width:100%;margin-bottom:14px">
@@ -1534,7 +1537,7 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
       <div class="pin-key" onclick="regPinKey('1')">1</div><div class="pin-key" onclick="regPinKey('2')">2</div><div class="pin-key" onclick="regPinKey('3')">3</div>
       <div class="pin-key" onclick="regPinKey('4')">4</div><div class="pin-key" onclick="regPinKey('5')">5</div><div class="pin-key" onclick="regPinKey('6')">6</div>
       <div class="pin-key" onclick="regPinKey('7')">7</div><div class="pin-key" onclick="regPinKey('8')">8</div><div class="pin-key" onclick="regPinKey('9')">9</div>
-      <div class="pin-key empty"></div><div class="pin-key" onclick="regPinKey('0')">0</div><div class="pin-key del" onclick="regPinBackspace()">⌫</div>
+      <div class="pin-key empty"></div><div class="pin-key" onclick="regPinKey('0')">0</div><div class="pin-key del" onclick="regPinBackspace()"><svg class="ic" aria-hidden="true"><use href="#i-backspace"/></svg></div>
     </div>
     <div class="pin-error" id="reg-pin-error"></div>
     <div id="reg-confirm-wrap" style="display:none;margin-top:14px;text-align:left;width:100%">
@@ -1548,14 +1551,14 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
       <div class="pin-key" onclick="regConfirmKey('1')">1</div><div class="pin-key" onclick="regConfirmKey('2')">2</div><div class="pin-key" onclick="regConfirmKey('3')">3</div>
       <div class="pin-key" onclick="regConfirmKey('4')">4</div><div class="pin-key" onclick="regConfirmKey('5')">5</div><div class="pin-key" onclick="regConfirmKey('6')">6</div>
       <div class="pin-key" onclick="regConfirmKey('7')">7</div><div class="pin-key" onclick="regConfirmKey('8')">8</div><div class="pin-key" onclick="regConfirmKey('9')">9</div>
-      <div class="pin-key empty"></div><div class="pin-key" onclick="regConfirmKey('0')">0</div><div class="pin-key del" onclick="regConfirmBackspace()">⌫</div>
+      <div class="pin-key empty"></div><div class="pin-key" onclick="regConfirmKey('0')">0</div><div class="pin-key del" onclick="regConfirmBackspace()"><svg class="ic" aria-hidden="true"><use href="#i-backspace"/></svg></div>
     </div>
     <div class="pin-error" id="reg-confirm-error"></div>
   </div>
 
   <!-- STEP: SECURITY QUESTION SETUP (part of registration) -->
   <div id="auth-secsetup" class="pin-box" style="display:none;max-width:380px">
-    <div style="font-size:32px;margin-bottom:14px">🛟</div>
+    <div class="ic-plate"><svg class="ic" aria-hidden="true"><use href="#i-lifering"/></svg></div>
     <div class="pin-title">Set a Recovery Question</div>
     <div class="pin-sub" style="margin-bottom:18px">Guest accounts have no email, so this is the only way back in if you forget your PIN.</div>
     <div style="text-align:left;width:100%;margin-bottom:14px">
@@ -1586,7 +1589,7 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
 
   <!-- STEP: FORGOT PIN (recovery) -->
   <div id="auth-forgot" class="pin-box" style="display:none;max-width:380px">
-    <div style="font-size:32px;margin-bottom:14px">🔓</div>
+    <div class="ic-plate"><svg class="ic" aria-hidden="true"><use href="#i-unlock"/></svg></div>
     <div id="forgot-reauth-view" style="display:none">
       <div class="pin-title">Recover Access</div>
       <div class="pin-sub" style="margin-bottom:18px">Sign out and sign back in with your account to prove it's you - you'll be able to set a new PIN right after, and none of your data is touched.</div>
@@ -1606,7 +1609,7 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
     <div id="forgot-no-q-view" style="display:none">
       <div class="pin-title" style="color:var(--amber)">No Recovery Question Set</div>
       <div class="pin-sub" style="margin-bottom:16px">This account didn't set up a recovery question, so there's no way to verify it's you and reset just the PIN. Your only option is to clear all data and start over.</div>
-      <div style="font-size:11px;color:var(--amber);text-align:left;width:100%;margin-bottom:12px">⚠ This permanently deletes your income, expenses, loans, goals, and wallet balances, and resets the account so you can register again.</div>
+      <div style="font-size:11px;color:var(--amber);text-align:left;width:100%;margin-bottom:12px"><svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg> This permanently deletes your income, expenses, loans, goals, and wallet balances, and resets the account so you can register again.</div>
       <div class="pin-error" id="forgot-noq-error"></div>
       <button class="btn btn-primary" style="width:100%;margin-top:4px;background:var(--red)" onclick="clearAndResetAccount()">Clear All Data &amp; Start Over</button>
     </div>
@@ -1627,16 +1630,16 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
       <div class="pin-key" onclick="pinKey('1')">1</div><div class="pin-key" onclick="pinKey('2')">2</div><div class="pin-key" onclick="pinKey('3')">3</div>
       <div class="pin-key" onclick="pinKey('4')">4</div><div class="pin-key" onclick="pinKey('5')">5</div><div class="pin-key" onclick="pinKey('6')">6</div>
       <div class="pin-key" onclick="pinKey('7')">7</div><div class="pin-key" onclick="pinKey('8')">8</div><div class="pin-key" onclick="pinKey('9')">9</div>
-      <div class="pin-key empty"></div><div class="pin-key" onclick="pinKey('0')">0</div><div class="pin-key del" onclick="pinBackspace()">⌫</div>
+      <div class="pin-key empty"></div><div class="pin-key" onclick="pinKey('0')">0</div><div class="pin-key del" onclick="pinBackspace()"><svg class="ic" aria-hidden="true"><use href="#i-backspace"/></svg></div>
     </div>
     <div class="pin-error" id="pin-error"></div>
-    <button class="btn btn-ghost btn-sm" id="pin-bio-btn" style="margin-top:8px;display:none" onclick="tryBiometricUnlock(false)">👆 Use Face ID / Fingerprint</button>
+    <button class="btn btn-ghost btn-sm" id="pin-bio-btn" style="margin-top:8px;display:none" onclick="tryBiometricUnlock(false)"><svg class="ic" aria-hidden="true"><use href="#i-fingerprint"/></svg> Use Face ID / Fingerprint</button>
     <button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="showForgotPin()">Forgot PIN?</button>
   </div>
 
   <!-- STEP: PIN SETUP (changing/setting PIN from settings) -->
   <div id="auth-pinsetup" class="pin-box" style="display:none">
-    <div style="font-size:32px;margin-bottom:14px">🔑</div>
+    <div class="ic-plate"><svg class="ic" aria-hidden="true"><use href="#i-key"/></svg></div>
     <div class="pin-title">Set <span style="color:var(--accent)">PIN</span></div>
     <div class="pin-sub" id="pinsetup-sub" style="margin-bottom:22px">Enter a new 4-digit PIN</div>
     <div class="pin-dots" id="pinsetup-dots">
@@ -1647,7 +1650,7 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
       <div class="pin-key" onclick="setupPinKey('1')">1</div><div class="pin-key" onclick="setupPinKey('2')">2</div><div class="pin-key" onclick="setupPinKey('3')">3</div>
       <div class="pin-key" onclick="setupPinKey('4')">4</div><div class="pin-key" onclick="setupPinKey('5')">5</div><div class="pin-key" onclick="setupPinKey('6')">6</div>
       <div class="pin-key" onclick="setupPinKey('7')">7</div><div class="pin-key" onclick="setupPinKey('8')">8</div><div class="pin-key" onclick="setupPinKey('9')">9</div>
-      <div class="pin-key empty"></div><div class="pin-key" onclick="setupPinKey('0')">0</div><div class="pin-key del" onclick="setupPinBackspace()">⌫</div>
+      <div class="pin-key empty"></div><div class="pin-key" onclick="setupPinKey('0')">0</div><div class="pin-key del" onclick="setupPinBackspace()"><svg class="ic" aria-hidden="true"><use href="#i-backspace"/></svg></div>
     </div>
     <div class="pin-error" id="pinsetup-error"></div>
     <button class="btn btn-ghost btn-sm" onclick="cancelPinSetup()" style="margin-top:18px">Cancel</button>
@@ -1655,7 +1658,7 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
 
   <!-- STEP: CLEAR ALL PIN CONFIRM -->
   <div id="auth-clearconfirm" class="pin-box" style="display:none">
-    <div style="font-size:32px;margin-bottom:14px">⚠️</div>
+    <div class="ic-plate warn"><svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg></div>
     <div class="pin-title" style="color:var(--red)">Clear All Data</div>
     <div class="pin-sub" style="margin-bottom:22px">Enter your PIN to confirm permanent deletion of all data</div>
     <div class="pin-dots" id="clear-dots">
@@ -1666,7 +1669,7 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
       <div class="pin-key" onclick="clearPinKey('1')">1</div><div class="pin-key" onclick="clearPinKey('2')">2</div><div class="pin-key" onclick="clearPinKey('3')">3</div>
       <div class="pin-key" onclick="clearPinKey('4')">4</div><div class="pin-key" onclick="clearPinKey('5')">5</div><div class="pin-key" onclick="clearPinKey('6')">6</div>
       <div class="pin-key" onclick="clearPinKey('7')">7</div><div class="pin-key" onclick="clearPinKey('8')">8</div><div class="pin-key" onclick="clearPinKey('9')">9</div>
-      <div class="pin-key empty"></div><div class="pin-key" onclick="clearPinKey('0')">0</div><div class="pin-key del" onclick="clearPinBackspace()">⌫</div>
+      <div class="pin-key empty"></div><div class="pin-key" onclick="clearPinKey('0')">0</div><div class="pin-key del" onclick="clearPinBackspace()"><svg class="ic" aria-hidden="true"><use href="#i-backspace"/></svg></div>
     </div>
     <div class="pin-error" id="clear-pin-error"></div>
     <button class="btn btn-ghost btn-sm" onclick="cancelClearConfirm()" style="margin-top:18px">Cancel</button>
@@ -1682,11 +1685,11 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
     <div style="font-size:12px;color:var(--muted);margin-bottom:36px">Personal Finance Tracker · v2.4</div>
     <div style="background:linear-gradient(135deg,var(--surface) 0%,var(--surface2) 100%);border:1px solid rgba(var(--accent-rgb),.18);border-radius:16px;padding:26px 28px;margin-bottom:28px;position:relative;overflow:hidden">
       <div style="position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:radial-gradient(circle,rgba(var(--accent-rgb),.1) 0%,transparent 70%);pointer-events:none"></div>
-      <div class="splash-tabs" role="tablist"><button type="button" role="tab" id="st-verse" class="on" aria-selected="true" onclick="setSplashMode('verse')">✝ Word for Today</button><button type="button" role="tab" id="st-tip" aria-selected="false" onclick="setSplashMode('tip')">💡 Money tip</button></div>
+      <div class="splash-tabs" role="tablist"><button type="button" role="tab" id="st-verse" class="on" aria-selected="true" onclick="setSplashMode('verse')"> Word for Today</button><button type="button" role="tab" id="st-tip" aria-selected="false" onclick="setSplashMode('tip')"><svg class="ic" aria-hidden="true"><use href="#i-bulb"/></svg> Money tip</button></div>
       <div id="splash-verse" style="font-size:15px;color:var(--text);line-height:1.7;font-style:italic;margin-bottom:14px;min-height:7em;display:flex;align-items:center;justify-content:center">"..."</div>
       <div id="splash-ref" style="font-size:12px;color:var(--accent);font-weight:600;font-family:var(--font-d)"></div>
       <div class="verse-progress-track"><div class="verse-progress-fill" id="verse-prog" style="width:0%"></div></div>
-      <button type="button" class="verse-next" id="verse-next-btn" onclick="nextVerse()">↻ Another verse</button><button type="button" class="verse-next" id="splash-learn" style="display:none" onclick="splashLearnMore()">📚 Learn more</button>
+      <button type="button" class="verse-next" id="verse-next-btn" onclick="nextVerse()">↻ Another verse</button><button type="button" class="verse-next" id="splash-learn" style="display:none" onclick="splashLearnMore()"><svg class="ic" aria-hidden="true"><use href="#i-book"/></svg> Learn more</button>
     </div>
     <div id="splash-greeting" style="font-size:13px;color:var(--muted);margin-bottom:28px"></div>
     <button onclick="closeSplash()" style="background:var(--accent);color:#080808;border:none;padding:12px 36px;border-radius:10px;font-family:var(--font-d);font-size:14px;font-weight:700;cursor:pointer;transition:all .16s;letter-spacing:.02em" onmouseover="this.style.background='var(--accent-dim)'" onmouseout="this.style.background='var(--accent)'">
@@ -1764,7 +1767,7 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
   </div>
   <div class="sb-bottom">
     <div style="display:flex;align-items:center;gap:10px;padding:10px;margin-bottom:8px;background:var(--surface2);border-radius:10px;border:1px solid var(--border);box-shadow:var(--shadow-sm)">
-      <div class="sb-avatar" id="sidebar-avatar" style="width:30px;height:30px;border-radius:50%;background:var(--accent-bg);border:1px solid rgba(var(--accent-rgb),.2);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;overflow:hidden">👤</div>
+      <div class="sb-avatar" id="sidebar-avatar" style="width:30px;height:30px;border-radius:50%;background:var(--accent-bg);border:1px solid rgba(var(--accent-rgb),.2);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;overflow:hidden"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg></div>
       <div style="min-width:0;flex:1">
         <div id="sidebar-username" style="font-size:12.5px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">-</div>
         <div style="font-size:10px;color:var(--muted2)">my account</div>
@@ -1947,7 +1950,7 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
       <div class="page-sub">Log what you spend, categorise it, and track your sources</div>
     </div>
     <div class="card" data-tour="expense-form">
-      <div class="card-hd"><div class="card-title">Add Expense</div><button class="btn btn-ghost btn-sm" id="scan-receipt-btn" data-tour="scan-receipt" onclick="scanReceiptStart()">📷 Scan Receipt</button></div>
+      <div class="card-hd"><div class="card-title">Add Expense</div><button class="btn btn-ghost btn-sm" id="scan-receipt-btn" data-tour="scan-receipt" onclick="scanReceiptStart()"><svg class="ic" aria-hidden="true"><use href="#i-camera"/></svg> Scan Receipt</button></div>
       <input type="file" id="receipt-file" accept="image/*" style="display:none" onchange="scanReceiptFile(this)">
       <div id="receipt-banner" style="display:none;font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:12px;padding:10px 12px;background:var(--accent-bg);border:1px solid rgba(var(--accent-rgb),.18);border-radius:var(--r-xs)"></div>
       <div class="form-row">
@@ -1956,7 +1959,7 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
       </div>
       <div class="form-row-3">
         <div class="form-group"><label>Category</label>
-          <select id="exp-cat" onchange="onExpCatChange()"><option value="food">🍜 Food</option><option value="transport">🚌 Transport</option><option value="shopping">🛍️ Shopping</option><option value="utilities">💡 Utilities</option><option value="health">💊 Health</option><option value="entertainment">🎮 Entertainment</option><option value="loan-payment">💸 Loan Payment</option><option value="other-exp">📦 Other</option></select>
+          <select id="exp-cat" onchange="onExpCatChange()"><option value="food">Food</option><option value="transport">Transport</option><option value="shopping">Shopping</option><option value="utilities">Utilities</option><option value="health">Health</option><option value="entertainment">Entertainment</option><option value="loan-payment">Loan Payment</option><option value="other-exp">Other</option></select>
         </div>
         <div class="form-group"><label>Source (wallet)</label>
           <select id="exp-source"></select>
@@ -1981,7 +1984,7 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
         </div>
       </div>
       <div style="font-size:12px;color:var(--muted);margin-bottom:12px;padding:8px 12px;background:var(--accent-bg);border:1px solid rgba(var(--accent-rgb),.12);border-radius:var(--r-xs)">
-        💡 The amount will be automatically deducted from the selected wallet.
+        <svg class="ic" aria-hidden="true"><use href="#i-bulb"/></svg> The amount will be automatically deducted from the selected wallet.
       </div>
       <button class="btn btn-primary" onclick="addExpense()">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -2000,13 +2003,13 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
       </div>
       <div class="filter-bar" id="exp-filter-bar">
         <button class="pill active" onclick="setExpFilter('all',this)">All</button>
-        <button class="pill" onclick="setExpFilter('food',this)">🍜 Food</button>
-        <button class="pill" onclick="setExpFilter('transport',this)">🚌 Transport</button>
-        <button class="pill" onclick="setExpFilter('shopping',this)">🛍️ Shopping</button>
-        <button class="pill" onclick="setExpFilter('utilities',this)">💡 Utilities</button>
-        <button class="pill" onclick="setExpFilter('health',this)">💊 Health</button>
-        <button class="pill" onclick="setExpFilter('entertainment',this)">🎮 Entertainment</button>
-        <button class="pill" onclick="setExpFilter('other-exp',this)">📦 Other</button>
+        <button class="pill" onclick="setExpFilter('food',this)"><span class="cat-ic cat-food"><svg class="ic" aria-hidden="true"><use href="#i-utensils"/></svg></span> Food</button>
+        <button class="pill" onclick="setExpFilter('transport',this)"><span class="cat-ic cat-transport"><svg class="ic" aria-hidden="true"><use href="#i-bus"/></svg></span> Transport</button>
+        <button class="pill" onclick="setExpFilter('shopping',this)"><span class="cat-ic cat-shopping"><svg class="ic" aria-hidden="true"><use href="#i-bag"/></svg></span> Shopping</button>
+        <button class="pill" onclick="setExpFilter('utilities',this)"><span class="cat-ic cat-utilities"><svg class="ic" aria-hidden="true"><use href="#i-bulb"/></svg></span> Utilities</button>
+        <button class="pill" onclick="setExpFilter('health',this)"><span class="cat-ic cat-health"><svg class="ic" aria-hidden="true"><use href="#i-heart"/></svg></span> Health</button>
+        <button class="pill" onclick="setExpFilter('entertainment',this)"><span class="cat-ic cat-entertainment"><svg class="ic" aria-hidden="true"><use href="#i-gamepad"/></svg></span> Entertainment</button>
+        <button class="pill" onclick="setExpFilter('other-exp',this)"><span class="cat-ic cat-other-exp"><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg></span> Other</button>
       </div>
       <div id="expense-list"></div>
     </div>
@@ -2119,7 +2122,7 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
         <div id="streak-card"></div>
 
         <div class="set-sync" id="set-sync" style="display:none">
-          <div class="set-sync-ic" id="set-sync-ic">☁️</div>
+          <div class="set-sync-ic" id="set-sync-ic"><svg class="ic" aria-hidden="true"><use href="#i-cloud"/></svg></div>
           <div class="set-sync-txt">
             <div class="set-sync-t" id="set-sync-t"></div>
             <div class="set-sync-s" id="set-sync-s"></div>
@@ -2209,12 +2212,12 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
         <button class="btn btn-danger" onclick="removePin()" id="pin-remove-btn" style="display:none">Remove PIN</button>
       </div>
       <div id="bio-block" style="border-top:1px solid var(--border);padding-top:16px;margin-bottom:18px;display:none">
-        <div style="font-size:12px;color:var(--text);font-weight:600;margin-bottom:4px">👆 Biometric Unlock (Face ID / Fingerprint)</div>
+        <div style="font-size:12px;color:var(--text);font-weight:600;margin-bottom:4px"><svg class="ic" aria-hidden="true"><use href="#i-fingerprint"/></svg> Biometric Unlock (Face ID / Fingerprint)</div>
         <div style="font-size:12px;color:var(--muted);margin-bottom:10px" id="bio-status-text">Open the app with your face or fingerprint instead of typing your PIN. Your PIN always still works as a backup.</div>
         <button class="btn btn-primary btn-sm" onclick="toggleBiometric()" id="bio-toggle-btn">Enable</button>
       </div>
       <div style="border-top:1px solid var(--border);padding-top:16px">
-        <div style="font-size:12px;color:var(--text);font-weight:600;margin-bottom:4px">🛟 Recovery Question</div>
+        <div style="font-size:12px;color:var(--text);font-weight:600;margin-bottom:4px"><svg class="ic" aria-hidden="true"><use href="#i-lifering"/></svg> Recovery Question</div>
         <div style="font-size:12px;color:var(--muted);margin-bottom:10px" id="secq-status-text">Not set - if you forget your PIN, you won't be able to recover this account.</div>
         <button class="btn btn-ghost btn-sm" onclick="showSettingsSecUpdate()" id="secq-set-btn">Set Recovery Question</button>
       </div>
@@ -2430,7 +2433,7 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
 <div id="guest-sheet" class="fn-sheet-wrap" aria-hidden="true" onclick="if(event.target===this)closeGuestSheet()">
   <div class="fn-sheet" role="dialog" aria-modal="true" aria-labelledby="gs-title">
     <div class="fn-grab"></div>
-    <div class="gs-ico" aria-hidden="true">🛡️</div>
+    <div class="gs-ico" aria-hidden="true"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg></div>
     <div class="gs-t" id="gs-title">Keep your data safe</div>
     <div class="gs-p">You're using a guest account with no email. If you lose this phone or clear its storage, your wallets and records can't be recovered. Linking Google takes about 10 seconds.</div>
     <button type="button" class="btn btn-primary gs-btn" onclick="closeGuestSheet();authLinkToGoogle()">Link to Google</button>
@@ -2442,9 +2445,9 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
 <div id="more-sheet" class="fn-sheet-wrap" aria-hidden="true" onclick="if(event.target===this)closeMoreSheet()">
   <div class="fn-sheet" role="dialog" aria-modal="true" aria-label="More">
     <div class="fn-grab"></div>
-    <button type="button" class="more-row" data-tour="more-settings" onclick="show('settings')"><span class="more-ic">⚙️</span><span>Settings</span><span class="more-chev">›</span></button>
-    <button type="button" class="more-row" onclick="show('export')"><span class="more-ic">📤</span><span>Export &amp; reports</span><span class="more-chev">›</span></button>
-    <button type="button" class="more-row" onclick="closeMoreSheet();window.FinTour&&window.FinTour.start(true)"><span class="more-ic">❓</span><span>Take a tour</span><span class="more-chev">›</span></button>
+    <button type="button" class="more-row" data-tour="more-settings" onclick="show('settings')"><span class="more-ic"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg></span><span>Settings</span><span class="more-chev">›</span></button>
+    <button type="button" class="more-row" onclick="show('export')"><span class="more-ic"><svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg></span><span>Export &amp; reports</span><span class="more-chev">›</span></button>
+    <button type="button" class="more-row" onclick="closeMoreSheet();window.FinTour&&window.FinTour.start(true)"><span class="more-ic"><svg class="ic" aria-hidden="true"><use href="#i-help"/></svg></span><span>Take a tour</span><span class="more-chev">›</span></button>
   </div>
 </div>
 
@@ -2677,7 +2680,10 @@ function showSplash(){
 
 const MONTH_ORDER=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const PAGE_TITLES={dashboard:'Dashboard',income:'Income',balances:'Balances',expenses:'Expenses',loans:'Loans',goals:'Goals & Budget',learn:'Learn',settings:'Settings',export:'Export'};
-const CAT_LABELS={food:'🍜 Food',transport:'🚌 Transport',shopping:'🛍️ Shopping',utilities:'💡 Utilities',health:'💊 Health',entertainment:'🎮 Entertainment','loan-payment':'💸 Loan Payment','other-exp':'📦 Other'};
+const CAT_LABELS={food:'Food',transport:'Transport',shopping:'Shopping',utilities:'Utilities',health:'Health',entertainment:'Entertainment','loan-payment':'Loan Payment','other-exp':'Other'};
+const CAT_ICON={food:'utensils',transport:'bus',shopping:'bag',utilities:'bolt',health:'heart',entertainment:'gamepad','loan-payment':'swap','other-exp':'box'};
+// icon + name, coloured per category (plain names stay in CAT_LABELS for CSV, reports and charts)
+function catHTML(k){return '<span class="cat-ic cat-'+esc(k)+'">'+FinIcons.ic(CAT_ICON[k]||'box')+esc(CAT_LABELS[k]||'Other')+'</span>';}
 let expFilter='all';
 
 function today(){
@@ -3186,7 +3192,7 @@ function toast(msg,type='ok'){
   const el=document.getElementById('toast');
   const icon=document.getElementById('toast-icon');
   const text=document.getElementById('toast-text');
-  text.textContent=msg;
+  text.textContent=(window.FinIcons?FinIcons.strip(msg):msg);
   if(type==='error'){icon.innerHTML='<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>';icon.style.stroke='var(--red)';}
   else{icon.innerHTML='<polyline points="20,6 9,17 4,12"/>';icon.style.stroke='var(--accent)';}
   el.classList.add('show');clearTimeout(el._t);
@@ -3214,11 +3220,11 @@ function updateSettingsHome(){
   if(!cloudUser){box.style.display='none';if(mail)mail.textContent='Not signed in';return;}
   box.style.display='flex';
   if(cloudUser.isAnonymous){
-    box.classList.add('guest');ic.textContent='⚠️';t.textContent='Guest account';
+    box.classList.add('guest');ic.innerHTML=FinIcons.ic('alert');t.textContent='Guest account';
     sub.textContent='Data is stored only on this device. Link Google to back it up.';
     btn.style.display='';if(mail)mail.textContent='Guest account';
   }else{
-    box.classList.remove('guest');ic.textContent='☁️';t.textContent='Cloud sync is on';
+    box.classList.remove('guest');ic.innerHTML=FinIcons.ic('cloud');t.textContent='Cloud sync is on';
     sub.textContent='Your data syncs automatically across your devices.';
     btn.style.display='none';if(mail)mail.textContent=cloudUser.email||cloudUser.displayName||'Signed in';
   }
@@ -3329,9 +3335,8 @@ function renderDash(){
   const _h=now.getHours();
   const _gr=_h<12?'Good morning':_h<17?'Good afternoon':'Good evening';
   const _nm=state.username?(', '+esc(state.username)):'';
-  const _wave=_h<12?'☀️':_h<17?'👋':'🌙';
   const _gEl=document.getElementById('dash-greeting');
-  if(_gEl)_gEl.innerHTML=_gr+_nm+' <span style="font-size:22px">'+_wave+'</span>';
+  if(_gEl)_gEl.innerHTML=_gr+_nm;
   document.getElementById('topbar-date').textContent=now.toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'});
 
   const totalBal=(state.wallets||[]).reduce((a,w)=>a+w.balance,0);
@@ -3351,7 +3356,7 @@ function renderDash(){
   const catTotals={};
   state.expenses.filter(e=>{const d=ldate(e.date);return !isNaN(d)&&d.getMonth()===now.getMonth()&&d.getFullYear()===curYear;}).forEach(e=>{const c=e.cat||'other-exp';catTotals[c]=(catTotals[c]||0)+e.amount;});
   const topCatEntry=Object.entries(catTotals).sort((a,b)=>b[1]-a[1])[0];
-  const topCatStr=topCatEntry?`${CAT_LABELS[topCatEntry[0]]} ate <strong>${curExp>0?Math.round(topCatEntry[1]/curExp*100):0}%</strong> of your spend`:'No expenses yet this month';
+  const topCatStr=topCatEntry?`${catHTML(topCatEntry[0])} ate <strong>${curExp>0?Math.round(topCatEntry[1]/curExp*100):0}%</strong> of your spend`:'No expenses yet this month';
   document.getElementById('month-snapshot').innerHTML=`
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
       <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:rgba(var(--accent-rgb),.6);font-weight:600">✦ ${curMonthName} ${curYear}</div>
@@ -3421,7 +3426,7 @@ function renderDash(){
   if(allKeys.length){
     finStock(document.getElementById('dash-chart'));
   } else {
-    document.getElementById('dash-chart').innerHTML='<div class="empty"><div class="empty-icon">📊</div><div class="empty-title">No data yet</div><div class="empty-sub">Add income and expenses to see your chart.</div></div>';
+    document.getElementById('dash-chart').innerHTML='<div class="empty"><div class="empty-icon"><svg class="ic" aria-hidden="true"><use href="#i-chart"/></svg></div><div class="empty-title">No data yet</div><div class="empty-sub">Add income and expenses to see your chart.</div></div>';
   }
 
   // Loans
@@ -3439,13 +3444,13 @@ function renderDash(){
   }
   payable.forEach(l=>lh+=`<div class="row"><span class="lbl">${esc(l.name)}${l.note?' · '+esc(l.note):''}${dashLoanStatus(l)}</span><span class="val an">${fmt(l.amount)}</span></div>`);
   rec.forEach(l=>lh+=`<div class="row"><span class="lbl">${esc(l.name)}${l.note?' · '+esc(l.note):''}${dashLoanStatus(l)}</span><span class="val ap">${fmt(l.amount)}</span></div>`);
-  document.getElementById('dash-loans').innerHTML=lh||'<div class="empty"><div class="empty-icon">🤝</div><div class="empty-title">No outstanding loans</div></div>';
+  document.getElementById('dash-loans').innerHTML=lh||'<div class="empty"><div class="empty-icon"><svg class="ic" aria-hidden="true"><use href="#i-swap"/></svg></div><div class="empty-title">No outstanding loans</div></div>';
 
   // Recent expenses
   const recent=[...state.expenses].reverse().slice(0,5);
   document.getElementById('dash-recent-exp').innerHTML=recent.length
     ?recent.map(e=>`<div class="row"><span class="lbl">${esc(e.desc)}${e.note?' <span style="color:var(--muted2);font-size:11px">· '+esc(e.note)+'</span>':''}</span><span class="val an">${fmt(e.amount)}</span></div>`).join('')
-    :'<div class="empty"><div class="empty-icon">🧾</div><div class="empty-title">No expenses logged yet</div></div>';
+    :'<div class="empty"><div class="empty-icon"><svg class="ic" aria-hidden="true"><use href="#i-receipt"/></svg></div><div class="empty-title">No expenses logged yet</div></div>';
 
   // Monthly spend progress
   if(curInc>0||curExp>0){
@@ -3510,7 +3515,7 @@ function renderStatsModal(){
 }
 
 function renderExpenseStatsModal(){
-  document.getElementById('sbm-title').textContent='🧾 Expense Breakdown';
+  document.getElementById('sbm-title').textContent='Expense Breakdown';
   const list=statsModalRange==='month'
     ?state.expenses.filter(e=>{const d=ldate(e.date);return !isNaN(d)&&d.getMonth()===statsModalMonthIdx&&d.getFullYear()===statsModalYear;})
     :state.expenses.slice();
@@ -3518,7 +3523,7 @@ function renderExpenseStatsModal(){
   const body=document.getElementById('sbm-body');
 
   if(!list.length){
-    body.innerHTML=sbmRangeToggle()+`<div class="empty" style="padding:30px 0"><div class="empty-icon">🧾</div><div class="empty-title">No expenses ${statsModalRange==='month'?'in '+sbmRangeLabel():'yet'}</div><div class="empty-sub">Log an expense to see your breakdown here.</div></div>`;
+    body.innerHTML=sbmRangeToggle()+`<div class="empty" style="padding:30px 0"><div class="empty-icon"><svg class="ic" aria-hidden="true"><use href="#i-receipt"/></svg></div><div class="empty-title">No expenses ${statsModalRange==='month'?'in '+sbmRangeLabel():'yet'}</div><div class="empty-sub">Log an expense to see your breakdown here.</div></div>`;
     return;
   }
 
@@ -3538,7 +3543,7 @@ function renderExpenseStatsModal(){
     const color=SBM_PALETTE[i%SBM_PALETTE.length];
     return `<div class="sbm-cat-row">
       <div class="sbm-cat-top">
-        <span class="sbm-cat-name">${CAT_LABELS[cat]||cat}</span>
+        <span class="sbm-cat-name">${catHTML(cat)}</span>
         <span class="sbm-cat-meta">${cnt} tx · ${pct}%</span>
       </div>
       <div class="sbm-cat-track"><div class="sbm-cat-fill" style="width:${pct}%;background:${color}"></div></div>
@@ -3552,7 +3557,7 @@ function renderExpenseStatsModal(){
         <div class="sbm-top-rank">${i+1}</div>
         <div style="min-width:0">
           <div style="font-size:12.5px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(e.desc)}</div>
-          <div style="font-size:10.5px;color:var(--muted)">${CAT_LABELS[e.cat||'other-exp']||'Other'} · ${fmtDate(e.date)}</div>
+          <div style="font-size:10.5px;color:var(--muted)">${catHTML(e.cat||'other-exp')} · ${fmtDate(e.date)}</div>
         </div>
       </div>
       <div style="font-family:var(--font-d);font-weight:700;color:var(--red);white-space:nowrap;margin-left:8px">${fmt(e.amount)}</div>
@@ -3569,7 +3574,7 @@ function renderExpenseStatsModal(){
       <div>
         <div class="sbm-highlight-lbl">Biggest expense</div>
         <div class="sbm-highlight-name">${esc(biggest.desc)}</div>
-        <div class="sbm-highlight-meta">${CAT_LABELS[biggest.cat||'other-exp']||'Other'} · ${fmtDate(biggest.date)}</div>
+        <div class="sbm-highlight-meta">${catHTML(biggest.cat||'other-exp')} · ${fmtDate(biggest.date)}</div>
       </div>
       <div style="font-family:var(--font-d);font-size:17px;font-weight:700;color:var(--red);white-space:nowrap">${fmt(biggest.amount)}</div>
     </div>
@@ -3581,7 +3586,7 @@ function renderExpenseStatsModal(){
 }
 
 function renderIncomeStatsModal(){
-  document.getElementById('sbm-title').textContent='💰 Income Breakdown';
+  document.getElementById('sbm-title').textContent='Income Breakdown';
   const curYear=statsModalYear;
   const list=statsModalRange==='month'
     ?state.income.filter(i=>i.month===MONTH_ORDER[statsModalMonthIdx]&&(i.year||new Date().getFullYear())===statsModalYear)
@@ -3590,7 +3595,7 @@ function renderIncomeStatsModal(){
   const body=document.getElementById('sbm-body');
 
   if(!list.length){
-    body.innerHTML=sbmRangeToggle()+`<div class="empty" style="padding:30px 0"><div class="empty-icon">💵</div><div class="empty-title">No income ${statsModalRange==='month'?'in '+sbmRangeLabel():'yet'}</div><div class="empty-sub">Add an income entry to see your breakdown here.</div></div>`;
+    body.innerHTML=sbmRangeToggle()+`<div class="empty" style="padding:30px 0"><div class="empty-icon"><svg class="ic" aria-hidden="true"><use href="#i-cash"/></svg></div><div class="empty-title">No income ${statsModalRange==='month'?'in '+sbmRangeLabel():'yet'}</div><div class="empty-sub">Add an income entry to see your breakdown here.</div></div>`;
     return;
   }
 
@@ -3696,8 +3701,8 @@ function renderIncome(){
   const sorted=sortedAll.filter(e=>(!incType||(e.type||'Other')===incType)&&(!_q||[e.month,e.year,e.type,e.note,e.amount].join(' ').toLowerCase().includes(_q)));
   const _ts=document.getElementById('inc-filter-type');
   if(_ts){const ts=[...new Set(state.income.map(e=>e.type||'Other'))];_ts.innerHTML='<option value="">All types</option>'+ts.map(t=>`<option${t===incType?' selected':''}>${esc(t)}</option>`).join('');}
-  if(sortedAll.length&&!sorted.length){document.getElementById('income-list').innerHTML='<div class="empty"><div class="empty-icon">🔍</div><div class="empty-title">No matches</div><div class="empty-sub">Try a different search or filter.</div></div>';return;}
-  if(!sorted.length){document.getElementById('income-list').innerHTML='<div class="empty"><div class="empty-icon">💵</div><div class="empty-title">No income entries yet</div><div class="empty-sub">Add your first entry above.</div></div>';return;}
+  if(sortedAll.length&&!sorted.length){document.getElementById('income-list').innerHTML='<div class="empty"><div class="empty-icon"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg></div><div class="empty-title">No matches</div><div class="empty-sub">Try a different search or filter.</div></div>';return;}
+  if(!sorted.length){document.getElementById('income-list').innerHTML='<div class="empty"><div class="empty-icon"><svg class="ic" aria-hidden="true"><use href="#i-cash"/></svg></div><div class="empty-title">No income entries yet</div><div class="empty-sub">Add your first entry above.</div></div>';return;}
   const latestId=sortedAll[0].id;
   const years=[...new Set(sorted.map(e=>e.year||new Date().getFullYear()))].sort((a,b)=>b-a);
   let html='';
@@ -3711,7 +3716,7 @@ function renderIncome(){
       const _dateStr=e.dateAdded?`<span class="inc-date">added ${fmtDate(e.dateAdded)}</span>`:'';
       const _latestTag=_isLatest?'<span class="inc-new"><i></i>Latest</span>':'';
       const _walTag=_iw?`<span class="inc-wal">${walDot(_iw)}${esc(_iw.label)}</span>`:'';
-      html+=`<div class="entry inc-row${_isLatest?' is-latest':''}"><div class="inc-ico" style="--tc:${_ti.c}" aria-hidden="true">${_ti.e}</div><div class="info"><div class="name">${esc(e.month)}${e.note?' - '+esc(e.note):''}</div><div class="meta"><span class="badge badge-${String(e.type).toLowerCase().replace(/[^a-z0-9]+/g,'-')}">${esc(e.type)}</span>${_latestTag}${_walTag}${_dateStr}</div></div><div class="right"><span class="amt ap">${fmt(e.amount)}</span><button class="btn btn-ghost btn-sm" onclick="openEditIncome(${e.id})">Edit</button><button class="btn btn-danger btn-sm" onclick="del('income',${e.id})">Remove</button></div></div>`;
+      html+=`<div class="entry inc-row${_isLatest?' is-latest':''}"><div class="inc-ico" style="--tc:${_ti.c}" aria-hidden="true">${_ti.e}</div><div class="info"><div class="name">${esc(e.month)}${e.note?' - '+esc(e.note):''}</div><div class="meta"><span class="badge badge-${String(e.type).toLowerCase().replace(/[^a-z0-9]+/g,'-')}">${esc(e.type)}</span>${_latestTag}${_walTag}${_dateStr}</div></div><div class="right"><span class="amt ap">${fmt(e.amount)}</span><button type="button" class="row-more" aria-label="More actions" aria-haspopup="menu" onclick="rowMenu(event,'income',${e.id})">${FinIcons.ic('more')}</button></div></div>`;
     });
     html+='</div>';
   });
@@ -3813,6 +3818,27 @@ function walMenu(ev,id){
     +'<button type="button" class="danger" onclick="closeWalMenu();confirmRemoveWallet(\''+id+'\')">Remove</button>';
   document.body.appendChild(m);
   let top=r.bottom+6,left=r.right-m.offsetWidth;
+  if(left<8)left=8;if(left+m.offsetWidth>innerWidth-8)left=innerWidth-m.offsetWidth-8;
+  if(top+m.offsetHeight>innerHeight-8)top=Math.max(8,r.top-m.offsetHeight-6);
+  m.style.top=top+'px';m.style.left=left+'px';
+  setTimeout(function(){document.addEventListener('click',closeWalMenu,{once:true});window.addEventListener('scroll',closeWalMenu,{once:true,capture:true});},0);
+}
+/* entry actions: one "..." button per row instead of 2-4 text buttons (keeps Remove away from Edit) */
+const ROW_ACTIONS={
+  expense:function(id){return[{i:'repeat',t:'Repeat today',js:'autoRepeat('+id+')'},{i:'pencil',t:'Edit',js:'openEditExpense('+id+')'},{i:'trash',t:'Remove',js:"del('expenses',"+id+")",danger:1}]},
+  income:function(id){return[{i:'pencil',t:'Edit',js:'openEditIncome('+id+')'},{i:'trash',t:'Remove',js:"del('income',"+id+")",danger:1}]},
+  loan:function(id){var l=(state.loans||[]).find(function(x){return x.id===id})||{};
+    return(l.type==='receivable'&&!l.settled?[{i:'clipboard',t:'Send reminder',js:'copyReminder('+id+')'}]:[]).concat([{i:'pencil',t:'Edit',js:'openEditLoan('+id+')'},{i:'trash',t:'Remove',js:"del('loans',"+id+")",danger:1}])},
+  goal:function(id){return[{i:'pencil',t:'Edit',js:'openEditGoal('+id+')'},{i:'trash',t:'Delete',js:'delGoal('+id+')',danger:1}]}
+};
+function rowMenu(ev,kind,id){
+  ev.stopPropagation();closeWalMenu();
+  var items=(ROW_ACTIONS[kind]||function(){return[]})(id);if(!items.length)return;
+  var r=ev.currentTarget.getBoundingClientRect(),m=document.createElement('div');
+  m.id='wc-menu';m.className='wc-menu';m.setAttribute('role','menu');
+  m.innerHTML=items.map(function(it){return '<button type="button" role="menuitem"'+(it.danger?' class="danger"':'')+' onclick="closeWalMenu();'+it.js.replace(/"/g,'&quot;')+'">'+FinIcons.ic(it.i)+'<span>'+it.t+'</span></button>'}).join('');
+  document.body.appendChild(m);
+  var top=r.bottom+6,left=r.right-m.offsetWidth;
   if(left<8)left=8;if(left+m.offsetWidth>innerWidth-8)left=innerWidth-m.offsetWidth-8;
   if(top+m.offsetHeight>innerHeight-8)top=Math.max(8,r.top-m.offsetHeight-6);
   m.style.top=top+'px';m.style.left=left+'px';
@@ -3967,13 +3993,13 @@ function walSave(){
 /* income rows: a little icon per type */
 function incTypeInfo(t){
   t=String(t||'');
-  if(/salary|sahod|wage/i.test(t))return{e:'💼',c:'var(--accent)'};
-  if(/bonus|13th|incentive/i.test(t))return{e:'🎁',c:'var(--amber)'};
-  if(/loan|repay|utang/i.test(t))return{e:'🤝',c:'var(--blue)'};
-  if(/freelance|business|sales?|side/i.test(t))return{e:'🧾',c:'var(--purple)'};
-  if(/gift|allow|regalo/i.test(t))return{e:'🎀',c:'var(--purple)'};
-  if(/interest|dividend|invest/i.test(t))return{e:'📈',c:'var(--teal)'};
-  return{e:'💰',c:'var(--muted)'};
+  if(/salary|sahod|wage/i.test(t))return{e:FinIcons.ic('briefcase'),c:'var(--accent)'};
+  if(/bonus|13th|incentive/i.test(t))return{e:FinIcons.ic('gift'),c:'var(--amber)'};
+  if(/loan|repay|utang/i.test(t))return{e:FinIcons.ic('swap'),c:'var(--blue)'};
+  if(/freelance|business|sales?|side/i.test(t))return{e:FinIcons.ic('receipt'),c:'var(--purple)'};
+  if(/gift|allow|regalo/i.test(t))return{e:FinIcons.ic('gift'),c:'var(--purple)'};
+  if(/interest|dividend|invest/i.test(t))return{e:FinIcons.ic('trend-up'),c:'var(--teal)'};
+  return{e:FinIcons.ic('cash'),c:'var(--muted)'};
 }
 
 function renderBalances(){
@@ -4061,13 +4087,11 @@ function renderExpenses(){
         var wl=(state.wallets||[]).find(function(w){return w.id===e.source;});
         var srcLabel=wl?wl.label:e.source;
         return '<div class="entry"><div class="info"><div class="name">'+esc(e.desc)+(e.recurring?'<span class="badge badge-recurring" style="margin-left:6px;font-size:9px">↺ recurring</span>':'')+'</div>'
-          +'<div class="meta">'+fmtDate(e.date)+' · '+esc(srcLabel)+(e.note?' · <em style="color:var(--muted)">'+esc(e.note)+'</em>':'')+'<span class="badge badge-'+(e.cat||'other-exp')+'">'+CAT_LABELS[e.cat||'other-exp']+'</span></div></div>'
+          +'<div class="meta">'+fmtDate(e.date)+' · '+esc(srcLabel)+(e.note?' · <em style="color:var(--muted)">'+esc(e.note)+'</em>':'')+'<span class="badge badge-'+(e.cat||'other-exp')+'">'+catHTML(e.cat||'other-exp')+'</span></div></div>'
           +'<div class="right"><span class="amt an">'+fmt(e.amount)+'</span>'
-          +'<button class="btn btn-ghost btn-sm" title="Log this again today" onclick="autoRepeat('+e.id+')">↻ Repeat</button>'
-          +'<button class="btn btn-ghost btn-sm" onclick="openEditExpense('+e.id+')">Edit</button>'
-          +'<button class="btn btn-danger btn-sm" onclick="del(\'expenses\','+e.id+')">Remove</button></div></div>';
+          +'<button type="button" class="row-more" aria-label="More actions" aria-haspopup="menu" onclick="rowMenu(event,\'expense\','+e.id+')">'+FinIcons.ic('more')+'</button></div></div>';
       }).join('')
-    :'<div class="empty"><div class="empty-icon">'+(searchQ?'🔍':'🧾')+'</div><div class="empty-title">'+(searchQ?'No matching expenses':'No expenses yet')+'</div><div class="empty-sub">'+(searchQ?'Try a different term.':'Start logging above.')+'</div></div>';
+    :'<div class="empty"><div class="empty-icon">'+FinIcons.ic(searchQ?'search':'receipt')+'</div><div class="empty-title">'+(searchQ?'No matching expenses':'No expenses yet')+'</div><div class="empty-sub">'+(searchQ?'Try a different term.':'Start logging above.')+'</div></div>';
 }
 
 
@@ -4129,22 +4153,20 @@ function renderLoans(){
         <div class="meta"><span class="badge ${l.settled?'badge-settled':l.type==='payable'?'badge-payable':'badge-receivable'}">${l.settled?'Settled':l.type==='payable'?'I owe':'Owes me'}</span>${statusBadge}${dueLine}${walletLine}</div></div>
         <div class="right">
           <span class="amt ${l.settled?'aw':l.type==='payable'?'an':'ap'}" style="${l.settled?'opacity:.4':''}">${fmt(l.amount)}</span>
-          ${l.type==='receivable'&&!l.settled?`<button class="btn btn-ghost btn-sm" onclick="copyReminder(${l.id})" title="Copy a Taglish reminder message">📋 Remind</button>`:''}
-          <button class="btn btn-ghost btn-sm" onclick="openEditLoan(${l.id})">Edit</button>
           <button class="btn btn-settle btn-sm" onclick="settle(${l.id})">${l.settled?'Undo':'Settle'}</button>
-          <button class="btn btn-danger btn-sm" onclick="del('loans',${l.id})">Remove</button>
+          <button type="button" class="row-more" aria-label="More actions" aria-haspopup="menu" onclick="rowMenu(event,'loan',${l.id})">${FinIcons.ic('more')}</button>
         </div>
       </div>
-      ${!l.settled?`<div style="display:flex;gap:8px;align-items:center;padding:8px 10px;background:var(--surface2);border-radius:var(--r-xs);border:1px solid var(--border2)">
+      ${!l.settled?`<div class="adj-row">
         <span style="font-size:11px;color:var(--muted);flex-shrink:0">Adjust:</span>
         <input type="number" id="adj-${l.id}" placeholder="Amount" min="0" style="flex:1;padding:5px 9px;font-size:12.5px">
-        <button class="btn btn-ghost btn-sm" onclick="adjustLoan(${l.id},'add')" title="Add to balance" style="padding:5px 10px;color:var(--accent)">＋ Add</button>
-        <button class="btn btn-ghost btn-sm" onclick="adjustLoan(${l.id},'deduct')" title="Deduct from balance" style="padding:5px 10px;color:var(--red)">－ Deduct</button>
+        <button class="btn btn-ghost btn-sm" onclick="adjustLoan(${l.id},'add')" title="Add to balance" style="padding:5px 10px;color:var(--accent)">${FinIcons.ic('plus')} Add</button>
+        <button class="btn btn-ghost btn-sm" onclick="adjustLoan(${l.id},'deduct')" title="Deduct from balance" style="padding:5px 10px;color:var(--red)">${FinIcons.ic('minus')} Deduct</button>
       </div>`:''}
     </div>`;
     }).join('')
-    :sortedAll.length?'<div class="empty"><div class="empty-icon">🔍</div><div class="empty-title">No matches</div><div class="empty-sub">Try a different search or filter.</div></div>'
-    :'<div class="empty"><div class="empty-icon">🤝</div><div class="empty-title">No loans tracked yet</div><div class="empty-sub">Add a loan above to get started.</div></div>';
+    :sortedAll.length?'<div class="empty"><div class="empty-icon"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg></div><div class="empty-title">No matches</div><div class="empty-sub">Try a different search or filter.</div></div>'
+    :'<div class="empty"><div class="empty-icon"><svg class="ic" aria-hidden="true"><use href="#i-swap"/></svg></div><div class="empty-title">No loans tracked yet</div><div class="empty-sub">Add a loan above to get started.</div></div>';
 }
 
 /* ACTIONS */
@@ -4551,9 +4573,9 @@ function rcApply(r,rawText){
   if(!r.merchant)warn.push('Couldn\'t read the store name - please type it.');
   const b=rcEl('receipt-banner');
   if(b){
-    b.innerHTML='<div style="display:flex;gap:8px;align-items:flex-start"><div style="flex:1"><strong style="color:var(--text)">🧾 Receipt scanned</strong> - check the amount, date and store below, then tap <em>Add Expense</em>. This free on-device reader can misread blurry, faded or crumpled receipts.'
+    b.innerHTML='<div style="display:flex;gap:8px;align-items:flex-start"><div style="flex:1"><strong style="color:var(--text)"><svg class="ic" aria-hidden="true"><use href="#i-receipt"/></svg> Receipt scanned</strong> - check the amount, date and store below, then tap <em>Add Expense</em>. This free on-device reader can misread blurry, faded or crumpled receipts.'
       +(warn.length?'<div style="color:var(--amber);margin-top:6px">'+warn.map(esc).join('<br>')+'</div>':'')
-      +'</div><button class="btn btn-ghost btn-sm" style="padding:2px 9px" onclick="rcHideBanner()" aria-label="Dismiss">✕</button></div>';
+      +'</div><button class="btn btn-ghost btn-sm" style="padding:2px 9px" onclick="rcHideBanner()" aria-label="Dismiss"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button></div>';
     b.style.display='block';
   }
   ['exp-desc','exp-amount','exp-date'].forEach(id=>{const e=rcEl(id);if(e){e.style.transition='box-shadow .3s';e.style.boxShadow='0 0 0 2px var(--accent)';setTimeout(()=>{e.style.boxShadow='';},2400);}});
@@ -5115,7 +5137,7 @@ function renderGoals(){
   // Goals list
   const gl=document.getElementById('goals-list');
   if(!gl)return;
-  if(!goals.length){gl.innerHTML='<div class="card" style="grid-column:1/-1"><div class="empty"><div class="empty-icon">🎯</div><div class="empty-title">No goals yet</div><div class="empty-sub">Add your first savings goal above.</div></div></div>';return;}
+  if(!goals.length){gl.innerHTML='<div class="card" style="grid-column:1/-1"><div class="empty"><div class="empty-icon"><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg></div><div class="empty-title">No goals yet</div><div class="empty-sub">Add your first savings goal above.</div></div></div>';return;}
   gl.innerHTML=goals.map(g=>{
     const pct=g.target>0?clamp(Math.round((g.saved/g.target)*100),0,100):0;
     return `<div class="goal-card">
@@ -5127,8 +5149,7 @@ function renderGoals(){
       <div style="margin-top:10px;display:flex;gap:6px">
         <input type="number" id="gs-${g.id}" placeholder="Add savings..." min="0" style="flex:1;padding:6px 9px;font-size:12px">
         <button class="btn btn-primary btn-sm" onclick="addToGoal(${g.id})">+ Add</button>
-        <button class="btn btn-ghost btn-sm" onclick="openEditGoal(${g.id})">Edit</button>
-        <button class="btn btn-danger btn-sm" onclick="delGoal(${g.id})">✕</button>
+        <button type="button" class="row-more" aria-label="More actions" aria-haspopup="menu" onclick="rowMenu(event,'goal',${g.id})">${FinIcons.ic('more')}</button>
       </div>
     </div>`;
   }).join('');
@@ -5250,7 +5271,7 @@ function getInstallModal(){
     modal.innerHTML=`
       <div class="pwa-install-card">
         <div class="pwa-install-head">
-          <div class="pwa-install-icon">📲</div>
+          <div class="pwa-install-icon"><svg class="ic" aria-hidden="true"><use href="#i-phone"/></svg></div>
           <div>
             <div id="pwa-install-title" class="card-title" style="margin:0">Install FINUITY</div>
             <div id="pwa-install-device" style="font-size:11px;color:var(--muted);margin-top:2px"></div>
@@ -5531,8 +5552,8 @@ const OB_LANGS=[
   {k:'es',cc:'ES',n:'Español',fb:'Spain'}
 ];
 const OB_SRC=[
-  {k:'friend',e:'👨‍👩‍👧'},{k:'facebook',e:'📘'},{k:'tiktok',e:'🎵'},{k:'instagram',e:'📸'},
-  {k:'youtube',e:'▶️'},{k:'google',e:'🔎'},{k:'church',e:'⛪'},{k:'other',e:'✨'}
+  {k:'friend',e:'<svg class="ic" aria-hidden="true"><use href="#i-users"/></svg>'},{k:'facebook',e:'<svg class="ic" aria-hidden="true"><use href="#i-chat"/></svg>'},{k:'tiktok',e:'<svg class="ic" aria-hidden="true"><use href="#i-music"/></svg>'},{k:'instagram',e:'<svg class="ic" aria-hidden="true"><use href="#i-camera"/></svg>'},
+  {k:'youtube',e:'<svg class="ic" aria-hidden="true"><use href="#i-play"/></svg>'},{k:'google',e:'<svg class="ic" aria-hidden="true"><use href="#i-search"/></svg>'},{k:'church',e:'<svg class="ic" aria-hidden="true"><use href="#i-church"/></svg>'},{k:'other',e:'<svg class="ic" aria-hidden="true"><use href="#i-sparkle"/></svg>'}
 ];
 const OB_T={
   en:{step:'Step {n} of 3',t1:'Choose your language',s1:'You can change this anytime in Settings.',t2:'Pick your currency',s2:'Only the symbol changes. Amounts are never converted.',t3:'Where did you hear about us?',s3:'Just curious. It helps us reach more people like you.',cont:'Continue',back:'Back',skip:'Skip for now',sug:'Suggested',oph:'Tell us where…',
@@ -5547,7 +5568,7 @@ const OB_T={
     src:{friend:'Amigo o familia',facebook:'Facebook',tiktok:'TikTok',instagram:'Instagram',youtube:'YouTube',google:'Búsqueda en Google',church:'Iglesia / comunidad',other:'Otro lugar'}}
 };
 const OB_TICK='<span class="ob-tick" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3.5 8.3L6.3 11.2L12.5 4.5"/></svg></span>';
-const OB_ICONS=['🌐','💱','📣'];
+const OB_ICONS=['globe','swap','megaphone'];
 let OB={step:0,lang:'en',cur:'PHP',src:'',det:{}};
 
 function obT(){return OB_T[OB.lang]||OB_T.en;}
@@ -5626,7 +5647,7 @@ function obRender(){
 function obChrome(){
   const t=obT();
   obEl('ob-step').textContent=t.step.replace('{n}',OB.step+1);
-  obEl('ob-ico').textContent=OB_ICONS[OB.step];
+  obEl('ob-ico').innerHTML=FinIcons.ic(OB_ICONS[OB.step]);
   obEl('ob-title').textContent=t['t'+(OB.step+1)];
   obEl('ob-sub').textContent=t['s'+(OB.step+1)];
   obEl('ob-back').textContent='←  '+t.back;
@@ -5843,7 +5864,7 @@ function showPinScreen(){
   document.getElementById('auth-overlay').style.display='flex';
   hideAllAuthScreens();
   document.getElementById('auth-pin').style.display='block';
-  document.getElementById('pin-welcome-name').textContent=state.username?'Hi, '+state.username+' 👋':'';
+  document.getElementById('pin-welcome-name').textContent=state.username?'Hi, '+state.username:'';
   document.getElementById('pin-error').textContent='';
   updatePinDots();
   updatePinBioButton();
@@ -6173,7 +6194,7 @@ function renderAvatar(){
   const sb=document.getElementById('sidebar-avatar');
   if(sb){
     if(img){sb.innerHTML='';const i=document.createElement('img');i.src=img;i.alt='';sb.appendChild(i);}
-    else sb.textContent='👤';
+    else sb.innerHTML=FinIcons.ic('user');
   }
   const rb=document.getElementById('avatar-remove-btn');if(rb)rb.style.display=img?'':'none';
 }
@@ -6250,14 +6271,14 @@ function renderSettings(){
     if(signedIn){
       pnBox.style.background='var(--accent-bg)';
       pnBox.style.border='1px solid rgba(var(--accent-rgb),.35)';
-      pnIcon.textContent='☁️';
+      pnIcon.innerHTML=FinIcons.ic('cloud');
       pnTitle.style.color='var(--accent)';
       pnTitle.textContent='Your data is backed up to the cloud';
       pnBody.innerHTML='Everything is synced to your account (<strong>'+esc(cloudUser.email||'signed-in account')+'</strong>) and will still be there if you clear this browser, switch devices, or reinstall. A manual backup is still good practice in case you ever need to move data outside the app.';
     } else {
       pnBox.style.background='var(--red-bg)';
       pnBox.style.border='1px solid rgba(240,72,72,.35)';
-      pnIcon.textContent='⚠️';
+      pnIcon.innerHTML=FinIcons.ic('alert');
       pnTitle.style.color='var(--red)';
       pnTitle.textContent='Everything is stored only on this device';
       pnBody.innerHTML='You\'re using a <strong>guest account</strong> - nothing is synced to the cloud. If you clear your browser\'s site data or cache, uninstall the app, or switch devices/browsers, <strong>all your data will be lost - permanently.</strong> Download a backup regularly, or link your account to Google (button on the Settings screen) so this stops being a risk.';
@@ -6525,7 +6546,7 @@ function initSplash(){
   try{localStorage.setItem('finSplashMode',mode);}catch(e){}
   setSplashMode(mode,true);
   const h=new Date().getHours();
-  const greet=h<12?'Good morning ☀️':h<17?'Good afternoon 🌤️':'Good evening 🌙';
+  const greet=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
   const nm=state.username?', '+state.username:'';document.getElementById('splash-greeting').textContent=greet+nm+' - here\'s your finances for today.';
   document.getElementById('splash-date').textContent=new Date().toLocaleDateString('en-PH',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 }
@@ -6666,7 +6687,7 @@ function renderTutSlide(){
   const s=TUTORIAL_SLIDES[tutIdx];
   const pct=((tutIdx+1)/TUTORIAL_SLIDES.length)*100;
   document.getElementById('tut-progress').style.width=pct+'%';
-  document.getElementById('tut-next-btn').textContent=s.last?'Get Started 🚀':'Next →';
+  document.getElementById('tut-next-btn').textContent=s.last?'Get Started':'Next →';
   // dots
   document.getElementById('tut-dots').innerHTML=TUTORIAL_SLIDES.map((_,i)=>
     `<div onclick="tutDotJump(${i})" style="width:${i===tutIdx?'18px':'6px'};height:6px;border-radius:99px;background:${i===tutIdx?'var(--accent)':'var(--muted2)'};cursor:pointer;transition:all .2s"></div>`
@@ -6674,22 +6695,25 @@ function renderTutSlide(){
   // slide content
   document.getElementById('tut-slides').innerHTML=`
     <div style="text-align:center">
-      <div style="font-size:48px;margin-bottom:18px;line-height:1">${s.icon}</div>
+      <div class="ic-plate lg">${FinIcons.fromEmoji(s.icon)}</div>
       <div style="font-family:var(--font-d);font-size:20px;font-weight:700;margin-bottom:12px;line-height:1.3">${s.title}</div>
       <div style="font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:${s.tip?'16px':'0'}">${s.desc}</div>
-      ${s.tip?`<div style="background:var(--accent-bg);border:1px solid var(--accent-dim);border-radius:9px;padding:10px 14px;font-size:12.5px;color:var(--accent);text-align:left">${s.tip}</div>`:''}
+      ${s.tip?`<div style="background:var(--accent-bg);border:1px solid var(--accent-dim);border-radius:9px;padding:10px 14px;font-size:12.5px;color:var(--accent);text-align:left">${FinIcons.html(s.tip)}</div>`:''}
     </div>`;
 }
 
 
 /* ── CUSTOM CONFIRM ── */
 let _confirmResolve=null;
+// dialog icons: callers still pass an emoji string; show it as a matching icon on a tinted plate
+function confirmIcon(e){const n=(window.FinIcons&&FinIcons.map[String(e).replace(/\uFE0F/g,'')])||(window.FinIcons&&FinIcons.map[e])||'alert';
+  const tone=/^(alert|trash|logout|unlock)$/.test(n)?(n==='alert'?' warn':' bad'):'';return '<div class="ic-plate'+tone+'" style="margin-bottom:0">'+FinIcons.ic(n)+'</div>';}
 function mtConfirm(msg,icon='⚠️',okLabel='Confirm',okColor='var(--red)'){
   return new Promise(resolve=>{
     if(_confirmResolve){_confirmResolve(false);_confirmResolve=null;}
     _confirmResolve=resolve;
     document.getElementById('confirm-modal').style.display='flex';
-    document.getElementById('confirm-icon').textContent=icon;
+    document.getElementById('confirm-icon').innerHTML=confirmIcon(icon);
     document.getElementById('confirm-msg').textContent=msg;
     document.getElementById('confirm-ok-btn').textContent=okLabel;
     document.getElementById('confirm-ok-btn').style.background=okColor;
@@ -6724,9 +6748,9 @@ function resolveMergeChoice(useRemote){
 }
 
 /* ══ LEGAL: Terms of Use + Privacy Policy (single source, used at sign-up, login screen and Settings) ══ */
-const LEGAL_VERSION='2.0', LEGAL_UPDATED='September 28, 2026';
-const LEGAL_DEV='[YOUR NAME / BUSINESS NAME]';          // <-- fill in: the person or entity that runs FINUITY
-const LEGAL_EMAIL='[YOUR CONTACT EMAIL]';               // <-- fill in: public contact / privacy email
+const LEGAL_VERSION='2.0', LEGAL_UPDATED='October 6, 2026';
+const LEGAL_DEV='PCP-IS SOLUTIONS';                       // the company that runs FINUITY (shown in the Terms and Privacy Policy)
+const LEGAL_EMAIL='PCPSERVICE@gmail.com';                 // public contact / privacy email (shown in the Terms and Privacy Policy)
 const LEGAL_DOCS={
 terms:[
 ['Acceptance of These Terms',`By creating an account, signing in, continuing as a Guest, or otherwise using FINUITY ("the App"), you agree to these Terms of Use and to our Privacy Policy. Ticking the agreement box is a valid electronic signature and creates a binding agreement under the Electronic Commerce Act of 2000 (Republic Act No. 8792). If you do not agree, do not use the App.`],
@@ -7021,7 +7045,7 @@ window.logRecurring = function(templateId){
     </div>
     <div class="form-row">
       <div class="form-group"><label>Category</label>
-        <select id="edit-exp-cat"><option value="food">🍜 Food</option><option value="transport">🚌 Transport</option><option value="shopping">🛍️ Shopping</option><option value="utilities">💡 Utilities</option><option value="health">💊 Health</option><option value="entertainment">🎮 Entertainment</option><option value="loan-payment">💸 Loan Payment</option><option value="other-exp">📦 Other</option></select>
+        <select id="edit-exp-cat"><option value="food">Food</option><option value="transport">Transport</option><option value="shopping">Shopping</option><option value="utilities">Utilities</option><option value="health">Health</option><option value="entertainment">Entertainment</option><option value="loan-payment">Loan Payment</option><option value="other-exp">Other</option></select>
       </div>
       <div class="form-group"><label>Source (wallet)</label><select id="edit-exp-source"></select></div>
     </div>
@@ -7069,7 +7093,7 @@ window.logRecurring = function(templateId){
 <!-- CONFIRM MODAL -->
 <div id="guest-signout-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3000;align-items:safe center;justify-content:safe center;padding:20px;overflow-y:auto">
   <div style="background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:30px 28px 24px;max-width:360px;width:100%;box-shadow:var(--shadow-lg)">
-    <div style="font-size:32px;margin-bottom:12px;text-align:center">⚠️</div>
+    <div class="ic-plate warn"><svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg></div>
     <div style="font-size:15px;font-weight:700;color:var(--text);text-align:center;margin-bottom:8px">You're signed in as a Guest</div>
     <div style="font-size:13px;color:var(--muted);text-align:center;line-height:1.6;margin-bottom:20px">This account has no email or password. If you sign out without linking first, there is no way to sign back in - all your data here will be permanently unreachable.</div>
     <button class="btn btn-primary" style="width:100%;padding:12px;margin-bottom:12px" onclick="closeGuestSignoutWarning();authLinkToGoogle()">Link to Google (Keep My Data)</button>
@@ -7084,7 +7108,7 @@ window.logRecurring = function(templateId){
 
 <div id="receipt-info-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3000;align-items:safe center;justify-content:safe center;padding:20px;overflow-y:auto">
   <div style="background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:28px 24px 22px;max-width:380px;width:100%;box-shadow:var(--shadow-lg)">
-    <div style="font-size:32px;margin-bottom:10px;text-align:center">🧾</div>
+    <div class="ic-plate"><svg class="ic" aria-hidden="true"><use href="#i-receipt"/></svg></div>
     <div style="font-size:15px;font-weight:700;color:var(--text);text-align:center;margin-bottom:8px">Scan a receipt - free</div>
     <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px">Take a photo and FINUITY reads the total, store and date for you. Your photo is read right on your phone - it is <b>never uploaded or saved</b>.</div>
     <div style="font-size:12.5px;color:var(--muted);line-height:1.65;margin-bottom:16px;padding:10px 12px;background:var(--surface2);border:1px solid var(--border2);border-radius:10px">
@@ -7100,7 +7124,7 @@ window.logRecurring = function(templateId){
 </div>
 <div id="receipt-progress-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3100;align-items:safe center;justify-content:safe center;padding:20px">
   <div style="background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:26px 24px 20px;max-width:340px;width:100%;box-shadow:var(--shadow-lg);text-align:center">
-    <div style="font-size:30px;margin-bottom:8px">🧾</div>
+    <div class="ic-plate"><svg class="ic" aria-hidden="true"><use href="#i-receipt"/></svg></div>
     <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px">Reading your receipt…</div>
     <div id="rc-status" style="font-size:12.5px;color:var(--muted);margin-bottom:14px;min-height:18px"></div>
     <div style="height:6px;background:var(--surface2);border-radius:99px;overflow:hidden;margin-bottom:16px"><div id="rc-bar" style="height:100%;width:3%;background:var(--accent);border-radius:99px;transition:width .3s"></div></div>
@@ -7109,7 +7133,7 @@ window.logRecurring = function(templateId){
 </div>
 <div id="merge-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3000;align-items:safe center;justify-content:safe center;padding:20px;overflow-y:auto">
   <div style="background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:30px 28px 24px;max-width:380px;width:100%;box-shadow:var(--shadow-lg)">
-    <div style="font-size:32px;margin-bottom:12px;text-align:center">☁️</div>
+    <div class="ic-plate"><svg class="ic" aria-hidden="true"><use href="#i-cloud"/></svg></div>
     <div style="font-size:15px;font-weight:700;color:var(--text);text-align:center;margin-bottom:8px">This account already has cloud data</div>
     <div id="merge-modal-detail" style="font-size:13px;color:var(--muted);text-align:center;line-height:1.6;margin-bottom:20px"></div>
     <button class="btn btn-primary" style="width:100%;padding:12px;margin-bottom:10px" onclick="resolveMergeChoice(true)">Use Cloud Data</button>
@@ -7255,13 +7279,13 @@ function bindChips(box){box.onclick=ev=>{const b=ev.target.closest('.fa-chip');i
 function chipBar(){const card=document.querySelector('#expenses .card');if(!card)return;
   let box=document.getElementById('fa-chipbar');
   if(!box){box=document.createElement('div');box.id='fa-chipbar';card.parentNode.insertBefore(box,card);bindChips(box);}
-  const h=chipsHTML();box.innerHTML=h?'<div class="fa-h" style="margin-top:0">⚡ One-tap repeat</div><div class="fa-chips">'+h+'</div>':'';}
+  const h=chipsHTML();box.innerHTML=h?'<div class="fa-h" style="margin-top:0"><svg class="ic" aria-hidden="true"><use href="#i-bolt"/></svg> One-tap repeat</div><div class="fa-chips">'+h+'</div>':'';}
 function openQuick(){let q=document.getElementById('fa-quick');
   if(!q){q=document.createElement('div');q.id='fa-quick';
     q.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3000;display:none;align-items:safe center;justify-content:safe center;padding:20px;overflow-y:auto';
     const cats=[...document.getElementById('exp-cat').options].filter(o=>o.value!=='loan-payment').map(o=>'<option value="'+o.value+'">'+o.textContent+'</option>').join('');
     q.innerHTML='<div style="background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:22px;max-width:380px;width:100%;box-shadow:var(--shadow-lg)">'
-      +'<div class="card-title" style="margin-bottom:10px">⚡ Quick Log Expense</div><div id="fa-qchips" class="fa-chips"></div>'
+      +'<div class="card-title" style="margin-bottom:10px"><svg class="ic" aria-hidden="true"><use href="#i-bolt"/></svg> Quick Log Expense</div><div id="fa-qchips" class="fa-chips"></div>'
       +'<input type="text" id="fa-q-text" autocomplete="off" placeholder="burger 600 gcash" style="width:100%;font-size:16px;padding:12px 14px">'
       +'<div style="font-size:11px;color:var(--muted2);margin:6px 2px 0">Just type it like a text: “taxi 500 cash on hand”, “rode a taxi worth 500 using my gcash”, “milk tea 120 kahapon”.</div>'
       +'<div id="fa-q-prev" style="margin:12px 2px;font-size:13px;min-height:20px;color:var(--muted)"></div>'
@@ -7428,7 +7452,7 @@ function card(){const host=document.getElementById('recurring-list');if(!host)re
   if(!c){c=document.createElement('div');c.id='fa-card';c.className='card';c.style.marginBottom='14px';anchor.parentNode.insertBefore(c,anchor);}
   const a=cfg(),cur=new Date();
   const tpls=[...new Map(state.expenses.filter(e=>e.recurring).map(e=>[e.desc,e])).values()];
-  let h='<div class="card-hd"><div class="card-title">⚙️ Automation</div></div>'
+  let h='<div class="card-hd"><div class="card-title"><svg class="ic" aria-hidden="true"><use href="#i-gear"/></svg> Automation</div></div>'
    +'<label class="fa-row"><span class="fa-n">Auto-log recurring items, auto-save to goals &amp; gentle reminders<small>Everything shows a snackbar with Undo.</small></span><input type="checkbox" '+(a.on?'checked':'')+' onchange="FA.master(this)"></label>'
    +'<div class="fa-h">Recurring expenses</div>'
    +(tpls.length?tpls.map(e=>{const it=a.exp[e.desc]||{},day=it.day||(ldate(e.date).getDate()||1);
@@ -7585,7 +7609,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <!-- WALLET EDITOR -->
 <div id="wal-modal" class="wal-ov" style="display:none" onclick="if(event.target===this)closeWalModal()">
   <div class="wal-sheet" role="dialog" aria-modal="true" aria-labelledby="wal-title">
-    <div class="wal-hd"><div class="wal-title" id="wal-title">Add account</div><button type="button" class="wal-x" onclick="closeWalModal()" aria-label="Close">✕</button></div>
+    <div class="wal-hd"><div class="wal-title" id="wal-title">Add account</div><button type="button" class="wal-x" onclick="closeWalModal()" aria-label="Close"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button></div>
     <div id="wal-prev"></div>
     <div class="wal-sec" id="wal-sec-brand"><label>Pick a bank or wallet</label><div id="wal-brands"></div></div>
     <div class="wal-sec" id="wal-sec-name"><label for="wal-name">Name</label><input type="text" id="wal-name" maxlength="24" placeholder="e.g. GCash, BPI Savings, Palengke…" autocomplete="off" oninput="walName(this.value)"></div>
@@ -7606,12 +7630,12 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <script>
 /* Money sub-tabs (phones): Income / Spend / Loans / Wallets / Goals share one bar on top of each page */
 (function(){
-  var T=[['income','Income','nav-income'],['expenses','Spend','nav-expenses'],['loans','Loans','nav-loans'],['balances','Wallets','nav-balances'],['goals','Goals','nav-goals']];
+  var T=[['income','Income','nav-income','download'],['expenses','Spend','nav-expenses','receipt'],['loans','Loans','nav-loans','swap'],['balances','Wallets','nav-balances','wallet'],['goals','Goals','nav-goals','target']];
   T.forEach(function(t){
     var sec=document.getElementById(t[0]);if(!sec)return;
     var bar=document.createElement('div');bar.className='money-tabs';bar.setAttribute('data-tour','money-tabs');bar.setAttribute('role','tablist');bar.setAttribute('aria-label','Money');
     bar.innerHTML=T.map(function(x){
-      return '<button type="button" class="mt-tab'+(x[0]===t[0]?' active':'')+'" role="tab" data-page="'+x[0]+'"'+(x[2]?' data-tour="'+x[2]+'"':'')+' onclick="show(\''+x[0]+'\')">'+x[1]+'</button>';
+      return '<button type="button" class="mt-tab'+(x[0]===t[0]?' active':'')+'" role="tab" data-page="'+x[0]+'"'+(x[2]?' data-tour="'+x[2]+'"':'')+' onclick="show(\''+x[0]+'\')">'+(window.FinIcons?FinIcons.ic(x[3]):'')+'<span>'+x[1]+'</span></button>';
     }).join('');
     sec.insertBefore(bar,sec.firstChild);
   });
