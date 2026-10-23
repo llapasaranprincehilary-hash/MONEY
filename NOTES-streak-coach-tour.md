@@ -54,3 +54,12 @@ The tour also accounts for the sticky Money tab strip so targets are never hidde
   and the expense filter chips scroll in one row.
 - Flags (language and currency) are intentionally left as flag emoji because they are information, not decoration.
 - `admin.html` still uses a few emoji (internal tool, not changed).
+
+## 5. Top bar streak + Profile  (`index.html`, `streak.js`)
+
+- The top-right settings gear is now a **streak button** (`#tb-streak`, flame + day count). Tap it to open Streak & Badges. Orange when a streak is running, amber dot when today is not logged yet. Drawn by `FinStreak.renderTop()`.
+- The phone nav's **More** tab (and the More sheet) is now **Profile** (`show('settings')`, still the `#settings` section internally). Shows the profile photo in the tab when one is set. Export stays highlighted under Profile.
+- Profile menu is grouped: Account (Personal info, PIN & Security, Data & Backup), Preferences (Appearance, Language & currency, Automation), Tools (Export, Install, Guided tour), About (Privacy & Legal, About).
+- The dashboard streak chip was removed (the top bar shows it now).
+- Fixed: on 601-900px screens the Profile column was capped at 560px and centred while the top bar spanned the full width. It now fills the same width.
+- Tour: new "Your streak" and "Profile" steps replace the Settings / More / Open Settings steps. Service worker cache bumped to v29.

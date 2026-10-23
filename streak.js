@@ -201,6 +201,15 @@ function renderCard(){
    +'<svg class="st-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>';
   if(el._h!==h){el._h=h;el.innerHTML=h}
 }
+function renderTop(){
+  var el=$('tb-streak');if(!el)return;
+  var c=calc(),n=c.current;
+  el.classList.toggle('lit',n>0);
+  el.classList.toggle('risk',!!c.atRisk);
+  var lbl=n+(n===1?'-day streak':'-day streak')+(c.atRisk?'. Log something today to keep it.':'')+' Open streak and badges.';
+  if(el.getAttribute('aria-label')!==lbl){el.setAttribute('aria-label',lbl);el.title=lbl}
+  var b=el.querySelector('b');if(b&&b.textContent!==String(n))b.textContent=n;
+}
 function renderChip(){
   var el=$('dash-streak');if(!el)return;
   var c=calc(),h='';
@@ -239,7 +248,7 @@ function renderPanel(){
 }
 function badgeForStreak(n){var d=DMAP['streak-'+n];return d?ic(d.icon)+' '+esc(d.label):n+' days'}
 function fmtShort(s){try{return parse(s).toLocaleDateString('en-PH',{month:'short',day:'numeric'})}catch(e){return s}}
-function render(){try{renderCard();renderChip();var p=$('set-detail');if(p&&p.style.display!=='none'&&document.querySelector('#set-detail .set-panel.open[data-panel="streak"]'))renderPanel()}catch(e){console.error('streak',e)}}
+function render(){try{renderTop();renderCard();renderChip();var p=$('set-detail');if(p&&p.style.display!=='none'&&document.querySelector('#set-detail .set-panel.open[data-panel="streak"]'))renderPanel()}catch(e){console.error('streak',e)}}
 
 function open(){
   try{if(typeof openSetPanel==='function'){openSetPanel('streak');renderPanel()}}catch(e){}
