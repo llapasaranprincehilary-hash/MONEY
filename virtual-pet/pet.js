@@ -194,7 +194,7 @@
     root.id = 'fin-pet-root';
     root.innerHTML =
       '<div class="fin-bubble" id="fin-bubble" role="status" aria-live="polite">' +
-        '<button class="fin-bubble-close" id="fin-bubble-close" aria-label="Dismiss">✕</button>' +
+        '<button class="fin-bubble-close" id="fin-bubble-close" aria-label="Dismiss"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>' +
         '<div class="fin-bubble-text" id="fin-bubble-text"></div>' +
         '<div class="fin-bubble-actions" id="fin-bubble-actions"></div>' +
         '<div class="fin-input-row" id="fin-input-row">' +
@@ -603,14 +603,18 @@
     }
     hideInlineInput();
     pet.reactionShowing = false;
-    els.bubbleText.textContent = String(msg.text).replace(/\s*[\u2014\u2013]\s*/g,' - ');
+    els.bubbleText.textContent = (window.FinIcons ? FinIcons.strip(String(msg.text)) : String(msg.text)).replace(/\s*[\u2014\u2013]\s*/g,' - ');
     els.bubbleActions.innerHTML = '';
 
     var actionList = normalizeActions(msg);
     actionList.forEach(function(action, i){
       var btn = document.createElement('button');
       btn.className = 'fin-bubble-btn' + (i>0 ? ' fin-secondary' : '');
-      btn.textContent = action.label;
+      if(window.FinIcons){   // a leading emoji becomes a matching icon; other decoration is dropped
+        var lead = FinIcons.leading(action.label);
+        if(lead.icon) btn.insertAdjacentHTML('beforeend', FinIcons.ic(lead.icon));
+        btn.appendChild(document.createTextNode((lead.icon ? ' ' : '') + lead.text));
+      } else btn.textContent = action.label;
       btn.addEventListener('click', function(){
         hideBubble();
         runAction(action);
@@ -681,7 +685,7 @@
     clearTimeout(pet.bubbleHideTimer);
     if(els.root.classList.contains('fin-minimized')) return;
     pet.reactionShowing = false;
-    els.bubbleText.textContent = promptText;
+    els.bubbleText.textContent = window.FinIcons ? FinIcons.strip(String(promptText)) : promptText;
     els.bubbleActions.innerHTML = '';
     els.inputField.value = '';
     els.inputField.placeholder = placeholder || '';
@@ -2102,7 +2106,7 @@
   function showReactionBubble(text){
     clearTimeout(pet.bubbleHideTimer);
     hideInlineInput();
-    els.bubbleText.textContent = text;
+    els.bubbleText.textContent = window.FinIcons ? FinIcons.strip(String(text)) : text;
     els.bubbleActions.innerHTML = '';
     els.bubble.classList.add('fin-show');
     pet.reactionShowing = true;
@@ -2269,7 +2273,8 @@
           var nBtn = els.bubbleActions ? els.bubbleActions.querySelectorAll('button').length : 0;
           var typing = els.inputRow && els.inputRow.classList.contains('fin-show');
           var hovered = false; try{ hovered = els.bubble.matches(':hover') || els.bubble.contains(document.activeElement); }catch(e){}
-          if(typing || hovered || nBtn >= 4) return false;
+          // 2+ buttons = a question waiting for an answer (the tour offer, a menu): never replace it
+          if(typing || hovered || nBtn >= 2) return false;
           hideBubble();
         }
         if(pet.queueBusy || pet.bubbleQueue.length) return false;

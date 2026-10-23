@@ -155,7 +155,7 @@ function onBroken(d){
 }
 function onBadge(d){
   if(/^streak-/.test(d.id))return;          // the streak message already celebrates these
-  say(d.icon+' New badge: '+d.label+'. '+d.hint+'. Nicely done!',[{label:'See my badges',kind:'custom',onClick:function(){try{FinStreak.openFromAnywhere()}catch(e){}}}],{rank:1,mood:'excited'});   // lowest rank: the badge toast already told them
+  say('New badge: '+d.label+'. '+d.hint+'. Nicely done!',[{label:'See my badges',kind:'custom',onClick:function(){try{FinStreak.openFromAnywhere()}catch(e){}}}],{rank:1,mood:'excited'});   // lowest rank: the badge toast already told them
 }
 
 function on(ev,fn){W.addEventListener(ev,function(e){try{fn((e&&e.detail)||{})}catch(err){console.error('coach',err)}})}
