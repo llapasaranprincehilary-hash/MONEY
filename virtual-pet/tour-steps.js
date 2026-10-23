@@ -259,36 +259,27 @@ window.FinTourSteps = [
     action: 'next'
   },
 
-  /* ---------- settings, streak and badges ---------- */
+  /* ---------- profile, streak and badges ---------- */
   {
-    target: 'nav-settings',
-    title: 'Settings',
-    description: 'Tap Settings for your profile, security, backups and more.',
+    target: 'top-streak',
+    title: 'Your streak',
+    description: 'Log something every day to grow your streak. Tap the flame any time to see your badges.',
+    placement: 'bottom',
+    action: 'next'
+  },
+  {
+    target: 'nav-profile',
+    title: 'Profile',
+    description: 'Your profile holds your streak, security, backups, appearance, exports and this tour. Tap Profile to open it.',
     placement: 'right',
+    mobilePlacement: 'top',
     action: 'click'
-  },
-  {
-    target: 'nav-more',
-    title: 'More',
-    description: 'Settings, exports and this tour live under More. Tap it.',
-    placement: 'top',
-    action: 'click'
-  },
-  {
-    target: 'more-settings',
-    requires: '#bottom-nav',
-    title: 'Open Settings',
-    description: 'Tap Settings to see your profile, security, backups and your streak.',
-    placement: 'top',
-    action: 'click',
-    before: function(){ try{ if(typeof openMoreSheet === 'function') openMoreSheet(); }catch(e){} },
-    after: function(){ try{ if(typeof closeMoreSheet === 'function') closeMoreSheet(); }catch(e){} }
   },
   {
     target: 'streak-card',
     page: 'settings',
     title: 'Your streak and badges',
-    description: 'Log something each day to grow your streak. Miss a day and a free rest day has you covered. Tap this card to see your badges.',
+    description: 'Miss a day and a free rest day has you covered. Tap this card to see your badges.',
     placement: 'bottom',
     action: 'next',
     before: function(){ try{ if(typeof closeSetPanel === 'function') closeSetPanel(); }catch(e){} }
