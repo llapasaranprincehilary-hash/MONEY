@@ -3036,11 +3036,11 @@ window.openQuick=openQuick;
 window.finGuessCat=guessCat;   // lets the receipt scanner reuse the keyword category engine
 })();
 </script>
-<script src="virtual-pet/pet-dialogue.js"></script>
+<script defer src="virtual-pet/pet-dialogue.js"></script>
 <script src="learn.js"></script>
 <script src="streak.js"></script>
-<script src="virtual-pet/pet.js"></script>
-<script src="virtual-pet/pet-coach.js"></script>
+<script defer src="virtual-pet/pet.js"></script>
+<script defer src="virtual-pet/pet-coach.js"></script>
 <script>
 (function(){
 var W=window,L=function(k,v){try{return v===undefined?localStorage.getItem(k):localStorage.setItem(k,v)}catch(e){}};
@@ -3139,8 +3139,8 @@ function init(){['dashboard','income','expenses','loans','balances'].forEach(fun
  new MutationObserver(function(ms){ms.forEach(function(m){m.addedNodes.forEach(function(n){if(n.classList&&n.classList.contains('ft-root'))document.querySelectorAll('.card.fx-c[data-tour]').forEach(function(c){c.classList.remove('fx-c')})})})}).observe(document.body,{childList:true})}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init()})();
 </script>
-<script src="virtual-pet/tour-steps.js"></script>
-<script src="virtual-pet/tour.js"></script>
+<script defer src="virtual-pet/tour-steps.js"></script>
+<script defer src="virtual-pet/tour.js"></script>
 <!-- WALLET EDITOR -->
 <div id="wal-modal" class="wal-ov" style="display:none" onclick="if(event.target===this)closeWalModal()">
   <div class="wal-sheet" role="dialog" aria-modal="true" aria-labelledby="wal-title">
