@@ -11,11 +11,12 @@
    CACHE_NAME — so an unchanged cache name means old, stale assets (icons
    included) can keep being served indefinitely even after you replace the
    underlying files. */
-const CACHE_NAME = 'finuity-shell-v29';
+const CACHE_NAME = 'finuity-shell-v30';
 
 const APP_SHELL = [
   './',
   './index.html',
+  './app.js',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',

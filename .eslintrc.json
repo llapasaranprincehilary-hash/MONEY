@@ -1,0 +1,22 @@
+{
+  "env": { "browser": true, "es6": true },
+  "parserOptions": { "ecmaVersion": 2020 },
+  "rules": {
+    "no-undef": "error",
+    "no-unused-vars": "warn",
+    "no-unreachable": "error",
+    "no-duplicate-case": "error",
+    "no-dupe-keys": "error",
+    "no-self-assign": "error",
+    "no-constant-condition": "error",
+    "use-isnan": "error",
+    "valid-typeof": "error"
+  },
+  "globals": {
+    "firebase": "readonly",
+    "FinPet": "readonly",
+    "FinLearn": "readonly",
+    "FinStreak": "readonly",
+    "window": "readonly"
+  }
+}
