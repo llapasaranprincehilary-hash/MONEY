@@ -29,7 +29,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -107,7 +107,7 @@ body.light .topbar{background:rgba(255,255,255,.92)}
 
 /* SECTIONS */
 .section{display:none}
-.section.active{display:block;animation:fs .18s ease}
+.section.active{display:block;animation:fs .15s ease;will-change:contents}
 @keyframes fs{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 .page-hd{margin-bottom:28px}
 .page-title{font-family:var(--font-d);font-size:24px;font-weight:700;margin-bottom:4px;letter-spacing:-.02em;line-height:1.2}
@@ -995,7 +995,7 @@ body.light .auth-bg::after{display:none}
 .btn-primary:hover:not(:active){transform:translateY(-1px)}
 
 /* APP - staged page entrances, growing charts, softer hovers */
-.section.active>*{animation:riseIn .55s cubic-bezier(.2,.7,.2,1) backwards}
+.section.active>*{animation:riseIn .42s cubic-bezier(.2,.7,.2,1) backwards}
 .section.active>*:nth-child(2){animation-delay:.05s}.section.active>*:nth-child(3){animation-delay:.1s}
 .section.active>*:nth-child(4){animation-delay:.15s}.section.active>*:nth-child(5){animation-delay:.2s}
 .section.active>*:nth-child(6){animation-delay:.25s}.section.active>*:nth-child(7){animation-delay:.3s}
@@ -1122,6 +1122,9 @@ label.fa-row{cursor:pointer}
      by deleting this line, the two <script> tags near the end of <body>,
      and the virtual-pet/ folder. Does not touch app state or navigation
      except by calling the app's own existing functions. -->
+<!-- Instant background lock — holds bg color before any CSS loads so there's no white flash -->
+<div id="app-skeleton" aria-hidden="true"></div>
+
 <link rel="stylesheet" href="virtual-pet/pet.css">
 <link rel="stylesheet" href="icons.css">
 <link rel="stylesheet" href="learn.css">
@@ -1137,9 +1140,53 @@ label.fa-row{cursor:pointer}
     document.documentElement.classList.add('finlock');
     setTimeout(function(){document.documentElement.classList.remove('finlock');},8000); // failsafe
   }
+  // Apply saved theme before first paint so skeleton matches — no flash
+  if(st&&st.theme==='light') document.documentElement.classList.add('light');
 }catch(e){}})();
 </script>
-<style>html.finlock body>*:not(#auth-overlay){visibility:hidden!important}</style>
+<style>html.finlock body>*:not(#auth-overlay){visibility:hidden!important} html.finlock #app-skeleton{display:none!important}</style>
+
+<style id="skeleton-styles">
+/* ── INSTANT OPEN FEEL ────────────────────────────────────────
+   No fake skeleton UI. Instead:
+   1. #app-skeleton holds the bg color so there is zero white flash
+   2. .content fades in once render() fires — one clean reveal
+   3. The accent-colored progress bar at the top shows life immediately
+────────────────────────────────────────────────────────────── */
+
+/* Thin accent progress bar — shows instantly, gone when ready */
+#app-skeleton{
+  position:fixed;top:0;left:0;right:0;
+  height:3px;
+  background:var(--accent,#a8e038);
+  z-index:9999;
+  transform-origin:left center;
+  animation:_sk-bar 1.2s cubic-bezier(.4,0,.6,1) infinite alternate;
+  pointer-events:none;
+}
+@keyframes _sk-bar{
+  from{opacity:.7;transform:scaleX(.25) translateX(0)}
+  to{opacity:1;transform:scaleX(.85) translateX(15%)}
+}
+#app-skeleton.sk-gone{
+  animation:none;
+  transition:opacity .2s ease;
+  opacity:0;
+}
+
+/* Content reveals smoothly once JS is ready */
+.content{
+  animation:none;
+  opacity:0;
+  transition:opacity .22s ease;
+}
+.content.sk-ready{
+  opacity:1;
+}
+
+/* Body stays visible — skeleton handles the perceived wait */
+body{ visibility:visible !important; }
+</style>
 
 <style id="layout-fixes">
 /* =====================================================================

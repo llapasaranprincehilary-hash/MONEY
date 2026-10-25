@@ -871,13 +871,26 @@ function populateReportYears(){
   if([...sel.options].some(o=>o.value===prev))sel.value=prev;
 }
 let _renderPending=false;
+let _skeletonDismissed=false;
+function _dismissSkeleton(){
+  if(_skeletonDismissed)return;
+  _skeletonDismissed=true;
+  const sk=document.getElementById('app-skeleton');
+  if(sk){
+    sk.classList.add('sk-gone');
+    setTimeout(()=>{ if(sk.parentNode)sk.parentNode.removeChild(sk); },250);
+  }
+  // Fade in the content area
+  const ct=document.querySelector('.content');
+  if(ct) requestAnimationFrame(()=>ct.classList.add('sk-ready'));
+}
 function scheduleRender(){
   // Coalesces multiple back-to-back render() calls into a single paint frame
   if(_renderPending)return;
   _renderPending=true;
   requestAnimationFrame(function(){ _renderPending=false; render(); });
 }
-function render(){renderBalances();renderDash();renderIncome();renderExpenses();renderLoans();renderGoals();renderSettings();updateBadges();syncEyeButtons();renderGuestBanner();populateReportYears();try{if(window.FinLearn)FinLearn.render();}catch(e){}try{if(window.FinStreak)FinStreak.tick();}catch(e){}}
+function render(){_dismissSkeleton();renderBalances();renderDash();renderIncome();renderExpenses();renderLoans();renderGoals();renderSettings();updateBadges();syncEyeButtons();renderGuestBanner();populateReportYears();try{if(window.FinLearn)FinLearn.render();}catch(e){}try{if(window.FinStreak)FinStreak.tick();}catch(e){}}
 function updateBadges(){
   document.getElementById('nav-badge-income').textContent=state.income.length;
   document.getElementById('nav-badge-expenses').textContent=state.expenses.length;
@@ -4454,6 +4467,12 @@ if(state.pinHash&&!sessionStorage.getItem('mtUnlocked')){showPinScreen();}
 document.documentElement.classList.remove('finlock');
 scheduleRender();
 updateSidebarUsername();
+// Failsafe: if render never fires for any reason, show content after 2s
+setTimeout(function(){
+  _dismissSkeleton();
+  var ct=document.querySelector('.content');
+  if(ct&&!ct.classList.contains('sk-ready')) ct.classList.add('sk-ready');
+},2000);
 // Auth entry point is now driven entirely by fbAuth.onAuthStateChanged → handleAuthState()
 // Recurring reminder: check if any recurring expenses haven't been logged this month
 setTimeout(()=>whenAppReady(()=>{
