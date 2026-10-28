@@ -18,3 +18,21 @@
 13. Removed duplicate `getWakeLine` declaration in `pet-dialogue.js`.
 
 Verified with ESLint (no new errors) and jsdom behaviour tests (original fails the loan-payment and offline-sync scenarios; patched passes).
+
+---
+
+## Merge notes (UI build + speed/UX build)
+
+Base = the UI build (light theme, new dashboard, Fin dock, a11y). Ported from the speed/UX build:
+- **Faster paint/interaction:** every `transition:all` replaced by the specific properties that actually animate (index.html, learn.css, streak.css, tutorial dots); `.card{contain:content}`; shorter section/progress animations; Google Fonts no longer block first paint.
+- **Less work per render:** this month's expenses filtered once and reused for total + category split; repeated `getElementById` calls cached in the dashboard/income/expense renderers; `rerender()` (currency change) uses the coalescing `scheduleRender()`.
+- **UX:** mobile tab bar reads Income / Spend / Loans / Wallets / Goals, matching the guided-tour text (the UI build still said Expenses / Balances, so the tour pointed at tabs with different names).
+
+Fixed while merging:
+1. **Light theme flashed dark on every load.** The "apply light theme before first paint" script had been pasted inside an HTML comment (dead code). It is now a real script at the start of `<body>`.
+2. **Fin's speech bubble was cut off the left edge of the screen** when Fin sits in the dashboard card (and could do the same when dragged near an edge). The bubble now opens down/right when docked, and flips automatically if it would leave the viewport.
+3. 320px phones: the card title, action button and expand chevron wrapped onto separate lines; they now stay on one row.
+4. Kept the UI build's higher-contrast text colours, the speed build had the older, lower-contrast greys.
+5. Service worker cache bumped to `v44` (includes `fin-dock.js` and `a11y.js`); `pet.css`/`pet.js`/`pet-dialogue.js` line endings normalised to LF.
+
+Checked: all JS parses; zero console/page errors on mobile 390px, 320px and desktop 1360px in light and dark; every section renders identically to the UI build on the same data (differential test) and totals reconcile; no horizontal scroll; every file the page loads is in the offline cache.

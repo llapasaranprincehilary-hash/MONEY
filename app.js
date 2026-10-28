@@ -721,6 +721,12 @@ function finDrawStock(el){var D=finBuckets(el._tf),tf=D.tf,W=el._w=el.clientWidt
   tip.style.display='block';var tw=tip.offsetWidth;tip.style.left=(px+tw+18>W?Math.max(0,px-tw-10):px+12)+'px'};
  var hide=function(){['#fs-x','#fs-di','#fs-de','#fs-tip'].forEach(function(s){q(s).style.display='none'});hd.innerHTML=head()};
  hit.addEventListener('pointermove',show);hit.addEventListener('pointerdown',show);hit.addEventListener('pointerleave',function(e){if(e.pointerType==='mouse')hide()})}
+function toggleHeroWallets(){window._heroWalletsOpen=!window._heroWalletsOpen;scheduleRender();}
+function toggleHeroPanel(){const c=document.querySelector('.hero-card');if(!c)return;const o=c.classList.toggle('open');const b=document.getElementById('hero-toggle');if(b)b.setAttribute('aria-expanded',o);}
+function dashTab(t){
+  ['recent','trend'].forEach(k=>{const p=document.getElementById('pane-'+k),b=document.getElementById('tab-'+k);if(p)p.hidden=(k!==t);if(b){b.classList.toggle('on',k===t);b.setAttribute('aria-selected',k===t);}});
+  if(t==='trend')scheduleRender();
+}
 function fmt(n){return window.FinX?FinX.money(n):'₱'+Number(n).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});}
 const EYE_ON_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
 const EYE_OFF_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0112 20c-7 0-11-8-11-8a21.8 21.8 0 015.06-6.06M9.9 4.24A10.94 10.94 0 0112 4c7 0 11 8 11 8a21.77 21.77 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
@@ -871,26 +877,13 @@ function populateReportYears(){
   if([...sel.options].some(o=>o.value===prev))sel.value=prev;
 }
 let _renderPending=false;
-let _skeletonDismissed=false;
-function _dismissSkeleton(){
-  if(_skeletonDismissed)return;
-  _skeletonDismissed=true;
-  const sk=document.getElementById('app-skeleton');
-  if(sk){
-    sk.classList.add('sk-gone');
-    setTimeout(()=>{ if(sk.parentNode)sk.parentNode.removeChild(sk); },250);
-  }
-  // Fade in the content area
-  const ct=document.querySelector('.content');
-  if(ct) requestAnimationFrame(()=>ct.classList.add('sk-ready'));
-}
 function scheduleRender(){
   // Coalesces multiple back-to-back render() calls into a single paint frame
   if(_renderPending)return;
   _renderPending=true;
   requestAnimationFrame(function(){ _renderPending=false; render(); });
 }
-function render(){_dismissSkeleton();renderBalances();renderDash();renderIncome();renderExpenses();renderLoans();renderGoals();renderSettings();updateBadges();syncEyeButtons();renderGuestBanner();populateReportYears();try{if(window.FinLearn)FinLearn.render();}catch(e){}try{if(window.FinStreak)FinStreak.tick();}catch(e){}}
+function render(){renderBalances();renderDash();renderIncome();renderExpenses();renderLoans();renderGoals();renderSettings();updateBadges();syncEyeButtons();renderGuestBanner();populateReportYears();try{if(window.FinLearn)FinLearn.render();}catch(e){}try{if(window.FinStreak)FinStreak.tick();}catch(e){}}
 function updateBadges(){
   document.getElementById('nav-badge-income').textContent=state.income.length;
   document.getElementById('nav-badge-expenses').textContent=state.expenses.length;
@@ -921,23 +914,58 @@ function renderDash(){
   const curMonthName=MONTH_ORDER[now.getMonth()];
   const curYear=now.getFullYear();
   const curInc=state.income.filter(i=>i.month===curMonthName&&(i.year||curYear)===curYear).reduce((a,b)=>a+b.amount,0);
-  const curExp=state.expenses.filter(e=>{const d=ldate(e.date);return !isNaN(d)&&d.getMonth()===now.getMonth()&&d.getFullYear()===curYear;}).reduce((a,b)=>a+b.amount,0);
+  // Filter this month's expenses once - reused for the total and the category breakdown
+  const _curMonthExp=state.expenses.filter(e=>{const d=ldate(e.date);return !isNaN(d)&&d.getMonth()===now.getMonth()&&d.getFullYear()===curYear;});
+  const curExp=_curMonthExp.reduce((a,b)=>a+b.amount,0);
   const curRem=curInc-curExp;
   // Biggest category this month
   const catTotals={};
-  state.expenses.filter(e=>{const d=ldate(e.date);return !isNaN(d)&&d.getMonth()===now.getMonth()&&d.getFullYear()===curYear;}).forEach(e=>{const c=e.cat||'other-exp';catTotals[c]=(catTotals[c]||0)+e.amount;});
+  _curMonthExp.forEach(e=>{const c=e.cat||'other-exp';catTotals[c]=(catTotals[c]||0)+e.amount;});
   const topCatEntry=Object.entries(catTotals).sort((a,b)=>b[1]-a[1])[0];
   const topCatStr=topCatEntry?`${catHTML(topCatEntry[0])} ate <strong>${curExp>0?Math.round(topCatEntry[1]/curExp*100):0}%</strong> of your spend`:'No expenses yet this month';
+  const _f=n=>fmt(n).replace(/\.00$/,'');
+  const _daysLeft=new Date(curYear,now.getMonth()+1,0).getDate()-now.getDate();
+  const _elapsed=now.getDate()/new Date(curYear,now.getMonth()+1,0).getDate();
+  const _tl=(function(){try{return (localStorage.getItem('finLang')||'')==='tl';}catch(e){return false;}})();
+  let _say,_tone;
+  if(curInc<=0){_tone='idle';_say=_tl?'I-add mo muna ang kita mo para makita natin kung ano ang natitira.':"Add your income and I'll show what's left this month.";}
+  else if(curRem<0){_tone='over';_say=_tl?`${fmt(Math.abs(curRem))} na ang lampas mo ngayong buwan. Tingnan natin kung ano ang puwedeng bawasan.`:`You're ${fmt(Math.abs(curRem))} over this month. Let's look at what to trim first.`;}
+  else if(curRem<curInc*0.1){_tone='tight';_say=_tl?`${fmt(curRem)} na lang at ${_daysLeft} araw pa. Mga kailangan lang muna.`:`Only ${fmt(curRem)} left with ${_daysLeft} day${_daysLeft===1?'':'s'} to go. Essentials only for now.`;}
+  else if(curExp/curInc>_elapsed+0.15){_tone='watch';_say=_tl?'Mas mabilis ang gastos mo kaysa sa takbo ng buwan. Dahan-dahan muna.':"You're spending faster than the month is moving. Ease off a little.";}
+  else{_tone='good';
+    const _bl=state.budgetLimit>0?state.budgetLimit:0;
+    if(_bl&&curExp>_bl)_say=_tl?`${_f(curExp-_bl)} na ang lampas mo sa budget. Kaya pa ng kita mo, pero dahan-dahan na.`:`You're ${_f(curExp-_bl)} past your budget. Your income still covers it, but ease off.`;
+    else if(_bl)_say=_tl?`Maayos ang takbo mo. ${_f(_bl-curExp)} pa ang natitira sa ${_f(_bl)} na budget mo.`:`You're on pace. ${_f(_bl-curExp)} left in your ${_f(_bl)} budget.`;
+    else _say=_tl?`Maayos ang takbo mo. ${_f(curRem)} pa ang natitira.`:`You're on pace. ${_f(curRem)} is still yours this month.`;
+  }
+  // second line: say where the money went in plain words (no percentages)
+  let _ins='';
+  if(_tone!=='idle'&&topCatEntry&&curExp>0){
+    const _k=topCatEntry[0],_a=_f(topCatEntry[1]),_most=topCatEntry[1]/curExp>=0.6;
+    const _EN={food:['Food is the biggest bite so far, ','Most of it went to food, '],transport:['Rides and fares are the biggest bite, ','Most of it went to rides and fares, '],shopping:['Shopping is leading at ','Most of it went to shopping, '],utilities:['Bills are the biggest bite, ','Most of it went to bills, '],entertainment:['Fun is leading at ','Most of it went to fun stuff, '],health:['Health is the biggest bite, ','Most of it went to health, '],'loan-payment':['Loan payments are the biggest bite, ','Most of it went to loan payments, '],'other-exp':['"Other" is the biggest bite, ','Most of it went to "other", ']};
+    const _TL={food:['Pagkain ang pinakamalaki mong gastos, ','Karamihan napunta sa pagkain, '],transport:['Pamasahe ang pinakamalaki mong gastos, ','Karamihan napunta sa pamasahe, '],shopping:['Pamimili ang nangunguna, ','Karamihan napunta sa pamimili, '],utilities:['Mga bayarin ang pinakamalaki, ','Karamihan napunta sa mga bayarin, '],entertainment:['Libangan ang nangunguna, ','Karamihan napunta sa libangan, '],health:['Kalusugan ang pinakamalaki, ','Karamihan napunta sa kalusugan, '],'loan-payment':['Bayad sa utang ang pinakamalaki, ','Karamihan napunta sa bayad sa utang, '],'other-exp':['Iba-iba ang pinakamalaki, ','Karamihan napunta sa iba-iba, ']};
+    const _pair=(_tl?_TL:_EN)[_k];
+    if(_pair)_ins=_pair[_most?1:0]+_a+'.';
+  }
+
+  const _spentPct=curInc>0?clamp(Math.round(curExp/curInc*100),0,100):0;
+  const _barCls=curRem<0?'over':_spentPct>=90?'warn':'';
   document.getElementById('month-snapshot').innerHTML=`
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
-      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:rgba(var(--accent-rgb),.6);font-weight:600">✦ ${curMonthName} ${curYear}</div>
-      <div style="font-size:11px;color:var(--muted)">${topCatStr}</div>
+    <div class="snap-row"><div class="snap-fin-slot" id="fin-slot" aria-hidden="true"></div>
+    <div class="snap-say tone-${_tone}" role="status"><span>${_say}</span>${_ins?`<span class="snap-say-2">${_ins}</span>`:''}</div>
+    <div class="snap-main">
+    <div class="snap-top">
+      <div>
+        <div class="snap-kicker">Left to spend in ${curMonthName}</div>
+        <div class="snap-big ${curInc<=0?'idle':curRem<0?'neg':''}">${curInc<=0?'—':fmt(curRem)}</div>
+      </div>
+      <div class="snap-pair">
+        <button type="button" class="snap-mini in" onclick="openStatsModal('income','month')" aria-label="Income this month, ${fmt(curInc)}. View details"><span>Income</span><b>${fmt(curInc)}</b><i aria-hidden="true">›</i></button>
+        <button type="button" class="snap-mini out" onclick="openStatsModal('expenses','month')" aria-label="Spent this month, ${fmt(curExp)}. View details"><span>Spent</span><b>${fmt(curExp)}</b><i aria-hidden="true">›</i></button>
+      </div>
     </div>
-    <div class="snapshot-grid">
-      <div class="snapshot-item" style="cursor:pointer" onclick="openStatsModal('income','month')"><div class="snapshot-label">Income</div><div class="snapshot-val" style="color:var(--accent)">${fmt(curInc)}</div></div>
-      <div class="snapshot-item" style="cursor:pointer" onclick="openStatsModal('expenses','month')"><div class="snapshot-label">Spent</div><div class="snapshot-val" style="color:var(--red)">${fmt(curExp)}</div></div>
-      <div class="snapshot-item"><div class="snapshot-label">Remaining</div><div class="snapshot-val" style="color:${curRem>=0?'var(--accent)':'var(--red)'}">${fmt(curRem)}</div></div>
-    </div>`;
+    <div class="snap-track"><i class="${_barCls}" style="width:${_spentPct}%"></i></div>
+    </div></div>`;
 
   // Hero
   const balStr=Number(totalBal).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -945,14 +973,19 @@ function renderDash(){
   // hero wallets - dynamic
   const hwContainer=document.getElementById('hero-wallets-inner');
   if(hwContainer){
-    hwContainer.innerHTML=(state.wallets||[]).map(w=>`<div class="hw"><div class="hw-name">${esc(w.label)}</div><div class="hw-val">${fmtBal(w.balance)}</div></div>`).join('');
+    const _HW_LIMIT=99,_all=(state.wallets||[]),_many=_all.length>_HW_LIMIT,_open=!!window._heroWalletsOpen;
+    // with many wallets: overdrawn ones first (never hidden), then biggest balances; fold the rest
+    const _ws=_many?_all.slice().sort((a,b)=>((b.balance<0)-(a.balance<0))||(b.balance-a.balance)):_all;
+    const _show=(_many&&!_open)?_ws.slice(0,_HW_LIMIT):_ws;
+    hwContainer.classList.toggle('is-open',_many&&_open);
+    hwContainer.innerHTML=_show.map(w=>`<div class="hw"><div class="hw-name">${esc(w.label)}</div><div class="hw-val">${fmtBal(w.balance)}</div></div>`).join('')
+      +(_many?`<div class="hw-actions"><button type="button" class="hw hw-more" onclick="toggleHeroWallets()" aria-expanded="${_open}">${_open?'Show fewer':'+'+(_all.length-_HW_LIMIT)+' more'}</button>${_open?`<button type="button" class="hw hw-more" onclick="show('balances')">Manage wallets →</button>`:''}</div>`:'');
   }
 
   // Stats
   document.getElementById('dash-stats').innerHTML=`
     <div class="stat g clickable" onclick="openStatsModal('income')"><span class="stat-tap-hint">view ›</span><label>Total Earned</label><div class="sv g">${fmt(totalInc)}</div><div class="sd">${state.income.length} entr${state.income.length===1?'y':'ies'}</div></div>
     <div class="stat a clickable" onclick="openStatsModal('expenses')"><span class="stat-tap-hint">view ›</span><label>Total Spent</label><div class="sv a">${fmt(totalExp)}</div><div class="sd">${state.expenses.length} transactions</div></div>
-    <div class="stat ${net>=0?'g':'r'}"><label>Net Income</label><div class="sv ${net>=0?'g':'r'}">${fmt(net)}</div><div class="sd">no adjustments</div></div>
     <div class="stat r"><label>I Owe</label><div class="sv r">${fmt(totalPay)}</div><div class="sd">outstanding</div></div>
     <div class="stat b"><label>Owed to Me</label><div class="sv b">${fmt(totalRec)}</div><div class="sd">outstanding</div></div>
   `;
@@ -994,10 +1027,11 @@ function renderDash(){
   });
   const allKeys=[...new Set([...Object.keys(incByKey),...Object.keys(expByKey)])].sort();
   const curKey=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const _dashChart=document.getElementById('dash-chart');
   if(allKeys.length){
-    finStock(document.getElementById('dash-chart'));
+    finStock(_dashChart);
   } else {
-    document.getElementById('dash-chart').innerHTML='<div class="empty"><div class="empty-icon"><svg class="ic" aria-hidden="true"><use href="#i-chart"/></svg></div><div class="empty-title">No data yet</div><div class="empty-sub">Add income and expenses to see your chart.</div></div>';
+    _dashChart.innerHTML='<div class="empty"><div class="empty-icon"><svg class="ic" aria-hidden="true"><use href="#i-chart"/></svg></div><div class="empty-title">No data yet</div><div class="empty-sub">Add income and expenses to see your chart.</div></div>';
   }
 
   // Loans
@@ -1016,6 +1050,15 @@ function renderDash(){
   payable.forEach(l=>lh+=`<div class="row"><span class="lbl">${esc(l.name)}${l.note?' · '+esc(l.note):''}${dashLoanStatus(l)}</span><span class="val an">${fmt(l.amount)}</span></div>`);
   rec.forEach(l=>lh+=`<div class="row"><span class="lbl">${esc(l.name)}${l.note?' · '+esc(l.note):''}${dashLoanStatus(l)}</span><span class="val ap">${fmt(l.amount)}</span></div>`);
   document.getElementById('dash-loans').innerHTML=lh||'<div class="empty"><div class="empty-icon"><svg class="ic" aria-hidden="true"><use href="#i-swap"/></svg></div><div class="empty-title">No outstanding loans</div></div>';
+  const _lw=document.getElementById('dash-loans-wrap');if(_lw)_lw.classList.toggle('is-empty',!lh);
+  const _od=document.getElementById('dash-owed');
+  if(_od){
+    const _soon=state.loans.filter(l=>!l.settled&&l.due&&!isNaN(ldate(l.due))&&(ldate(l.due)-Date.now())/864e5<=7).length;
+    const _bits=[];
+    if(totalPay>0)_bits.push(`<button type="button" onclick="show('loans')">You owe <b class="n">${fmt(totalPay)}</b></button>`);
+    if(totalRec>0)_bits.push(`<button type="button" onclick="show('loans')">Owed to you <b class="p">${fmt(totalRec)}</b></button>`);
+    _od.innerHTML=_bits.length?`<div class="owed-strip">${_bits.join('')}${_soon?`<span class="owed-soon">${_soon} due soon</span>`:''}</div>`:'';
+  }
 
   // Recent expenses
   const recent=[...state.expenses].reverse().slice(0,5);
@@ -1027,7 +1070,8 @@ function renderDash(){
   if(curInc>0||curExp>0){
     const pct=curInc>0?clamp(Math.round((curExp/curInc)*100),0,100):100;
     const cls=pct>=100?'over':pct>=75?'warn':'safe';
-    document.getElementById('dash-spend-progress').innerHTML=`<div class="prog-wrap"><div class="prog-lbl"><span>${curMonthName} spend</span><span>${pct}% of income</span></div><div class="prog-track"><div class="prog-fill ${cls}" style="width:${pct}%"></div></div></div>`;
+    const _dsp=document.getElementById('dash-spend-progress');
+    _dsp.innerHTML=`<div class="prog-wrap"><div class="prog-lbl"><span>${curMonthName} spend</span><span>${pct}% of income</span></div><div class="prog-track"><div class="prog-fill ${cls}" style="width:${pct}%"></div></div></div>`;
   } else {
     document.getElementById('dash-spend-progress').innerHTML='';
   }
@@ -1248,8 +1292,9 @@ function renderIncome(){
     const _typeColors={Salary:'var(--accent)',Bonus:'var(--amber)','Loan Repayment':'var(--blue)'};
     const types=[...new Set(state.income.map(e=>e.type||'Other'))].map(k=>({key:k,color:_typeColors[k]||'var(--muted)'}));
     bEl.innerHTML=types.map(t=>{
-      const tot=state.income.filter(e=>(e.type||'Other')===t.key).reduce((a,b)=>a+b.amount,0);
-      const cnt=state.income.filter(e=>(e.type||'Other')===t.key).length;
+      const _tEntries=state.income.filter(e=>(e.type||'Other')===t.key);
+      const tot=_tEntries.reduce((a,b)=>a+b.amount,0);
+      const cnt=_tEntries.length;
       if(!cnt)return '';
       return `<div style="flex:1;min-width:120px;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:12px 14px">
         <div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:${t.color};font-weight:600;margin-bottom:4px">${esc(t.key)}</div>
@@ -1272,8 +1317,9 @@ function renderIncome(){
   const sorted=sortedAll.filter(e=>(!incType||(e.type||'Other')===incType)&&(!_q||[e.month,e.year,e.type,e.note,e.amount].join(' ').toLowerCase().includes(_q)));
   const _ts=document.getElementById('inc-filter-type');
   if(_ts){const ts=[...new Set(state.income.map(e=>e.type||'Other'))];_ts.innerHTML='<option value="">All types</option>'+ts.map(t=>`<option${t===incType?' selected':''}>${esc(t)}</option>`).join('');}
-  if(sortedAll.length&&!sorted.length){document.getElementById('income-list').innerHTML='<div class="empty"><div class="empty-icon"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg></div><div class="empty-title">No matches</div><div class="empty-sub">Try a different search or filter.</div></div>';return;}
-  if(!sorted.length){document.getElementById('income-list').innerHTML='<div class="empty"><div class="empty-icon"><svg class="ic" aria-hidden="true"><use href="#i-cash"/></svg></div><div class="empty-title">No income entries yet</div><div class="empty-sub">Add your first entry above.</div></div>';return;}
+  const _incList=document.getElementById('income-list');
+  if(sortedAll.length&&!sorted.length){_incList.innerHTML='<div class="empty"><div class="empty-icon"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg></div><div class="empty-title">No matches</div><div class="empty-sub">Try a different search or filter.</div></div>';return;}
+  if(!sorted.length){_incList.innerHTML='<div class="empty"><div class="empty-icon"><svg class="ic" aria-hidden="true"><use href="#i-cash"/></svg></div><div class="empty-title">No income entries yet</div><div class="empty-sub">Add your first entry above.</div></div>';return;}
   const latestId=sortedAll[0].id;
   const years=[...new Set(sorted.map(e=>e.year||new Date().getFullYear()))].sort((a,b)=>b-a);
   let html='';
@@ -1291,7 +1337,7 @@ function renderIncome(){
     });
     html+='</div>';
   });
-  document.getElementById('income-list').innerHTML=html;
+  _incList.innerHTML=html;
 }
 
 /* ── WALLET CARDS: brand colors, card type, credit usage ── */
@@ -4107,7 +4153,7 @@ function toggleTheme(){
 }
 function initTheme(){
   const t=localStorage.getItem('mtTheme');
-  if(t==='light'){document.body.classList.add('light');['theme-toggle','theme-toggle-settings'].forEach(function(i){var e=document.getElementById(i);if(e)e.classList.add('on')});const _l=document.getElementById('theme-label');if(_l)_l.textContent='Light';}
+  if(t!=='dark'){document.body.classList.add('light');['theme-toggle','theme-toggle-settings'].forEach(function(i){var e=document.getElementById(i);if(e)e.classList.add('on')});const _l=document.getElementById('theme-label');if(_l)_l.textContent='Light';}
   let a=null;try{a=localStorage.getItem('mtAccent');}catch(e){}
   applyAccent(a);
 }
@@ -4269,7 +4315,7 @@ function renderTutSlide(){
   document.getElementById('tut-next-btn').textContent=s.last?'Get Started':'Next →';
   // dots
   document.getElementById('tut-dots').innerHTML=TUTORIAL_SLIDES.map((_,i)=>
-    `<div onclick="tutDotJump(${i})" style="width:${i===tutIdx?'18px':'6px'};height:6px;border-radius:99px;background:${i===tutIdx?'var(--accent)':'var(--muted2)'};cursor:pointer;transition:all .2s"></div>`
+    `<div onclick="tutDotJump(${i})" style="width:${i===tutIdx?'18px':'6px'};height:6px;border-radius:99px;background:${i===tutIdx?'var(--accent)':'var(--muted2)'};cursor:pointer;transition:width .2s,background .2s"></div>`
   ).join('');
   // slide content
   document.getElementById('tut-slides').innerHTML=`
@@ -4467,12 +4513,6 @@ if(state.pinHash&&!sessionStorage.getItem('mtUnlocked')){showPinScreen();}
 document.documentElement.classList.remove('finlock');
 scheduleRender();
 updateSidebarUsername();
-// Failsafe: if render never fires for any reason, show content after 2s
-setTimeout(function(){
-  _dismissSkeleton();
-  var ct=document.querySelector('.content');
-  if(ct&&!ct.classList.contains('sk-ready')) ct.classList.add('sk-ready');
-},2000);
 // Auth entry point is now driven entirely by fbAuth.onAuthStateChanged → handleAuthState()
 // Recurring reminder: check if any recurring expenses haven't been logged this month
 setTimeout(()=>whenAppReady(()=>{
