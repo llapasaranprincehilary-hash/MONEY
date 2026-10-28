@@ -422,3 +422,13 @@
 @media(prefers-reduced-motion:reduce){
   #fin-pet-root.fin-furious .fin-avatar-wrap{animation:none !important;}
 }
+
+/* ---------- bubble stays on screen when Fin sits at the left or top edge ----------
+   Normally the bubble opens up and to the LEFT of Fin. When Fin is docked in the
+   dashboard card (left side) or dragged near an edge, that would push it off-screen,
+   so it opens down and to the RIGHT instead. */
+#fin-pet-root.fin-docked .fin-bubble,
+#fin-pet-root.fin-bub-flip .fin-bubble{
+  right:auto;left:0;bottom:auto;top:calc(var(--fin-avatar-size) + 10px);
+  border-radius:4px 16px 16px 16px;transform-origin:top left;
+}
