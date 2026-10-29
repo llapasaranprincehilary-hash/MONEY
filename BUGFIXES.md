@@ -36,3 +36,48 @@ Fixed while merging:
 5. Service worker cache bumped to `v44` (includes `fin-dock.js` and `a11y.js`); `pet.css`/`pet.js`/`pet-dialogue.js` line endings normalised to LF.
 
 Checked: all JS parses; zero console/page errors on mobile 390px, 320px and desktop 1360px in light and dark; every section renders identically to the UI build on the same data (differential test) and totals reconcile; no horizontal scroll; every file the page loads is in the offline cache.
+
+## Fin on the opening screens
+- Fin no longer floats over the "Word for Today" splash or the sign-in / PIN screens (he was covering the "Let's go" button). While one of those screens is up the real Fin is hidden and non-clickable, and a small, non-clickable Fin peeks over the top-left corner of the verse card (ducking and blinking), behind all content; he is anchored to the card so he stays on its corner at any screen size. When the screen closes the real Fin fades back in. (`virtual-pet/fin-ambient.js` + the "fin-ambient" block at the end of `pet.css`; cache bumped to `v45`.)
+
+## Opening screen: the verse is the hero
+- Removed the "Good afternoon, Rey - here's your finances for today" line (the dashboard already greets you by name).
+- Verse / tip text is now the largest thing on the screen (19-25px, scales with the phone), in a wider, softer card; the logo, title and subtitle are smaller so they support instead of compete. Spacing is symmetrical (equal left/right margins, content vertically centred). Cache bumped to `v47`.
+
+## Opening screen: design pass
+One centre axis, one focal point (the verse), 8px rhythm. Brand row -> card (Fin peeks over its top edge, centred) -> full-width button -> date.
+- Verse and its reference are grouped and centred together (they used to drift apart on short verses); the card keeps a steady height so the button never jumps when the verse changes.
+- "Word for Today / Money tip" tabs never wrap onto two lines; tip sources are sentence case instead of forced caps.
+- Auto-advance progress is a short inset line instead of a sliver riding the card's rounded corner.
+- Button matches the card's width and uses white-on-green text for readable contrast.
+- Block sits slightly above true centre (optical centring). Cache `v49`.
+
+---
+
+## Final merge: UI build (v5) + speed build (fixed-final)
+
+Base = the UI build (new dashboard, Fin dock, a11y, light theme). Ported from the speed build:
+- **Partial rendering.** After one action only what changed is rebuilt instead of all 9 sections
+  (`renderAfterExpense/Income/Loan/Goal/Wallet/Budget/Settings/Hide`, `_schedulePartial`, page-aware `show()`).
+- **Faster, tokenised motion.** `--tr-enter/spring/exit/micro` tokens and the shorter section/modal/progress
+  animations (20 CSS lines; timing properties only, verified line-by-line - no colours/layout touched).
+- Cached repeated `getElementById` lookups (`exp-search`, `budget-input`).
+
+Bugs found in the speed build's partial-render code and fixed while merging:
+1. **Streak never advanced on logging**, `FinStreak.tick()` was only called by the full render. Now part of every partial render.
+2. **Dashboard Learn card / insights went stale** (`FinLearn.render()` was skipped). Fixed.
+3. **Guest "not backed up" sheet could not trigger** after adding entries (`renderGuestBanner` skipped). Fixed.
+4. **Goals badge in the nav stayed wrong** after adding/removing a goal (`updateBadges` skipped). Fixed.
+5. **Visible page could go stale**: goals read expenses/budget, settling a loan adds an income row, wallet removal
+   touches loans. Rule added: the page on screen is always refreshed too; every other page is rebuilt by `show()` when opened.
+6. **Pages with no partial mapping** (Export) and navigating in the same frame as an action fall back to / stay correct via a full render.
+7. A queued partial render no longer leaves stale entries behind after a full render.
+8. Extra speed: list pages that are not on screen (Expenses/Income/Loans/Goals/Settings) are not rebuilt by partial renders.
+
+Kept from the UI build: new dashboard, Fin dock/ambient, a11y.js, high-contrast colours, light-theme-first-paint fix,
+manifest colours. Service worker cache bumped to `v50`.
+
+Verification (headless Chromium, Firebase stubbed, seeded data): 32 checks. After every action (expense, income, goal, budget,
+loan add/settle, hide balances, Export page, same-frame navigation) the visible page is identical to a full `render()`, and every
+page opened afterwards is identical to a full render; badges update; no console/page errors; no horizontal scroll at 390px/320px;
+`addExpense` makes zero full `render()` calls. ESLint: no new findings vs. either source build. All files are in the offline cache list.

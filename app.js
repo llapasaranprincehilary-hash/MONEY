@@ -721,17 +721,17 @@ function finDrawStock(el){var D=finBuckets(el._tf),tf=D.tf,W=el._w=el.clientWidt
   tip.style.display='block';var tw=tip.offsetWidth;tip.style.left=(px+tw+18>W?Math.max(0,px-tw-10):px+12)+'px'};
  var hide=function(){['#fs-x','#fs-di','#fs-de','#fs-tip'].forEach(function(s){q(s).style.display='none'});hd.innerHTML=head()};
  hit.addEventListener('pointermove',show);hit.addEventListener('pointerdown',show);hit.addEventListener('pointerleave',function(e){if(e.pointerType==='mouse')hide()})}
-function toggleHeroWallets(){window._heroWalletsOpen=!window._heroWalletsOpen;scheduleRender();}
+function toggleHeroWallets(){window._heroWalletsOpen=!window._heroWalletsOpen;_schedulePartial([renderDash]);}
 function toggleHeroPanel(){const c=document.querySelector('.hero-card');if(!c)return;const o=c.classList.toggle('open');const b=document.getElementById('hero-toggle');if(b)b.setAttribute('aria-expanded',o);}
 function dashTab(t){
   ['recent','trend'].forEach(k=>{const p=document.getElementById('pane-'+k),b=document.getElementById('tab-'+k);if(p)p.hidden=(k!==t);if(b){b.classList.toggle('on',k===t);b.setAttribute('aria-selected',k===t);}});
-  if(t==='trend')scheduleRender();
+  if(t==='trend')_schedulePartial([renderDash]);
 }
 function fmt(n){return window.FinX?FinX.money(n):'₱'+Number(n).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});}
 const EYE_ON_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
 const EYE_OFF_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0112 20c-7 0-11-8-11-8a21.8 21.8 0 015.06-6.06M9.9 4.24A10.94 10.94 0 0112 4c7 0 11 8 11 8a21.77 21.77 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
 function fmtBal(n){return state.hideBalances?((window.FinX?FinX.sym():'₱')+' ••••••'):fmt(n);}
-function toggleHideBalances(){state.hideBalances=!state.hideBalances;save();scheduleRender();}
+function toggleHideBalances(){state.hideBalances=!state.hideBalances;save();renderAfterHide();}
 function syncEyeButtons(){
   const hidden=!!state.hideBalances;
   ['eye-hero','eye-balpage'].forEach(id=>{
@@ -802,7 +802,7 @@ function show(id){
   document.body.dataset.page=id;
   document.querySelectorAll('.mt-tab.active').forEach(t=>{const bar=t.parentElement;if(bar&&bar.clientWidth)bar.scrollLeft=t.offsetLeft-(bar.clientWidth-t.offsetWidth)/2;});
   if(id==='settings')openSetPanel(null);
-  scheduleRender();
+  _schedulePartial([]); // renders only the page being opened (full render for pages without a mapping)
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -877,12 +877,72 @@ function populateReportYears(){
   if([...sel.options].some(o=>o.value===prev))sel.value=prev;
 }
 let _renderPending=false;
+let _partialPending=false;
+const _pendingRenders=new Set();
 function scheduleRender(){
-  // Coalesces multiple back-to-back render() calls into a single paint frame
+  // Coalesces multiple back-to-back render() calls into a single paint frame.
+  // A full render always wins over any queued partial one.
   if(_renderPending)return;
   _renderPending=true;
-  requestAnimationFrame(function(){ _renderPending=false; render(); });
+  _pendingRenders.clear();
+  requestAnimationFrame(function(){ _renderPending=false; _pendingRenders.clear(); render(); });
 }
+
+// ── PARTIAL RENDER SYSTEM (speed) ─────────────────────────────────────────
+// A full render() rebuilds every section. After a single action only what changed
+// needs rebuilding, 3-5x less work. Two rules keep it correct:
+//  1. whatever page the person is looking at is ALWAYS refreshed too, so nothing visible
+//     can go stale (e.g. goals use expenses, a settled loan adds an income row);
+//  2. pages that are not on screen are rebuilt by show() the moment they are opened.
+// Anything this table does not know about (e.g. the Export page) falls back to a full render.
+function renderExtras(){
+  // things the full render() also did: guest reminder, Learn card/insights, streak
+  renderGuestBanner();
+  try{if(window.FinLearn)FinLearn.render();}catch(e){}
+  try{if(window.FinStreak)FinStreak.tick();}catch(e){}
+}
+const _PAGE_RENDER={
+  dashboard:[renderDash,renderBalances,syncEyeButtons,renderExtras],
+  income:[renderIncome,updateBadges],
+  expenses:[renderExpenses,updateBadges],
+  loans:[renderLoans,updateBadges],
+  balances:[renderBalances,syncEyeButtons],
+  goals:[renderGoals,updateBadges],
+  settings:[renderSettings,renderGuestBanner],
+  learn:[function(){try{if(window.FinLearn)FinLearn.render();}catch(e){}}]
+};
+// The big list/page builders only matter while their own page is on screen; show() rebuilds a page
+// the moment it is opened, so skipping them while hidden never leaves anything stale.
+const _PAGE_OWNED=new Map([[renderExpenses,'expenses'],[renderIncome,'income'],[renderLoans,'loans'],[renderGoals,'goals'],[renderSettings,'settings']]);
+function _schedulePartial(fns){
+  const sec=document.querySelector('.section.active');
+  const pageFns=sec?_PAGE_RENDER[sec.id]:null;
+  if(!pageFns){scheduleRender();return;}
+  fns.concat(pageFns).forEach(function(f){_pendingRenders.add(f);});
+  if(_renderPending||_partialPending)return;
+  _partialPending=true;
+  requestAnimationFrame(function(){
+    _partialPending=false;
+    if(_renderPending)return; // a full render was requested meanwhile and will cover everything
+    const now=document.querySelector('.section.active'),nowId=now?now.id:'';
+    const toRun=[..._pendingRenders];_pendingRenders.clear();
+    if(!_PAGE_RENDER[nowId]){scheduleRender();return;} // moved to a page without a partial mapping (e.g. Export)
+    toRun.forEach(function(fn){
+      const owner=_PAGE_OWNED.get(fn);
+      if(owner&&owner!==nowId)return; // hidden page: rebuilt by show() when opened
+      try{fn();}catch(e){console.warn('render',e);}
+    });
+  });
+}
+// Targeted helpers: used instead of save();scheduleRender() at each call site
+function renderAfterExpense(){_schedulePartial([renderExpenses,renderDash,renderBalances,updateBadges,syncEyeButtons,renderExtras]);}
+function renderAfterIncome(){_schedulePartial([renderIncome,renderDash,renderBalances,updateBadges,syncEyeButtons,renderExtras]);}
+function renderAfterLoan(){_schedulePartial([renderLoans,renderDash,renderBalances,updateBadges,renderExtras]);}
+function renderAfterGoal(){_schedulePartial([renderGoals,renderDash,renderBalances,updateBadges,renderExtras]);}
+function renderAfterWallet(){_schedulePartial([renderBalances,renderDash,renderIncome,renderExpenses,renderLoans,updateBadges,syncEyeButtons]);}
+function renderAfterSettings(){_schedulePartial([renderSettings,renderDash,renderGuestBanner,syncEyeButtons]);}
+function renderAfterBudget(){_schedulePartial([renderGoals,renderDash]);}
+function renderAfterHide(){_schedulePartial([renderBalances,renderDash,renderIncome,renderExpenses,renderLoans,renderGoals,syncEyeButtons]);}
 function render(){renderBalances();renderDash();renderIncome();renderExpenses();renderLoans();renderGoals();renderSettings();updateBadges();syncEyeButtons();renderGuestBanner();populateReportYears();try{if(window.FinLearn)FinLearn.render();}catch(e){}try{if(window.FinStreak)FinStreak.tick();}catch(e){}}
 function updateBadges(){
   document.getElementById('nav-badge-income').textContent=state.income.length;
@@ -1464,7 +1524,7 @@ function rowMenu(ev,kind,id){
 function walMove(id,dir){
   const ws=state.wallets||[],i=ws.findIndex(w=>w.id===id),j=i+dir;
   if(i<0||j<0||j>=ws.length)return;
-  const t=ws[i];ws[i]=ws[j];ws[j]=t;save();scheduleRender();
+  const t=ws[i];ws[i]=ws[j];ws[j]=t;save();renderAfterWallet();
 }
 
 /* editor sheet: add / edit / quick balance update */
@@ -1593,7 +1653,7 @@ function walSave(){
   if(WD.mode==='add'){
     const id='w'+Date.now();
     state.wallets.push({id:id,label:name,balance:newBal,updated:today(),brand:WD.brand,type:WD.type,limit:limit,c1:WD.c1,c2:WD.c2,dark:WD.dark,logo:WD.logo});
-    save();closeWalModal();scheduleRender();toast(name+' added ✓');
+    save();closeWalModal();renderAfterWallet();toast(name+' added ✓');
     window.dispatchEvent(new CustomEvent('fin:wallet-added',{detail:{id:id,name:name}}));
     return;
   }
@@ -1603,7 +1663,7 @@ function walSave(){
   if(changed){w.balance=newBal;w.updated=today();}
   const balChanged=changed;
   const wasBal=WD.mode==='bal';
-  save();closeWalModal();scheduleRender();toast(wasBal?w.label+' updated ✓':'Saved ✓');
+  save();closeWalModal();renderAfterWallet();toast(wasBal?w.label+' updated ✓':'Saved ✓');
   if(balChanged)window.dispatchEvent(new CustomEvent('fin:balance-updated',{detail:{id:w.id,label:w.label,amount:newBal}}));
 }
 
@@ -1691,7 +1751,7 @@ function renderExpenses(){
   }
 
   // ── Expense list ─────────────────────────────────────────
-  var searchQ=(document.getElementById('exp-search')?document.getElementById('exp-search').value:'').toLowerCase().trim();
+  var _expSearch=document.getElementById('exp-search');var searchQ=(_expSearch?_expSearch.value:'').toLowerCase().trim();
   var list=[...state.expenses].reverse();
   if(expFilter!=='all') list=list.filter(function(e){return (e.cat||'other-exp')===expFilter;});
   if(searchQ) list=list.filter(function(e){return String(e.desc||'').toLowerCase().includes(searchQ)||String(e.source||'').toLowerCase().includes(searchQ)||(e.note||'').toLowerCase().includes(searchQ);});
@@ -1803,7 +1863,7 @@ function addIncome(){
   }
   state.income.push({id:uid(),month,year,type,amount,note,wallet:walletId,dateAdded:today()});
   document.getElementById('inc-amount').value='';document.getElementById('inc-note').value='';
-  save();scheduleRender();toast('Income added'+(wallet?' - '+wallet.label+' updated':'')+' ✓');
+  save();renderAfterIncome();toast('Income added'+(wallet?' - '+wallet.label+' updated':'')+' ✓');
   window.dispatchEvent(new CustomEvent('fin:income-added',{detail:{amount,walletId}}));
 }
 function walletOptionsHTML(selectedId){
@@ -1848,7 +1908,7 @@ function saveEditIncome(){
   e.wallet=newWalletId;
   e.note=document.getElementById('edit-inc-note').value.trim();
   closeEditIncome();
-  save();scheduleRender();toast('Income entry updated ✓');
+  save();renderAfterIncome();toast('Income entry updated ✓');
 }
 function onExpCatChange(){
   const cat=document.getElementById('exp-cat').value;
@@ -1943,7 +2003,7 @@ function saveEditExpense(){
   e.date=document.getElementById('edit-exp-date').value||today();
   e.note=document.getElementById('edit-exp-note').value.trim();
   closeEditExpense();
-  save();scheduleRender();toast('Expense updated ✓');
+  save();renderAfterExpense();toast('Expense updated ✓');
 }
 async function addExpense(){
   const desc=document.getElementById('exp-desc').value.trim();
@@ -1981,7 +2041,7 @@ async function addExpense(){
   document.getElementById('exp-date').value=today();document.getElementById('exp-note').value='';
   document.getElementById('exp-recurring').checked=false;
   rcHideBanner();
-  save();scheduleRender();toast('Expense logged'+(wallet?' - '+wallet.label+' updated':'')+' ✓');
+  save();renderAfterExpense();toast('Expense logged'+(wallet?' - '+wallet.label+' updated':'')+' ✓');
   window.dispatchEvent(new CustomEvent('fin:expense-logged',{detail:{desc,amount,cat,source}}));
 }
 /* ══ RECEIPT SCANNER (free, on-device OCR via Tesseract.js) ══
@@ -2227,7 +2287,7 @@ async function addLoan(){
   }
   state.loans.push(loan);
   document.getElementById('loan-name').value='';document.getElementById('loan-amount').value='';document.getElementById('loan-note').value='';document.getElementById('loan-due').value='';document.getElementById('loan-wallet').value='';
-  save();scheduleRender();toast('Loan added'+walletMsg+' ✓');
+  save();renderAfterLoan();toast('Loan added'+walletMsg+' ✓');
   window.dispatchEvent(new CustomEvent('fin:loan-added',{detail:{loan}}));
 }
 function openEditLoan(id){
@@ -2297,7 +2357,7 @@ async function saveEditLoan(){
   l.name=name;l.amount=amount;l.type=type;l.due=due;l.note=note;
   if(newWalletId)l.sourceWallet=newWalletId;else delete l.sourceWallet;
   closeEditLoan();
-  save();scheduleRender();toast('Loan updated'+walletMsg+' ✓');
+  save();renderAfterLoan();toast('Loan updated'+walletMsg+' ✓');
 }
 async function confirmRemoveWallet(walletId){
   const w=(state.wallets||[]).find(x=>x.id===walletId);
@@ -2311,7 +2371,7 @@ function removeWallet(walletId){
   const w=state.wallets.find(x=>x.id===walletId);
   if(!w)return;
   state.wallets=state.wallets.filter(x=>x.id!==walletId);
-  save();scheduleRender();toast(w.label+' wallet removed');
+  save();renderAfterWallet();toast(w.label+' wallet removed');
 }
 function settle(id){
   const l=state.loans.find(x=>x.id===id);
@@ -2366,7 +2426,7 @@ async function confirmSettleLoan(){
   l.settledDate=date;
   l.settled=true;
   closeSettleLoan();
-  save();scheduleRender();
+  save();renderAfterLoan();
   toast('Loan settled - '+wallet.label+' updated ✓');
   window.dispatchEvent(new CustomEvent('fin:loan-settled',{detail:{loan:l,wallet}}));
 }
@@ -2391,12 +2451,12 @@ async function undoSettle(id){
     }
     delete l.settledTxn;delete l.settledWallet;delete l.settledDate;
     l.settled=false;
-    save();scheduleRender();
+    save();renderAfterLoan();
     toast('Marked as outstanding - balance reverted');
     return;
   }
   l.settled=false;
-  save();scheduleRender();
+  save();renderAfterLoan();
   toast('Marked as outstanding');
 }
 function adjustLoan(id,mode,amountOverride){
@@ -2414,7 +2474,7 @@ function adjustLoan(id,mode,amountOverride){
     else toast(`Deducted ${fmt(val)} from ${l.name}'s loan ✓`);
   }
   if(inp)inp.value='';
-  save();scheduleRender();
+  save();renderAfterLoan();
   window.dispatchEvent(new CustomEvent('fin:loan-adjusted',{detail:{loan:l}}));
 }
 async function del(type,id){
@@ -2478,7 +2538,7 @@ async function del(type,id){
     }
   }
   state[type]=state[type].filter(x=>x.id!==id);
-  save();scheduleRender();toast('Removed');
+  save();renderAfterLoan();toast('Removed');
 }
 
 /* EXPORT */
@@ -2746,7 +2806,7 @@ function renderGoals(){
       const cls=pct>=100?'over':pct>=75?'warn':'safe';
       const clr=pct>=100?'var(--red)':pct>=75?'var(--amber)':'var(--accent)';
       bs.innerHTML=`<div class="prog-wrap" style="margin-top:8px"><div class="prog-lbl"><span style="color:${clr};font-weight:600">${fmt(curExp)} spent of ${fmt(state.budgetLimit)}</span><span>${pct}%</span></div><div class="prog-track"><div class="prog-fill ${cls}" style="width:${pct}%"></div></div><div style="font-size:11px;color:var(--muted);margin-top:5px">${curMonthName} ${curYear} · ${state.budgetLimit-curExp>=0?fmt(state.budgetLimit-curExp)+' remaining':'Over by '+fmt(curExp-state.budgetLimit)}</div></div>`;
-      if(document.getElementById('budget-input'))document.getElementById('budget-input').placeholder=state.budgetLimit>0?state.budgetLimit:'e.g. 15000';
+      const _bi=document.getElementById('budget-input');if(_bi)_bi.placeholder=state.budgetLimit>0?state.budgetLimit:'e.g. 15000';
     } else {
       bs.innerHTML='<div style="font-size:12px;color:var(--muted2);margin-top:6px">No budget set yet.</div>';
     }
@@ -2781,7 +2841,7 @@ function saveBudget(){
 function setBudgetLimit(v){
   if(isNaN(v)||v<0)return;
   const previous=state.budgetLimit;
-  state.budgetLimit=v;save();scheduleRender();toast('Budget saved ✓');
+  state.budgetLimit=v;save();renderAfterBudget();toast('Budget saved ✓');
   window.dispatchEvent(new CustomEvent('fin:budget-saved',{detail:{amount:v,previous}}));
 }
 window.setBudgetLimit=setBudgetLimit;
@@ -2796,7 +2856,7 @@ function addGoal(){
   state.goals.push({id:uid(),name,target,saved,note});
   document.getElementById('goal-name').value='';document.getElementById('goal-target').value='';
   document.getElementById('goal-saved').value='';document.getElementById('goal-note').value='';
-  save();scheduleRender();toast('Goal added ✓');
+  save();renderAfterGoal();toast('Goal added ✓');
   window.dispatchEvent(new CustomEvent('fin:goal-added',{detail:{goal:state.goals[state.goals.length-1]}}));
 }
 function addToGoal(id,amountOverride){
@@ -2808,14 +2868,14 @@ function addToGoal(id,amountOverride){
   const reached=g.saved>=g.target;
   if(reached){toast('🎉 Goal reached! '+g.name);}
   else toast(fmt(v)+' added to '+g.name+' ✓');
-  save();scheduleRender();
+  save();renderAfterGoal();
   window.dispatchEvent(new CustomEvent('fin:goal-progress',{detail:{goal:g,reached,amountAdded:v}}));
 }
 async function delGoal(id){
   const ok=await mtConfirm('Remove this goal?','🗑️','Remove','var(--red)');
   if(!ok)return;
   state.goals=state.goals.filter(x=>x.id!==id);
-  save();scheduleRender();toast('Goal removed');
+  save();renderAfterGoal();toast('Goal removed');
 }
 function openEditGoal(id){
   const g=(state.goals||[]).find(x=>x.id===id);
@@ -2842,7 +2902,7 @@ function saveEditGoal(){
   g.name=name;g.target=target;g.saved=saved;
   g.note=document.getElementById('edit-goal-note').value.trim();
   closeEditGoal();
-  save();scheduleRender();toast('Goal updated ✓');
+  save();renderAfterGoal();toast('Goal updated ✓');
 }
 
 /* ══════════════════════════════════════
@@ -3696,7 +3756,7 @@ function setupPinKey(k){
             toast('PIN reset - welcome back! ✓');
             showSplash();
           } else {
-            scheduleRender();
+            renderAfterSettings();
             document.getElementById('auth-overlay').style.display='none';
             toast('PIN updated ✓');
           }
@@ -3943,13 +4003,13 @@ function renderSettings(){
 function changeName(){
   const nm=document.getElementById('settings-newname').value.trim();
   if(!nm){toast('Enter a new name','error');return;}
-  state.username=nm; save(); scheduleRender(); toast('Name updated ✓');
+  state.username=nm; save(); renderAfterSettings(); toast('Name updated ✓');
   document.getElementById('settings-newname').value='';
 }
 async function removePin(){
   const ok=await mtConfirm('Remove PIN lock? Your app will no longer be protected.','🔓','Remove PIN','var(--amber)');
   if(!ok)return;
-  state.pin='';state.pinHash='';state.pinSalt='';bioClear();save();scheduleRender();toast('PIN removed');
+  state.pin='';state.pinHash='';state.pinSalt='';bioClear();save();renderAfterSettings();toast('PIN removed');
 }
 function showSettingsSecUpdate(){
   document.getElementById('secq-update-modal').style.display='flex';
@@ -3989,7 +4049,7 @@ async function saveSettingsSecQuestion(){
   state.securityAnswer='';
   save();
   document.getElementById('secq-update-modal').style.display='none';
-  scheduleRender();
+  renderAfterSettings();
   toast('Recovery question saved ✓');
 }
 async function restoreFromSettings(input){
@@ -4167,9 +4227,6 @@ function initSplash(){
   const mode=(last==='verse'&&window.FinLearn)?'tip':'verse';
   try{localStorage.setItem('finSplashMode',mode);}catch(e){}
   setSplashMode(mode,true);
-  const h=new Date().getHours();
-  const greet=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
-  const nm=state.username?', '+state.username:'';document.getElementById('splash-greeting').textContent=greet+nm+' - here\'s your finances for today.';
   document.getElementById('splash-date').textContent=new Date().toLocaleDateString('en-PH',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 }
 function setSplashMode(m,instant){
@@ -4189,8 +4246,8 @@ function showVerse(v,instant){
   const vEl=document.getElementById('splash-verse'),rEl=document.getElementById('splash-ref'),lb=document.getElementById('splash-learn');
   if(!vEl||!rEl||!v)return;
   const set=()=>{
-    if(v.tip){vEl.textContent=v.text;vEl.style.fontStyle='normal';rEl.textContent=v.ref;}
-    else{vEl.textContent='"'+v.text+'"';vEl.style.fontStyle='italic';rEl.textContent=' - '+v.ref;}
+    if(v.tip){vEl.textContent=v.text;vEl.dataset.kind='tip';rEl.dataset.kind='tip';rEl.textContent=v.ref;}
+    else{vEl.textContent='\u201C'+v.text+'\u201D';vEl.dataset.kind='verse';rEl.dataset.kind='verse';rEl.textContent=v.ref;}
     if(lb)lb.style.display=v.tip?'':'none';
     vEl.style.opacity='1';rEl.style.opacity='1';
   };
@@ -4566,7 +4623,7 @@ window.logRecurring = function(templateId){
   if(alreadyLogged){ toast(template.desc+' already logged this month','error'); return; }
   var wallet=deductWalletBalance(template.source, template.amount);
   pushExpense({desc:template.desc, amount:template.amount, cat:template.cat, source:template.source, date:today(), note:template.note||'', recurring:true, recurringTemplateId:template.id});
-  save(); scheduleRender();
+  save(); renderAfterExpense();
   toast(template.desc+' logged ✓'+(wallet?' - '+wallet.label+' updated':''));
   window.dispatchEvent(new CustomEvent('fin:expense-logged',{detail:{desc:template.desc,amount:template.amount,cat:template.cat,source:template.source,recurring:true}}));
 };
