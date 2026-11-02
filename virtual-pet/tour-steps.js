@@ -57,6 +57,15 @@ window.FinTourSteps = [
     action: 'next'
   },
   {
+    target: 'fin-week',
+    page: 'dashboard',
+    title: "Fin's week",
+    description: 'Fin levels up as you build the habit. Each week brings three small challenges, a no-spend day button for days you spend nothing, and a recap of how the week went.',
+    placement: 'top',
+    requires: '[data-tour="fin-week"]',
+    action: 'next'
+  },
+  {
     target: 'currency-switch',
     page: 'dashboard',
     title: 'Change your currency',
@@ -180,7 +189,7 @@ window.FinTourSteps = [
     target: 'scan-receipt',
     page: 'expenses',
     title: 'Scan a receipt',
-    description: 'Snap a photo of a receipt and I will read the amount, date and store for you. It runs on your device, so nothing gets uploaded.',
+    description: 'Snap a photo of a receipt and I will read the amount, date and store for you. It runs on your device, so nothing gets uploaded. It is a VIP perk, and you get 3 free tries.',
     placement: 'bottom',
     action: 'next'
   },
