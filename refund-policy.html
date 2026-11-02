@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Refund Policy | FINUITY</title>
+<meta name="robots" content="index,follow">
+<link rel="icon" href="icon-192.png">
+<style>
+:root{color-scheme:light dark;--bg:#fff;--text:#16161a;--muted:#5d5d6b;--line:#e3e3ea;--gold:#946200;--card:#f6f6f9}
+@media (prefers-color-scheme:dark){:root{--bg:#0b0b0e;--text:#ececf1;--muted:#9a9aa8;--line:#2a2a33;--gold:#f0b92c;--card:#141418}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:720px;margin:0 auto;padding:28px 20px 64px}
+a{color:var(--gold)}
+nav{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 22px;font-size:14px}
+h1{font-size:28px;line-height:1.2;margin:0 0 6px;letter-spacing:-.02em}
+.meta{color:var(--muted);font-size:14px;margin:0 0 26px}
+h2{font-size:17px;margin:26px 0 6px}
+p{margin:0 0 12px}
+.note{padding:12px 14px;border-radius:12px;background:var(--card);border:1px solid var(--line);font-size:14px;color:var(--muted)}
+footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<main>
+<nav aria-label="Legal pages"><a href="index.html">&larr; Back to FINUITY</a><a href="terms.html">Terms of Use</a><a href="privacy.html">Privacy Policy</a><a href="refund-policy.html">Refund policy</a></nav>
+<h1 id="t"></h1>
+<p class="meta" id="m"></p>
+<div id="body">Loading&hellip;</div>
+<footer>FINUITY is a personal finance tracker. Questions: <a id="mail" href="#"></a></footer>
+</main>
+<script src="legal-data.js"></script>
+<script src="vip.js"></script>
+<script>
+(function(){
+  var DOC="refund", ONLY="Payments, Billing and Refunds";
+  function esc(x){return String(x).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  var title=DOC==='terms'?'Terms of Use':DOC==='privacy'?'Privacy Policy':'Refund Policy';
+  var secs=LEGAL_DOCS[DOC==='refund'?'terms':DOC];
+  document.getElementById('t').textContent=title;
+  document.getElementById('m').textContent='Version '+LEGAL_VERSION+' \u00B7 Last updated '+LEGAL_UPDATED;
+  var m=document.getElementById('mail');m.textContent=LEGAL_EMAIL;m.href='mailto:'+LEGAL_EMAIL;
+  var html='';
+  if(DOC==='refund'){
+    html+='<p class="note">This page shows the billing and refund part of our full <a href="terms.html">Terms of Use</a>.</p>';
+    secs=secs.filter(function(s){return s[0]===ONLY||s[0]==='Free and VIP Plans'});
+    secs.sort(function(a,b){return a[0]===ONLY?-1:1});
+  }
+  secs.forEach(function(s,i){html+='<h2>'+(DOC==='refund'?'':(i+1)+'. ')+esc(s[0])+'</h2><p>'+legalFill(s[1])+'</p>'});
+  document.getElementById('body').innerHTML=html;
+  document.title=title+' | FINUITY';
+})();
+</script>
+</body>
+</html>

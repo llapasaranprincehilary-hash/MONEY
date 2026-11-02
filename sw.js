@@ -11,23 +11,36 @@
    CACHE_NAME — so an unchanged cache name means old, stale assets (icons
    included) can keep being served indefinitely even after you replace the
    underlying files. */
-const CACHE_NAME = 'finuity-shell-v50';
+const CACHE_NAME = 'finuity-shell-v51';
+
+// Small JSON the page writes (reminder time, last logged day) so a background reminder can run with the app closed.
+const LIFE_CACHE = 'finuity-life-data';
 
 const APP_SHELL = [
   './',
   './index.html',
-  './app.js',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
   './icon-512-maskable.png',
   './icons.css',
   './icons.js',
+  './app.js',
   './learn.css',
   './learn.js',
   './streak.css',
   './ux.css',
   './streak.js',
+  './life.css',
+  './life.js',
+  './vip.css',
+  './scan.css',
+  './scan.js',
+  './legal-data.js',
+  './terms.html',
+  './privacy.html',
+  './refund-policy.html',
+  './vip.js',
   './virtual-pet/pet.css',
   './virtual-pet/pet.js',
   './virtual-pet/fin-dock.js',
@@ -58,7 +71,7 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
-      .then(keys => Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))))
+      .then(keys => Promise.all(keys.filter(k => k !== CACHE_NAME && k !== LIFE_CACHE).map(k => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
@@ -115,6 +128,42 @@ self.addEventListener('fetch', event => {
         return response;
       }).catch(() => cached); // offline: fall back to whatever's cached
       return cached || networkFetch; // instant load if cached, background-refreshed for next time
+    })
+  );
+});
+
+
+/* ── Daily reminder (Chrome/Android installed app: periodic background sync; otherwise the page sends it while open) ── */
+async function remindIfNeeded() {
+  try {
+    const cache = await caches.open(LIFE_CACHE);
+    const url = new URL('life-data.json', self.registration.scope).href;
+    const hit = await cache.match(url);
+    if (!hit) return;
+    const d = await hit.json();
+    if (!d.on || self.Notification.permission !== 'granted') return;
+    const p = n => (n < 10 ? '0' + n : '' + n), now = new Date();
+    const today = now.getFullYear() + '-' + p(now.getMonth() + 1) + '-' + p(now.getDate());
+    const hm = p(now.getHours()) + ':' + p(now.getMinutes());
+    if (hm < (d.time || '20:00') || d.loggedDay === today || d.notified === today) return;
+    const n = d.streak || 0;
+    await self.registration.showNotification(n >= 2 ? 'Your ' + n + '-day streak is waiting' : 'Quick check-in from Fin', {
+      body: n >= 2 ? 'Log anything, or tap "Nothing spent today". It takes five seconds.' : 'Anything to log today? A no-spend day counts too.',
+      icon: 'icon-192.png', badge: 'icon-192.png', tag: 'finuity-streak', data: { url: './index.html' }
+    });
+    d.notified = today;
+    await cache.put(url, new Response(JSON.stringify(d), { headers: { 'Content-Type': 'application/json' } }));
+  } catch (e) { /* a missed reminder is fine */ }
+}
+self.addEventListener('periodicsync', event => {
+  if (event.tag === 'finuity-reminder') event.waitUntil(remindIfNeeded());
+});
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+      for (const c of list) { if ('focus' in c) return c.focus(); }
+      return self.clients.openWindow('./index.html');
     })
   );
 });

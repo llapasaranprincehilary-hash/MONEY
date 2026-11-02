@@ -27,31 +27,43 @@ var DEFS=[
  {id:'first-month-budgeted',icon:'target',label:'Budget set',hint:'Set a monthly spending limit',cat:'Getting started'},
  {id:'first-goal',icon:'sparkle',label:'Dreamer',hint:'Create your first savings goal',cat:'Getting started'},
  {id:'streak-3',icon:'sprout',label:'Warm-up',hint:'Log 3 days in a row',cat:'Streaks'},
- {id:'streak-7',icon:'flame',label:'One week strong',hint:'Log 7 days in a row',cat:'Streaks'},
- {id:'streak-14',icon:'bolt',label:'Two-week habit',hint:'Log 14 days in a row',cat:'Streaks'},
- {id:'streak-30',icon:'star',label:'Habit formed',hint:'Log 30 days in a row',cat:'Streaks'},
- {id:'streak-60',icon:'diamond',label:'Diamond focus',hint:'Log 60 days in a row',cat:'Streaks'},
- {id:'streak-100',icon:'crown',label:'Money royalty',hint:'Log 100 days in a row',cat:'Streaks'},
- {id:'entries-25',icon:'list',label:'25 entries',hint:'Log 25 incomes or expenses',cat:'Habits'},
- {id:'entries-100',icon:'clipboard',label:'100 entries',hint:'Log 100 incomes or expenses',cat:'Habits'},
- {id:'goal-hit',icon:'trophy',label:'Goal reached',hint:'Fully fund a savings goal',cat:'Money wins'},
+ {id:'streak-7',icon:'flame',label:'One week strong',hint:'Log 7 days in a row',cat:'Streaks',tier:'bronze'},
+ {id:'streak-14',icon:'bolt',label:'Two-week habit',hint:'Log 14 days in a row',cat:'Streaks',tier:'bronze'},
+ {id:'streak-30',icon:'star',label:'Habit formed',hint:'Log 30 days in a row',cat:'Streaks',tier:'silver'},
+ {id:'streak-60',icon:'diamond',label:'Diamond focus',hint:'Log 60 days in a row',cat:'Streaks',tier:'silver'},
+ {id:'streak-100',icon:'crown',label:'Money royalty',hint:'Log 100 days in a row',cat:'Streaks',tier:'gold'},
+ {id:'entries-25',icon:'list',label:'25 entries',hint:'Log 25 incomes or expenses',cat:'Habits',tier:'bronze'},
+ {id:'entries-100',icon:'clipboard',label:'100 entries',hint:'Log 100 incomes or expenses',cat:'Habits',tier:'silver'},
+ {id:'entries-500',icon:'clipboard',label:'500 entries',hint:'Log 500 incomes or expenses',cat:'Habits',tier:'gold'},
+ {id:'perfect-week',icon:'trophy',label:'Perfect week',hint:'Finish all three weekly challenges',cat:'Habits'},
+ {id:'goal-hit',icon:'trophy',label:'Goal reached',hint:'Fully fund a savings goal',cat:'Money wins',tier:'bronze'},
+ {id:'goals-3',icon:'trophy',label:'Goal getter',hint:'Fully fund 3 savings goals',cat:'Money wins',tier:'silver'},
+ {id:'goals-10',icon:'trophy',label:'Dream machine',hint:'Fully fund 10 savings goals',cat:'Money wins',tier:'gold'},
  {id:'loan-free',icon:'flag',label:'Debt-free',hint:'Pay off a loan in full',cat:'Money wins'},
  {id:'best-saver',icon:'trend-up',label:'Best saving month',hint:'Beat your own best savings rate',cat:'Money wins'},
  {id:'first-lesson',icon:'book',label:'Student of money',hint:'Finish your first lesson',cat:'Learning'},
  {id:'all-lessons',icon:'graduation',label:'Graduate',hint:'Finish all 7 lessons',cat:'Learning'},
  {id:'quiz-starter',icon:'compass',label:'Baseline set',hint:'Take the Starter Quiz',cat:'Learning'},
- {id:'quiz-gain',icon:'rocket',label:'Level up',hint:'Score higher on the Progress Quiz',cat:'Learning'}
+ {id:'quiz-gain',icon:'rocket',label:'Level up',hint:'Score higher on the Progress Quiz',cat:'Learning'},
+ {id:'night-owl',icon:'moon',label:'Night owl',hint:'Log something between midnight and 5 am',cat:'Secrets',secret:true},
+ {id:'early-bird',icon:'sun',label:'Early bird',hint:'Log something between 5 and 7 am',cat:'Secrets',secret:true},
+ {id:'comeback',icon:'heart',label:'Welcome back',hint:'Return after a week away and log again',cat:'Secrets',secret:true},
+ {id:'nospend-3',icon:'shield',label:'Zero hero',hint:'Mark 3 no-spend days',cat:'Secrets',secret:true},
+ {id:'freeze-saved',icon:'snow',label:'Saved by the freeze',hint:'Let a streak freeze rescue your streak',cat:'Secrets',secret:true},
+ {id:'fin-legend',icon:'medal',label:'Fin is a legend',hint:'Raise Fin to the top level',cat:'Secrets',secret:true}
 ];
 var DMAP={};DEFS.forEach(function(d){DMAP[d.id]=d});
-var CATS=['Getting started','Streaks','Habits','Money wins','Learning'];
+var CATS=['Getting started','Streaks','Habits','Money wins','Learning','Secrets'];
 
 /* ───────── state ───────── */
 function ST(){
   var s=S();if(!s)return null;
   var st=s.streak;
-  if(!st||typeof st!=='object'){st=s.streak={days:[],best:0,total:0,badges:{},lastCur:0,v:1};bootstrap(st)}
+  if(!st||typeof st!=='object'){st=s.streak={days:[],best:0,total:0,badges:{},lastCur:0,v:1,freezes:0,frozen:{}};bootstrap(st)}
   if(!Array.isArray(st.days))st.days=[];
   if(!st.badges||typeof st.badges!=='object')st.badges={};
+  if(!st.frozen||typeof st.frozen!=='object')st.frozen={};
+  if(typeof st.freezes!=='number'||st.freezes<0)st.freezes=0;
   return st;
 }
 // existing users start with the history they already have, so day one is not "0"
@@ -94,18 +106,43 @@ function calc(){
   // the full history is scanned once (first run / old backups); after that "best" is kept up to date as days are logged
   if(!st.bestDone){st.days.forEach(function(d){var r=run(set,d);if(r>best)best=r});st.bestDone=true;st.best=best}
   if(cur>best)best=cur;
-  var v={current:cur,best:best,total:Math.max(st.total||0,st.days.length),loggedToday:!!set[t],state:mode,atRisk:cur>0&&!set[t],set:set,today:t};
+  var v={current:cur,best:best,total:Math.max(st.total||0,st.days.length),loggedToday:!!set[t],state:mode,atRisk:cur>0&&!set[t],set:set,today:t,frozen:st.frozen||{}};
   memo={key:key,val:v};return v;
 }
 function nextMilestone(cur){for(var i=0;i<MILESTONES.length;i++)if(MILESTONES[i]>cur)return MILESTONES[i];return null}
 
+/* ───────── streak freeze ─────────
+   A freeze covers the two days someone missed so a busy stretch does not erase a streak of 3+ days.
+   It is used automatically, only when the streak would otherwise break, and earned at the 7/14/30/60/100-day milestones (hold up to 2). */
+function freezeCap(){try{return W.FinVip?FinVip.freezeCap():2}catch(e){return 2}}
+function daysBetween(a,b){return Math.round((parse(b)-parse(a))/864e5)}
+function applyFreeze(){
+  var st=ST();if(!st||!(st.freezes>0))return false;
+  var t=td(),set=setOf(st);
+  if(set[t])return false;
+  var last=st.days[st.days.length-1];
+  if(!last||last>=t||daysBetween(last,t)!==3)return false;
+  if(run(set,last)<3)return false;
+  st.freezes--;
+  [addDays(last,1),addDays(last,2)].forEach(function(d){st.days.push(d);st.frozen[d]=1});
+  st.days.sort();
+  memo={key:'',val:null};
+  persist();
+  emit('fin:freeze-used',{days:2});
+  award('freeze-saved',false);
+  render();
+  return true;
+}
+
 /* ───────── logging ───────── */
 function log(kind){
   var st=ST();if(!st)return false;
+  applyFreeze();
   var t=td(),set=setOf(st);
   if(set[t])return false;                       // already counted today
   var before=calc(),y=addDays(t,-1),y2=addDays(t,-2);
   var usedRest=!set[y]&&!!set[y2]&&before.state==='rest';
+  var prevLast=st.days.length?st.days[st.days.length-1]:'';
   st.days.push(t);st.days.sort();
   if(st.days.length>KEEP_DAYS)st.days=st.days.slice(-KEEP_DAYS);
   st.total=(st.total||0)+1;
@@ -115,6 +152,11 @@ function log(kind){
   if(after.best>(st.best||0))st.best=after.best;
   st.lastCur=after.current;
   var ms=MILESTONES.indexOf(after.current)>-1?after.current:0;
+  if(ms>=7&&st.freezes<freezeCap()){st.freezes++;emit('fin:freeze-earned',{count:st.freezes})}
+  // secret badges that depend on when the person logged
+  var hr=new Date().getHours();
+  if(hr<5)award('night-owl',false);else if(hr<7)award('early-bird',false);
+  if(prevLast&&daysBetween(prevLast,t)>=7)award('comeback',false);
   evalBadges(false);
   persist();
   emit('fin:streak-up',{current:after.current,best:st.best,milestone:ms,newBest:newBest,first:st.total===1,kind:kind||''});
@@ -142,7 +184,7 @@ function award(id,silent){
     var d=DMAP[id];
     st.fresh=(st.fresh||[]).concat([id]).slice(-6);
     try{toast('Badge unlocked: '+d.label)}catch(e){}
-    emit('fin:badge',{id:id,label:d.label,icon:d.icon,hint:d.hint});
+    emit('fin:badge',{id:id,label:d.label,icon:d.icon,hint:d.hint,tier:d.tier||'',secret:!!d.secret});
   }
   render();
   return true;
@@ -156,7 +198,10 @@ function evalBadges(silent){
     ['first-goal',(s.goals||[]).length>=1],
     ['goal-hit',(s.goals||[]).some(function(g){return g.target>0&&g.saved>=g.target})],
     ['loan-free',(s.loans||[]).some(function(l){return l.settled})],
-    ['entries-25',ent>=25],['entries-100',ent>=100],
+    ['entries-25',ent>=25],['entries-100',ent>=100],['entries-500',ent>=500],
+    ['goals-3',(s.goals||[]).filter(function(g){return g.target>0&&g.saved>=g.target}).length>=3],
+    ['goals-10',(s.goals||[]).filter(function(g){return g.target>0&&g.saved>=g.target}).length>=10],
+    ['nospend-3',!!(s.life&&s.life.nospend&&Object.keys(s.life.nospend).length>=3)],
     ['first-lesson',L>=1],['all-lessons',L>=7],
     ['quiz-starter',!!(s.learn&&s.learn.pre)],
     ['quiz-gain',!!(s.learn&&s.learn.pre&&s.learn.post&&s.learn.post.pct>s.learn.pre.pct)]
@@ -179,8 +224,8 @@ var DOW=['S','M','T','W','T','F','S'];
 function weekDots(c){
   var t=td(),h='';
   for(var i=6;i>=0;i--){
-    var d=addDays(t,-i),on=!!c.set[d],isT=i===0,rest=!on&&!isT&&c.set[addDays(d,-1)]&&c.set[addDays(d,1)];
-    h+='<span class="st-d'+(on?' on':'')+(isT?' today':'')+(rest?' rest':'')+'" title="'+d+'"><i>'+(on?ic('check'):rest?ic('shield'):'')+'</i><b>'+DOW[parse(d).getDay()]+'</b></span>';
+    var d=addDays(t,-i),fz=!!(c.frozen&&c.frozen[d]),on=!!c.set[d]&&!fz,isT=i===0,rest=!on&&!fz&&!isT&&c.set[addDays(d,-1)]&&c.set[addDays(d,1)];
+    h+='<span class="st-d'+(on?' on':'')+(fz?' frozen':'')+(isT?' today':'')+(rest?' rest':'')+'" title="'+d+'"><i>'+(fz?ic('snow'):on?ic('check'):rest?ic('shield'):'')+'</i><b>'+DOW[parse(d).getDay()]+'</b></span>';
   }
   return h;
 }
@@ -231,19 +276,20 @@ function renderPanel(){
   h+='<div class="st-sec">Last 5 weeks</div><div class="st-cal">'+DOW.map(function(d){return '<em>'+d+'</em>'}).join('');
   // align to weeks: begin on a Sunday 4 weeks before this week's Sunday
   var sunday=addDays(t,-parse(t).getDay()),begin=addDays(sunday,-28);
-  for(var i=0;i<35;i++){var d=addDays(begin,i),on=!!c.set[d],fut=d>t,rest=!on&&!fut&&c.set[addDays(d,-1)]&&c.set[addDays(d,1)];
-    h+='<span class="st-cd'+(on?' on':'')+(d===t?' today':'')+(fut?' fut':'')+(rest?' rest':'')+'" title="'+d+'">'+(on?ic('check'):rest?ic('shield'):'')+'</span>'}
-  h+='</div><div class="st-legend"><span><i class="on"></i>Logged</span><span><i class="rest"></i>Rest day</span><span><i class="today"></i>Today</span></div>';
+  for(var i=0;i<35;i++){var d=addDays(begin,i),fz=!!(c.frozen&&c.frozen[d]),on=!!c.set[d]&&!fz,fut=d>t,rest=!on&&!fz&&!fut&&c.set[addDays(d,-1)]&&c.set[addDays(d,1)];
+    h+='<span class="st-cd'+(on?' on':'')+(fz?' frozen':'')+(d===t?' today':'')+(fut?' fut':'')+(rest?' rest':'')+'" title="'+d+'">'+(fz?ic('snow'):on?ic('check'):rest?ic('shield'):'')+'</span>'}
+  h+='</div><div class="st-legend"><span><i class="on"></i>Logged</span><span><i class="rest"></i>Rest day</span><span><i class="frozen"></i>Freeze</span><span><i class="today"></i>Today</span></div>';
   h+='<details class="st-how"><summary>How streaks work</summary><p>Log any income, expense, loan payment, goal saving or balance update and the day counts. Missing a single day will not reset you: you get one free <b>rest day</b> each week. Streaks reward showing up, not being perfect.</p></details>';
   // badges
   h+='<div class="st-sec">Badges <em>'+n+' of '+DEFS.length+'</em></div>';
   CATS.forEach(function(cat){
     var list=DEFS.filter(function(d){return d.cat===cat});
     h+='<div class="st-cat">'+cat+'</div><div class="st-badges">'+list.map(function(d){
-      var got=earned[d.id],isNew=got&&(st.fresh||[]).indexOf(d.id)>-1;
-      return '<div class="st-b c-'+d.cat.toLowerCase().replace(/[^a-z]+/g,'-')+(got?' got':'')+'" title="'+esc(d.hint)+'"><span class="st-b-i">'+ic(got?d.icon:'lock')+'</span><span class="st-b-t">'+esc(d.label)+'</span><span class="st-b-h">'+(got?'Earned '+esc(fmtShort(got)):esc(d.hint))+'</span>'+(isNew?'<span class="st-new">NEW</span>':'')+'</div>'}).join('')+'</div>';
+      var got=earned[d.id],isNew=got&&(st.fresh||[]).indexOf(d.id)>-1,hid=d.secret&&!got;
+      return '<div class="st-b c-'+d.cat.toLowerCase().replace(/[^a-z]+/g,'-')+(got?' got':'')+(d.tier?' tier-'+d.tier:'')+(d.secret?' secret':'')+'" title="'+esc(hid?'A secret badge':d.hint)+'"><span class="st-b-i">'+ic(got?d.icon:'lock')+'</span><span class="st-b-t">'+(hid?'???':esc(d.label))+(d.tier?'<span class="st-tier '+d.tier+'">'+d.tier+'</span>':'')+(d.secret&&got?'<span class="st-tier secret">secret</span>':'')+'</span><span class="st-b-h">'+(got?'Earned '+esc(fmtShort(got)):hid?'Keep using FINUITY to find it':esc(d.hint))+'</span>'+(isNew?'<span class="st-new">NEW</span>':'')+'</div>'}).join('')+'</div>';
   });
   if(el._h!==h){el._h=h;el.innerHTML=h}
+  try{if(W.FinLife)FinLife.decoratePanel()}catch(e){}
   if(st.fresh&&st.fresh.length){st.fresh=[]}   // shown once
 }
 function badgeForStreak(n){var d=DMAP['streak-'+n];return d?ic(d.icon)+' '+esc(d.label):n+' days'}
@@ -279,6 +325,7 @@ function tick(){
   if(!st.seeded)seed();
   var t=td();
   if(lastDay!==t){lastDay=t;memo={key:'',val:null}}
+  applyFreeze();
   checkBroken();
   render();
 }

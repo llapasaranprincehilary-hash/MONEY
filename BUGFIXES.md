@@ -81,3 +81,48 @@ Verification (headless Chromium, Firebase stubbed, seeded data): 32 checks. Afte
 loan add/settle, hide balances, Export page, same-frame navigation) the visible page is identical to a full `render()`, and every
 page opened afterwards is identical to a full render; badges update; no console/page errors; no horizontal scroll at 390px/320px;
 `addExpense` makes zero full `render()` calls. ESLint: no new findings vs. either source build. All files are in the offline cache list.
+
+---
+
+## VIP update merged (MONEY-final-vip)
+
+Added from the VIP build: VIP plan + free-plan limits (`vip.js`/`vip.css`), Fin's week - levels, XP, weekly challenges, recap, reminders
+(`life.js`/`life.css`), receipt scanner as a VIP perk with 3 free tries (`scan.js`/`scan.css`), badge tiers + streak freezes + secret badges
+(`streak.js`), public Terms / Privacy / Refund pages with one shared text source (`legal-data.js`, `terms.html`, `privacy.html`,
+`refund-policy.html`, legal version 3.0 - every user is asked to accept again), payments backend (`backend/`), deploy and legal checklists.
+Service worker: `v51`, new files cached, plus the VIP build's background reminder.
+
+How it was merged: the VIP build was made before the speed and UI work, so only its real changes were ported, never its older copies of shared
+files (its `index.html`/`learn.css`/`streak.css` would have undone the faster transitions and the new dashboard).
+
+Problems found and fixed while merging:
+1. **Data-loss risk between the speed build and VIP.** The speed build delayed writing to storage by 300 ms; VIP's limit guard treats the stored copy as
+   "last good copy" and rolls back to it when a change crosses a free-plan limit - so a rollback could silently drop edits made in the last
+   300 ms. `save()` now writes storage immediately (cloud push stays debounced).
+2. **Partial renders skipped the VIP/Fin's week cards.** `render()` calls `FinLife.tick()` and `FinVip.tick()`; the speed build's partial renders
+   would have left the Fin's week card, the VIP card and the wallet meter stale. They are now part of every partial render.
+3. `app.js` was dropped from the offline cache list by the VIP service worker (its script was inline there). Restored.
+4. New scripts are `defer`red so they still load after the deferred Fin pet scripts, in the VIP build's order.
+5. "Fin's week" sits in the new dashboard flow just above the Learn card; the VIP wallet meter is on Balances and the VIP card in Settings.
+
+Verification: the 32 regression checks above (now 33, incl. count-up animation settling on the true balance) plus 17 VIP checks: Fin's week / VIP / streak
+cards render, logging awards XP, storage is written immediately, a 7th wallet and a over-limit amount are blocked and rolled back **without losing the entry saved
+just before**, upgrade sheet opens, receipt scan opens its sheet, terms/privacy/refund pages render, no console errors. Payments run in demo
+mode until `backend/SETUP-PAYMENTS.md` is followed.
+
+---
+
+## Edge-case audit (after the VIP merge)
+
+Checked and fine: local-date handling around midnight in Manila (UTC+8), Los Angeles (UTC-8) and Auckland (UTC+13) - today(), streak, Fin's week
+and expense dates agree; income/goal/loan inputs of `''`, `0`, `-5`, `abc`, `NaN`, `Infinity`, huge numbers are rejected; HTML/script in
+descriptions, notes, loan and goal names is escaped, and names with quotes keep working buttons; entries pointing at a deleted wallet do not crash;
+an over-limit account (VIP expired) can still edit and delete but not grow; restoring a big backup on the free plan sticks; double-clicking
+Add Expense logs once; hidden balances show no digits and unhide to the right total; XP, streak and entries survive a reload; wallet math is
+rounded to centavos at every update; streak freezes only fire for exactly two missed days after a 3+ day streak and respect the cap.
+
+Fixed: amounts typed with more than 2 decimals were stored as typed (0.004 saved as a "₱0.00" entry; 12.345 drifted from the wallet's rounded balance).
+All amount inputs (income, expense, loan, goal, budget, loan payment, add-to-goal, wallet balance, and their edit forms) now round to whole
+centavos before validation, so 0.004 is rejected and 12.345 becomes 12.35.
+
+Known small quirk (left as designed): "days logged" totals count the two days a streak freeze covered.

@@ -1,0 +1,132 @@
+/* FINUITY Life layer: celebrations, Fin's growth, weekly challenges, recap, reminders.
+   Everything here is additive. Motion is reserved for moments the person caused (a win, a level, a tap)
+   and is switched off under prefers-reduced-motion. */
+
+/* ───────── confetti canvas ───────── */
+#life-fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:3600}
+
+/* ───────── Fin: level chip, aura, accessories ───────── */
+.fin-lv{position:absolute;right:-4px;bottom:-2px;min-width:26px;padding:2px 6px;border-radius:99px;font:800 9px/1.3 var(--font-d,sans-serif);letter-spacing:.02em;text-align:center;color:#2a1c02;background:linear-gradient(135deg,#ffe27a,#f0b92c);border:1.5px solid #4a2c05;pointer-events:none;z-index:3;font-variant-numeric:tabular-nums}
+.fin-lv.pop{animation:life-pop .6s cubic-bezier(.2,1.6,.4,1)}
+.fin-aura{position:absolute;inset:-18%;border-radius:50%;pointer-events:none;z-index:0;opacity:0;background:radial-gradient(circle,rgba(255,214,90,.55) 0%,rgba(255,190,50,.22) 42%,transparent 70%);transition:opacity .6s}
+#fin-pet-root.fin-lv-5 .fin-aura{opacity:1;animation:life-aura 3.4s ease-in-out infinite}
+.fin-avatar-wrap{position:relative}
+.finc .fin-acc{pointer-events:none}
+.finc .fin-tw{opacity:0;animation:life-twinkle 3.2s steps(1,end) infinite}
+.finc .fin-tw:nth-child(2){animation-delay:.8s}
+.finc .fin-tw:nth-child(3){animation-delay:1.7s}
+.finc .fin-tw:nth-child(4){animation-delay:2.4s}
+.finc .fin-tw:nth-child(5){animation-delay:1.1s}
+.finc .fin-tw:nth-child(6){animation-delay:2s}
+.finc .fin-wing-l{transform-origin:5px 16px;animation:life-flap-l 2.6s ease-in-out infinite}
+.finc .fin-wing-r{transform-origin:27px 16px;animation:life-flap-r 2.6s ease-in-out infinite}
+/* eyes follow the pointer by one pixel (set from life.js); uses the separate `translate` property so Fin's own transforms still work */
+.finc .eyes-open,.finc .eyes-wide,.finc .eyes-happy,.finc .eyes-blink{translate:var(--lx,0px) var(--ly,0px)}
+@keyframes life-twinkle{0%,100%{opacity:0}8%,28%{opacity:1}36%{opacity:0}}
+@keyframes life-flap-l{0%,100%{transform:rotate(0)}50%{transform:rotate(-7deg)}}
+@keyframes life-flap-r{0%,100%{transform:rotate(0)}50%{transform:rotate(7deg)}}
+@keyframes life-aura{0%,100%{transform:scale(.94);opacity:.75}50%{transform:scale(1.06);opacity:1}}
+@keyframes life-pop{0%{transform:scale(.4)}100%{transform:scale(1)}}
+#fin-pet-root.fin-leveling .fin-avatar-wrap{animation:life-levelup 1.1s cubic-bezier(.3,1.5,.5,1)}
+@keyframes life-levelup{0%{transform:scale(1)}25%{transform:scale(1.28) translateY(-10px)}55%{transform:scale(.94)}100%{transform:scale(1)}}
+
+/* ───────── "Fin's week" card on the dashboard ───────── */
+#dash-life{margin:0 0 16px}
+.lf-card{border:1px solid var(--border2);background:var(--surface);border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:14px}
+.lf-top{display:flex;align-items:center;gap:12px}
+.lf-coin{flex:none;width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe27a,#f0b92c 55%,#b57a0b);border:2px solid #4a2c05;display:flex;align-items:center;justify-content:center;font:800 15px var(--font-d,sans-serif);color:#2a1c02;font-variant-numeric:tabular-nums}
+.lf-who{flex:1;min-width:0}
+.lf-name{font:700 15px/1.2 var(--font-d,sans-serif);color:var(--text)}
+.lf-xp{margin-top:6px;height:6px;border-radius:99px;background:var(--surface3,var(--surface2));overflow:hidden}
+.lf-xp i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#f0b92c,var(--accent));transition:width .7s cubic-bezier(.3,.9,.3,1)}
+.lf-xp-t{margin-top:5px;font-size:11px;color:var(--muted)}
+.lf-h{font:700 13px var(--font-d,sans-serif);color:var(--text);display:flex;justify-content:space-between;align-items:baseline}
+.lf-h small{font:500 11px var(--font-b,sans-serif);color:var(--muted)}
+.lf-ch{display:flex;flex-direction:column;gap:12px}
+.lf-c{display:flex;gap:11px;align-items:flex-start}
+.lf-c-i{flex:none;width:34px;height:34px;border-radius:11px;background:var(--surface2);display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.lf-c-i .ic{width:18px;height:18px}
+.lf-c.done .lf-c-i{background:rgba(var(--accent-rgb),.16);color:var(--accent)}
+.lf-c-b{flex:1;min-width:0}
+.lf-c-t{font-size:13px;color:var(--text);line-height:1.3}
+.lf-c.done .lf-c-t{color:var(--muted);text-decoration:line-through;text-decoration-color:rgba(var(--accent-rgb),.5)}
+.lf-bar{margin-top:6px;height:5px;border-radius:99px;background:var(--surface3,var(--surface2));overflow:hidden}
+.lf-bar i{display:block;height:100%;border-radius:inherit;background:var(--accent);transition:width .6s cubic-bezier(.3,.9,.3,1)}
+.lf-c-n{flex:none;font:700 12px var(--font-d,sans-serif);color:var(--muted);font-variant-numeric:tabular-nums;padding-top:2px}
+.lf-c.done .lf-c-n{color:var(--accent)}
+.lf-row{display:flex;gap:8px;flex-wrap:wrap}
+.lf-btn{flex:1 1 auto;min-height:44px;padding:0 14px;border-radius:12px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font:600 13px var(--font-b,sans-serif);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px;-webkit-tap-highlight-color:transparent;transition:border-color .15s,transform .12s}
+.lf-btn:hover{border-color:rgba(var(--accent-rgb),.5)}
+.lf-btn:active{transform:scale(.97)}
+.lf-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.lf-btn .ic{width:16px;height:16px}
+.lf-btn[disabled]{opacity:.5;cursor:default}
+.lf-btn.pri{background:rgba(var(--accent-rgb),.14);border-color:rgba(var(--accent-rgb),.4);color:var(--accent)}
+
+/* ───────── weekly recap sheet ───────── */
+.lf-back{position:fixed;inset:0;z-index:3200;background:rgba(0,0,0,.62);display:flex;align-items:flex-end;justify-content:center;animation:life-fade .2s ease-out}
+.lf-sheet{width:100%;max-width:520px;max-height:92vh;overflow:auto;background:var(--surface);border:1px solid var(--border2);border-bottom:0;border-radius:24px 24px 0 0;padding:20px 18px calc(22px + env(safe-area-inset-bottom,0px));animation:life-up .32s cubic-bezier(.2,.9,.3,1)}
+@media(min-width:600px){.lf-back{align-items:center}.lf-sheet{border-radius:24px;border-bottom:1px solid var(--border2)}}
+.lf-sh-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:4px}
+.lf-sh-t{font:800 21px/1.15 var(--font-d,sans-serif);color:var(--text);letter-spacing:-.02em}
+.lf-sh-s{font-size:12px;color:var(--muted);margin-top:3px}
+.lf-x{flex:none;width:44px;height:44px;margin:-6px -6px 0 0;border-radius:50%;border:1px solid var(--border2);background:var(--surface2);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.lf-x .ic{width:16px;height:16px}
+.lf-say{margin:14px 0;padding:12px 14px;border-radius:14px;background:rgba(var(--accent-rgb),.08);border:1px solid rgba(var(--accent-rgb),.22);font-size:13.5px;line-height:1.45;color:var(--text)}
+.lf-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.lf-st{padding:12px;border-radius:14px;background:var(--surface2);display:flex;flex-direction:column;gap:3px;min-width:0}
+.lf-st b{font:800 17px var(--font-d,sans-serif);color:var(--text);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.lf-st span{font-size:11px;color:var(--muted)}
+.lf-st em{font-style:normal;font-size:11px;font-weight:600}
+.lf-st em.up{color:var(--red)}.lf-st em.dn{color:var(--accent)}.lf-st em.flat{color:var(--muted)}
+.lf-days{display:flex;align-items:flex-end;gap:8px;height:92px;margin:4px 0 16px}
+.lf-day{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end}
+.lf-day i{display:block;width:100%;min-height:3px;border-radius:6px 6px 3px 3px;background:var(--surface3,var(--surface2))}
+.lf-day.has i{background:linear-gradient(180deg,var(--accent),rgba(var(--accent-rgb),.45))}
+.lf-day b{font-size:10px;font-weight:600;color:var(--muted)}
+.lf-day.log b{color:var(--accent)}
+@keyframes life-fade{from{opacity:0}to{opacity:1}}
+@keyframes life-up{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+
+/* ───────── streak panel extras (freeze, reminder, effects) ───────── */
+.lf-sec{margin:18px 0 0;padding:14px;border:1px solid var(--border2);border-radius:16px;background:var(--surface2);display:flex;flex-direction:column;gap:12px}
+.lf-sec h4{font:700 13px var(--font-d,sans-serif);color:var(--text);margin:0}
+.lf-sec p{font-size:12px;line-height:1.45;color:var(--muted);margin:0}
+.lf-frz{display:flex;gap:8px;align-items:center}
+.lf-frz i{width:30px;height:30px;border-radius:10px;border:1.5px dashed var(--border2);display:flex;align-items:center;justify-content:center;color:var(--muted2,var(--muted))}
+.lf-frz i.on{border-style:solid;border-color:rgba(110,190,255,.6);background:rgba(110,190,255,.14);color:#7cc4ff}
+.lf-frz i .ic{width:16px;height:16px}
+.lf-tg{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13px;color:var(--text)}
+.lf-tg small{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+.lf-sw{flex:none;position:relative;width:44px;height:26px;border-radius:99px;border:1px solid var(--border2);background:var(--surface3,var(--surface));cursor:pointer;transition:background .15s,border-color .15s;padding:0}
+.lf-sw::before{content:"";position:absolute;inset:-10px -4px}   /* invisible, makes the touch target 46px tall */
+.lf-sw::after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:var(--muted);transition:transform .18s,background .15s}
+.lf-sw[aria-checked="true"]{background:rgba(var(--accent-rgb),.25);border-color:rgba(var(--accent-rgb),.55)}
+.lf-sw[aria-checked="true"]::after{transform:translateX(18px);background:var(--accent)}
+.lf-sw:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.lf-time{height:36px;border-radius:10px;border:1px solid var(--border2);background:var(--surface);color:var(--text);font:600 13px var(--font-b,sans-serif);padding:0 10px}
+
+/* ───────── badge tiers + secrets (rendered by streak.js) ───────── */
+.st-b.tier-bronze .st-b-i{box-shadow:0 0 0 2px #b8763a inset}
+.st-b.tier-silver .st-b-i{box-shadow:0 0 0 2px #b9c3d3 inset}
+.st-b.tier-gold .st-b-i{box-shadow:0 0 0 2px #f0b92c inset,0 0 14px rgba(240,185,44,.35)}
+.st-b:not(.got) .st-b-i{box-shadow:none}
+.st-b.secret:not(.got) .st-b-t{letter-spacing:.2em}
+.st-tier{display:inline-block;margin-left:6px;font-size:9px;font-weight:700;padding:1px 6px;border-radius:99px;vertical-align:middle}
+.st-tier.bronze{background:rgba(184,118,58,.2);color:#d9945a}
+.st-tier.silver{background:rgba(185,195,211,.18);color:#c9d3e3}
+.st-tier.gold{background:rgba(240,185,44,.2);color:#f0b92c}
+.st-tier.secret{background:rgba(157,126,247,.2);color:var(--purple)}
+.st-d.frozen i,.st-cd.frozen{border-style:solid;border-color:rgba(110,190,255,.6);background:rgba(110,190,255,.14);color:#7cc4ff}
+
+/* ───────── Fin in empty states ───────── */
+.life-empty-fin{display:flex;align-items:center;gap:10px;justify-content:center;margin-top:12px;flex-wrap:wrap;text-align:left}
+.life-empty-fin .lf-mini{flex:none;width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe27a,#f0b92c 55%,#b57a0b);border:1.5px solid #4a2c05}
+.life-empty-fin span.t{font-size:12.5px;color:var(--muted);max-width:30ch;line-height:1.4}
+.life-empty-fin .lf-btn{flex:none;min-height:34px;font-size:12px;padding:0 12px}
+
+@media (prefers-reduced-motion:reduce){
+  .finc .fin-tw,.finc .fin-wing-l,.finc .fin-wing-r,.fin-aura,.lf-sheet,.lf-back,.fin-lv.pop,#fin-pet-root.fin-leveling .fin-avatar-wrap{animation:none !important}
+  .finc .fin-tw{opacity:1}
+  .lf-xp i,.lf-bar i{transition:none}
+}

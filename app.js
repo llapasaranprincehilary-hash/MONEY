@@ -212,6 +212,7 @@ const CAT_ICON={food:'utensils',transport:'bus',shopping:'bag',utilities:'bolt',
 function catHTML(k){return '<span class="cat-ic cat-'+esc(k)+'">'+FinIcons.ic(CAT_ICON[k]||'box')+esc(CAT_LABELS[k]||'Other')+'</span>';}
 let expFilter='all';
 
+function cents(v){return Math.round(v*100)/100;} // amounts are stored in whole centavos (0.004 -> 0 is rejected, 12.345 -> 12.35)
 function today(){
   // Local calendar date, not UTC - toISOString() converts to UTC first, which
   // in timezones ahead of UTC (e.g. UTC+8) mislabels anything logged between
@@ -366,22 +367,14 @@ function loadState(){
   }
   catch(e){return def;}
 }
-let _saveTimer=null;
 function save(){
-  // Debounced: batches rapid writes (e.g. multiple field saves) into one localStorage write
-  if(_saveTimer) clearTimeout(_saveTimer);
-  _saveTimer=setTimeout(function(){
-    _saveTimer=null;
-    localStorage.setItem('kwentadoV1',JSON.stringify(state));
-    queueCloudPush();
-  },300);
-}
-function saveImmediate(){
-  // Use for critical paths (restore, cloud sync) that must not be deferred
-  if(_saveTimer){ clearTimeout(_saveTimer); _saveTimer=null; }
+  // Written synchronously on purpose: vip.js treats the stored copy as the "last good copy" when it
+  // blocks a change that crosses a free-plan limit, so it must never lag behind. The cloud push is
+  // already debounced inside queueCloudPush(), so this stays cheap.
   localStorage.setItem('kwentadoV1',JSON.stringify(state));
   queueCloudPush();
 }
+function saveImmediate(){save();}
 
 // ── Cloud Sync (Firebase) ──────────────────────────────────
 let cloudUser=null;
@@ -531,22 +524,7 @@ async function pullCloudIfNewer(){
   }catch(e){console.warn('Cloud refresh failed',e);}
   cloudPulling=false;
 }
-document.addEventListener('visibilitychange',()=>{
-  // Flush any pending debounced save when the tab goes to background (covers tab-switch, app-switch, close)
-  if(document.visibilityState==='hidden'&&_saveTimer){
-    clearTimeout(_saveTimer);_saveTimer=null;
-    localStorage.setItem('kwentadoV1',JSON.stringify(state));
-    queueCloudPush();
-  }
-  if(document.visibilityState==='visible')pullCloudIfNewer();
-});
-// pagehide fires on mobile before the page is discarded (more reliable than beforeunload on iOS)
-window.addEventListener('pagehide',()=>{
-  if(_saveTimer){
-    clearTimeout(_saveTimer);_saveTimer=null;
-    localStorage.setItem('kwentadoV1',JSON.stringify(state));
-  }
-});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')pullCloudIfNewer();});
 window.addEventListener('online',pullCloudIfNewer);
 window.addEventListener('focus',pullCloudIfNewer);
 
@@ -900,16 +878,18 @@ function renderExtras(){
   renderGuestBanner();
   try{if(window.FinLearn)FinLearn.render();}catch(e){}
   try{if(window.FinStreak)FinStreak.tick();}catch(e){}
+  try{if(window.FinLife)FinLife.tick();}catch(e){}   // Fin's week card on the dashboard
+  try{if(window.FinVip)FinVip.tick();}catch(e){}     // VIP card (Settings) + wallet meter (Balances)
 }
 const _PAGE_RENDER={
   dashboard:[renderDash,renderBalances,syncEyeButtons,renderExtras],
-  income:[renderIncome,updateBadges],
-  expenses:[renderExpenses,updateBadges],
-  loans:[renderLoans,updateBadges],
-  balances:[renderBalances,syncEyeButtons],
-  goals:[renderGoals,updateBadges],
-  settings:[renderSettings,renderGuestBanner],
-  learn:[function(){try{if(window.FinLearn)FinLearn.render();}catch(e){}}]
+  income:[renderIncome,updateBadges,renderExtras],
+  expenses:[renderExpenses,updateBadges,renderExtras],
+  loans:[renderLoans,updateBadges,renderExtras],
+  balances:[renderBalances,syncEyeButtons,renderExtras],
+  goals:[renderGoals,updateBadges,renderExtras],
+  settings:[renderSettings,renderGuestBanner,renderExtras],
+  learn:[renderExtras]
 };
 // The big list/page builders only matter while their own page is on screen; show() rebuilds a page
 // the moment it is opened, so skipping them while hidden never leaves anything stale.
@@ -943,7 +923,7 @@ function renderAfterWallet(){_schedulePartial([renderBalances,renderDash,renderI
 function renderAfterSettings(){_schedulePartial([renderSettings,renderDash,renderGuestBanner,syncEyeButtons]);}
 function renderAfterBudget(){_schedulePartial([renderGoals,renderDash]);}
 function renderAfterHide(){_schedulePartial([renderBalances,renderDash,renderIncome,renderExpenses,renderLoans,renderGoals,syncEyeButtons]);}
-function render(){renderBalances();renderDash();renderIncome();renderExpenses();renderLoans();renderGoals();renderSettings();updateBadges();syncEyeButtons();renderGuestBanner();populateReportYears();try{if(window.FinLearn)FinLearn.render();}catch(e){}try{if(window.FinStreak)FinStreak.tick();}catch(e){}}
+function render(){renderBalances();renderDash();renderIncome();renderExpenses();renderLoans();renderGoals();renderSettings();updateBadges();syncEyeButtons();renderGuestBanner();populateReportYears();try{if(window.FinLearn)FinLearn.render();}catch(e){}try{if(window.FinStreak)FinStreak.tick();}catch(e){}try{if(window.FinLife)FinLife.tick();}catch(e){}try{if(window.FinVip)FinVip.tick();}catch(e){}}
 function updateBadges(){
   document.getElementById('nav-badge-income').textContent=state.income.length;
   document.getElementById('nav-badge-expenses').textContent=state.expenses.length;
@@ -1640,7 +1620,7 @@ function walSave(){
     if(name.length>24)return err('Name is too long (max 24 characters).');
     if((state.wallets||[]).some(w=>w.id!==WD.id&&w.label.toLowerCase()===name.toLowerCase()))return err('You already have an account with that name.');
   }
-  const raw=document.getElementById('wal-bal').value,num=raw===''?0:parseFloat(raw);
+  const raw=document.getElementById('wal-bal').value,num=raw===''?0:cents(parseFloat(raw));
   if(isNaN(num))return err('Enter a valid amount.');
   const limit=credit?(parseFloat(document.getElementById('wal-limit').value)||0):0;
   if(credit&&limit<0)return err('Credit limit cannot be negative.');
@@ -1851,7 +1831,7 @@ function addIncome(){
   const month=document.getElementById('inc-month').value;
   const year=parseInt(document.getElementById('inc-year').value);
   const type=document.getElementById('inc-type').value;
-  const amount=parseFloat(document.getElementById('inc-amount').value);
+  const amount=cents(parseFloat(document.getElementById('inc-amount').value));
   const note=document.getElementById('inc-note').value.trim();
   const walletId=document.getElementById('inc-wallet').value;
   if(!amount||amount<=0||isNaN(amount)){toast('Enter a valid amount','error');return;}
@@ -1893,7 +1873,7 @@ function saveEditIncome(){
   const id=parseInt(document.getElementById('edit-inc-id').value);
   const e=state.income.find(x=>x.id===id);
   if(!e)return;
-  const amount=parseFloat(document.getElementById('edit-inc-amount').value);
+  const amount=cents(parseFloat(document.getElementById('edit-inc-amount').value));
   if(!amount||amount<=0||isNaN(amount)){toast('Enter a valid amount','error');return;}
   const newWalletId=document.getElementById('edit-inc-wallet').value;
   // Revert old wallet effect, then apply new one
@@ -1968,7 +1948,7 @@ function saveEditExpense(){
   const e=state.expenses.find(x=>x.id===id);
   if(!e)return;
   const desc=document.getElementById('edit-exp-desc').value.trim();
-  const amount=parseFloat(document.getElementById('edit-exp-amount').value);
+  const amount=cents(parseFloat(document.getElementById('edit-exp-amount').value));
   if(!desc){toast('Add a description','error');return;}
   if(!amount||amount<=0||isNaN(amount)){toast('Enter a valid amount','error');return;}
   const newSource=document.getElementById('edit-exp-source').value;
@@ -2007,7 +1987,7 @@ function saveEditExpense(){
 }
 async function addExpense(){
   const desc=document.getElementById('exp-desc').value.trim();
-  const amount=parseFloat(document.getElementById('exp-amount').value);
+  const amount=cents(parseFloat(document.getElementById('exp-amount').value));
   const cat=document.getElementById('exp-cat').value;
   const source=document.getElementById('exp-source').value;
   const date=document.getElementById('exp-date').value||today();
@@ -2044,7 +2024,7 @@ async function addExpense(){
   save();renderAfterExpense();toast('Expense logged'+(wallet?' - '+wallet.label+' updated':'')+' ✓');
   window.dispatchEvent(new CustomEvent('fin:expense-logged',{detail:{desc,amount,cat,source}}));
 }
-/* ══ RECEIPT SCANNER (free, on-device OCR via Tesseract.js) ══
+/* ══ RECEIPT SCANNER (on-device OCR via Tesseract.js; VIP perk with 3 free tries, see vip.js) ══
    The photo is read on the phone and never uploaded or stored. Only the reader software
    is downloaded (once) from a public CDN. It is a free reader, so it can misread - 
    the result always lands in the normal expense form to be checked before saving. */
@@ -2262,7 +2242,7 @@ function rcApply(r,rawText){
 
 async function addLoan(){
   const name=document.getElementById('loan-name').value.trim();
-  const amount=parseFloat(document.getElementById('loan-amount').value)||0;
+  const amount=cents(parseFloat(document.getElementById('loan-amount').value)||0);
   const type=document.getElementById('loan-type').value;
   const note=document.getElementById('loan-note').value.trim();
   const due=document.getElementById('loan-due').value||'';
@@ -2316,7 +2296,7 @@ async function saveEditLoan(){
   const l=state.loans.find(x=>x.id===id);
   if(!l)return;
   const name=document.getElementById('edit-loan-name').value.trim();
-  const amount=parseFloat(document.getElementById('edit-loan-amount').value)||0;
+  const amount=cents(parseFloat(document.getElementById('edit-loan-amount').value)||0);
   const type=document.getElementById('edit-loan-type').value;
   const due=document.getElementById('edit-loan-due').value||'';
   const note=document.getElementById('edit-loan-note').value.trim();
@@ -2461,7 +2441,7 @@ async function undoSettle(id){
 }
 function adjustLoan(id,mode,amountOverride){
   const inp=document.getElementById('adj-'+id);
-  const val=amountOverride!==undefined?(parseFloat(amountOverride)||0):(parseFloat(inp&&inp.value)||0);
+  const val=cents(amountOverride!==undefined?(parseFloat(amountOverride)||0):(parseFloat(inp&&inp.value)||0));
   if(isNaN(val)||val<=0){toast('Enter a valid amount','error');return;}
   const l=state.loans.find(x=>x.id===id);
   if(!l)return;
@@ -2832,7 +2812,7 @@ function renderGoals(){
   }).join('');
 }
 function saveBudget(){
-  const v=parseFloat(document.getElementById('budget-input').value);
+  const v=cents(parseFloat(document.getElementById('budget-input').value));
   if(isNaN(v)||v<0){toast('Enter a valid amount','error');return;}
   setBudgetLimit(v);
 }
@@ -2847,8 +2827,8 @@ function setBudgetLimit(v){
 window.setBudgetLimit=setBudgetLimit;
 function addGoal(){
   const name=document.getElementById('goal-name').value.trim();
-  const target=parseFloat(document.getElementById('goal-target').value)||0;
-  const saved=Math.max(0,parseFloat(document.getElementById('goal-saved').value)||0);
+  const target=cents(parseFloat(document.getElementById('goal-target').value)||0);
+  const saved=Math.max(0,cents(parseFloat(document.getElementById('goal-saved').value)||0));
   const note=document.getElementById('goal-note').value.trim();
   if(!name){toast('Enter a goal name','error');return;}
   if(!target||target<=0){toast('Enter a target amount','error');return;}
@@ -2862,7 +2842,7 @@ function addGoal(){
 function addToGoal(id,amountOverride){
   const g=state.goals.find(x=>x.id===id);
   const inp=document.getElementById('gs-'+id);
-  const v=amountOverride!==undefined?(parseFloat(amountOverride)||0):(parseFloat(inp&&inp.value)||0);
+  const v=cents(amountOverride!==undefined?(parseFloat(amountOverride)||0):(parseFloat(inp&&inp.value)||0));
   if(!g||isNaN(v)||v<=0){toast('Enter a valid amount','error');return;}
   g.saved=Math.round((g.saved+v)*100)/100;
   const reached=g.saved>=g.target;
@@ -2895,8 +2875,8 @@ function saveEditGoal(){
   const g=(state.goals||[]).find(x=>x.id===id);
   if(!g)return;
   const name=document.getElementById('edit-goal-name').value.trim();
-  const target=parseFloat(document.getElementById('edit-goal-target').value)||0;
-  const saved=Math.max(0,parseFloat(document.getElementById('edit-goal-saved').value)||0);
+  const target=cents(parseFloat(document.getElementById('edit-goal-target').value)||0);
+  const saved=Math.max(0,cents(parseFloat(document.getElementById('edit-goal-saved').value)||0));
   if(!name){toast('Enter a goal name','error');return;}
   if(!target||target<=0){toast('Enter a target amount','error');return;}
   g.name=name;g.target=target;g.saved=saved;
@@ -4429,50 +4409,11 @@ function resolveMergeChoice(useRemote){
   if(_mergeResolve){_mergeResolve(useRemote);_mergeResolve=null;}
 }
 
-/* ══ LEGAL: Terms of Use + Privacy Policy (single source, used at sign-up, login screen and Settings) ══ */
-const LEGAL_VERSION='2.0', LEGAL_UPDATED='October 6, 2026';
-const LEGAL_DEV='PCP-IS SOLUTIONS';                       // the company that runs FINUITY (shown in the Terms and Privacy Policy)
-const LEGAL_EMAIL='PCPSERVICE@gmail.com';                 // public contact / privacy email (shown in the Terms and Privacy Policy)
-const LEGAL_DOCS={
-terms:[
-['Acceptance of These Terms',`By creating an account, signing in, continuing as a Guest, or otherwise using FINUITY ("the App"), you agree to these Terms of Use and to our Privacy Policy. Ticking the agreement box is a valid electronic signature and creates a binding agreement under the Electronic Commerce Act of 2000 (Republic Act No. 8792). If you do not agree, do not use the App.`],
-['Who May Use the App',`You must be at least 18 years old. If you are younger, a parent or legal guardian must read and accept these documents on your behalf and supervise your use. The App is for your own personal, non-commercial use.`],
-['What FINUITY Is',`FINUITY is a personal, self-managed finance tracker for income, expenses, wallet balances (e.g. GCash, Maya, cash), loans and savings goals that <b>you</b> enter yourself. It is provided by ${LEGAL_DEV} ("we", "us") and is under active development.`],
-['What FINUITY Is Not',`FINUITY is <b>not</b> a bank, e-wallet, electronic money issuer, lending or financing company, payment processor, remittance provider, broker or investment adviser, and is not supervised by the Bangko Sentral ng Pilipinas or the Securities and Exchange Commission. It has no connection to your real bank or e-wallet accounts and never moves money. Balances, loans and reports are figures you typed in; a loan entry is a personal note, not proof of a debt or a collection tool. Nothing in the App is financial, investment, tax, accounting or legal advice, and generated reports are unaudited and are not for tax filings or submission to any authority unless you verify them yourself.`],
-['Your Account and Security',`You are responsible for your sign-in credentials, your device, your 4-digit PIN and your recovery answer, and for all activity under your account. The PIN (and optional device biometric unlock) is a convenience lock, <b>not</b> encryption. Guest accounts have no email, so we cannot recover them if you lose the device or clear its storage. Tell us promptly if you suspect unauthorized access.`],
-['Your Data and Content',`You own the information you enter. You give us a limited, non-exclusive licence to store, process and sync it solely to run the App for you. You are responsible for its accuracy and for having the right to enter information about other people (for example names in loan records) - keep it to what is necessary. Do not enter government ID numbers, card numbers, bank credentials or passwords.`],
-['Acceptable Use',`You agree not to: use the App for anything unlawful, fraudulent or for money laundering; try to access another person's account or data; probe, attack, overload, scrape or reverse-engineer the App or its services; upload malware; or bypass any security or usage limit.`],
-['Backups and Availability',`The App is provided as available and may be interrupted, changed or discontinued. Syncing can fail or conflict between devices. You are responsible for exporting your own backups (Settings and Export). Restoring a backup overwrites current data.`],
-['Third-Party Services',`The App relies on Google Firebase (authentication and database), Google Sign-In and Google Fonts, and, only if you use the optional receipt scanner, the jsDelivr content network to download the open-source Tesseract.js reader. Their own terms and privacy policies apply, and we are not responsible for their outages or acts.`],
-['Intellectual Property',`The App, its design, code, name, logo and icons belong to us or our licensors. You receive a limited, revocable, non-exclusive, non-transferable licence to use it for personal purposes. Scripture excerpts remain the property of their respective translation rights holders and are shown for personal encouragement only.`],
-['Devotional Content',`Any Bible verses or devotional content is for personal encouragement. It is not pastoral, financial or professional counsel.`],
-['Disclaimer of Warranties',`To the extent permitted by law, the App is provided "as is" and "as available" without warranties of any kind, including accuracy, reliability, uninterrupted operation, or fitness for a particular purpose. Calculations may contain errors.`],
-['Limitation of Liability',`To the extent permitted by Philippine law, we are not liable for indirect, incidental or consequential loss, loss of data, or any financial decision you make based on the App. Nothing in these Terms excludes liability that cannot be excluded under Philippine law, including liability for fraud, bad faith or gross negligence, or limits your rights as a data subject or consumer.`],
-['Indemnity',`You agree to be responsible for claims and losses arising from your breach of these Terms or your unlawful use of the App, to the extent permitted by law.`],
-['Suspension and Ending Use',`We may suspend or end access if you breach these Terms or to protect the App or other users. You may stop at any time and permanently delete your account and data in Settings (Legal and Data). Sections that by nature should survive (ownership, disclaimers, liability, governing law) continue after termination.`],
-['Changes to These Terms',`We may update these Terms or the Privacy Policy. When we make a material change we will show the new version in the App and ask you to accept it again before you continue. Continued use after the notice period means you accept the update.`],
-['Governing Law and Disputes',`These Terms are governed by the laws of the Republic of the Philippines. Please contact us first so we can try to resolve any concern in good faith; failing that, disputes go to the proper courts of the Philippines.`],
-['General',`If any provision is unenforceable, the rest remains in force. Our failure to enforce a right is not a waiver. These Terms and the Privacy Policy are the entire agreement between you and us about the App. Contact: ${LEGAL_EMAIL}.`]
-],
-privacy:[
-['Who We Are',`${LEGAL_DEV} is the Personal Information Controller of FINUITY. Privacy contact / Data Protection Officer: ${LEGAL_EMAIL}. This policy follows the Data Privacy Act of 2012 (Republic Act No. 10173), its Implementing Rules and Regulations, and issuances of the National Privacy Commission (NPC).`],
-['Personal Data We Handle',`<b>Account data:</b> email address, sign-in method (Google, email/password or guest), display name, and a unique account ID.<br><b>Data you enter:</b> income, expenses, wallet names and balances, loans (including names of people and notes), savings goals, budget limit, notes, and app settings.<br><b>Security data:</b> a salted hash of your PIN, your recovery question, and a salted hash of your answer (we cannot read either).<br><b>Technical data:</b> authentication tokens and data your browser stores (localStorage/sessionStorage: theme, tutorial status, unlock state). Google may receive your IP address and device details when you sign in, sync, or load fonts.<br><b>We do not collect:</b> bank or e-wallet credentials, card numbers, precise location, contacts, photos, or microphone/camera data, and we do not run advertising or third-party analytics.`],
-['Why We Use It and Our Legal Basis',`We process data to (1) create and secure your account, (2) store, sync and display your records across your devices, (3) provide backups, exports and reports you request, and (4) keep the service safe and fix problems. Our bases under Section 12 of the Data Privacy Act are your <b>consent</b> (given when you accept these documents), performance of the service you asked for, and our legitimate interest in security and reliability. We do not sell your data, use it for profiling or advertising, or make automated decisions about you.`],
-['Where Your Data Is Kept',`A copy is stored in your browser on your device. If you use an account, a copy is also stored in Google Cloud Firestore under your account ID. Google servers may be located outside the Philippines, so your data may be transferred and processed abroad; Google acts as our processor under its own security and data-protection commitments, and we remain accountable for your data.`],
-['Who We Share It With',`Only with service providers needed to run the App: Google (Firebase Authentication, Firestore, Google Sign-In, Google Fonts). We disclose data to authorities only when required by law or lawful order. The optional receipt scanner runs entirely on your device: your receipt photo is not uploaded or stored, and only the open-source reader software and its language data are downloaded from a public content network (jsDelivr) the first time you use it, which may see your IP address. We do not otherwise share, rent or sell personal data. The developer does not routinely view your individual records.`],
-['How Long We Keep It',`Local data stays until you clear it or your browser storage. Cloud data stays until you delete it or your account, which you can do any time in Settings (Legal and Data). Backups you download are yours to manage. Inactive guest accounts may be removed after a long period. Deleted data may persist briefly in provider backups before being overwritten.`],
-['Security',`We use HTTPS/TLS in transit, Google's access controls, and salted hashing (SHA-256) for your PIN and recovery answer. Your records are <b>not</b> end-to-end encrypted, and the PIN is a convenience lock: someone with access to your unlocked device may see your data. <b>Optional biometric unlock:</b> if you turn it on, your device's operating system checks your face or fingerprint through the browser's WebAuthn feature; the App never receives, stores or transmits your face or fingerprint data, and keeps only an on-device credential reference in this browser. Your PIN always still works. No system is perfectly secure; use a device passcode and keep backups.`],
-['Your Rights as a Data Subject',`Under Section 16 of the Data Privacy Act you may: be informed; object to processing; access your data; correct it; request erasure or blocking; withdraw consent; receive your data in a portable format; and claim damages for violations. In-app: edit any entry, download a JSON/CSV backup, or permanently delete your account and cloud data in Settings. Otherwise email ${LEGAL_EMAIL}; we aim to respond within 30 days. You may also complain to the National Privacy Commission (privacy.gov.ph). Withdrawing consent or deleting your account means we can no longer provide cloud sync.`],
-['Data Breach Notification',`If a personal data breach that puts you at risk occurs, we will notify the NPC and affected users within 72 hours of knowledge or reasonable belief, as required by NPC rules, and tell you what happened and what to do.`],
-['Other People\'s Data',`If you enter details about others (such as a person who owes you money), do so only as needed for your personal records and keep them accurate. You are responsible for that entry.`],
-['Children',`The App is not directed to children. Users under 18 need a parent or guardian to accept these documents and supervise. If we learn we hold a minor's data without proper consent, we will delete it on request.`],
-['Cookies and Local Storage',`We use browser storage and Firebase tokens that are strictly necessary to keep you signed in and remember settings. We do not use advertising or tracking cookies.`],
-['Changes and Contact',`We will update this policy when practices or the law change, show the new version, and ask for acceptance again where required. Questions, requests or complaints: ${LEGAL_EMAIL}.`]
-]};
+/* ══ LEGAL: the Terms and Privacy text now lives in legal-data.js (one source for these screens and the public terms.html / privacy.html pages) ══ */
 function legalHTML(tab){
   const title=tab==='terms'?'Terms of Use':'Privacy Policy';
   const head=`<p style="color:var(--muted);margin-bottom:14px"><b style="color:var(--text)">${title}</b><br>Version ${LEGAL_VERSION} · Last updated ${LEGAL_UPDATED}</p>`;
-  return head+LEGAL_DOCS[tab].map((sec,i)=>`<p style="font-weight:700;margin-bottom:4px">${i+1}. ${sec[0]}</p><p style="margin-bottom:12px">${sec[1]}</p>`).join('')+`<p style="margin:16px 0 0;padding-top:12px;border-top:1px dashed var(--border2);color:var(--muted);font-size:11.5px;text-align:center"> - End of ${title} - </p>`;
+  return head+LEGAL_DOCS[tab].map((sec,i)=>`<p style="font-weight:700;margin-bottom:4px">${i+1}. ${sec[0]}</p><p style="margin-bottom:12px">${legalFill(sec[1])}</p>`).join('')+`<p style="margin:16px 0 0;padding-top:12px;border-top:1px dashed var(--border2);color:var(--muted);font-size:11.5px;text-align:center"> - End of ${title} - </p>`;
 }
 function legalTabStyle(btn,on,read){
   if(!btn)return;

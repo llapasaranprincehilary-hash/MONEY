@@ -1,0 +1,140 @@
+/* FINUITY VIP: upgrade sheet, settings card, balances strip */
+.vp-card{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:14px 16px;margin:0 0 16px;border-radius:18px;border:1px solid var(--border2);background:var(--surface);color:var(--text);font-family:var(--font-b);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:border-color .15s,transform .12s}
+.vp-card:hover{border-color:rgba(240,185,44,.55)}
+.vp-card:active{transform:scale(.99)}
+.vp-card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.vp-card.vip{background:linear-gradient(135deg,rgba(240,185,44,.16),var(--surface) 70%);border-color:rgba(240,185,44,.4)}
+.vp-card.wait{cursor:default}
+.vp-ci{flex:none;width:40px;height:40px;border-radius:12px;background:rgba(240,185,44,.14);color:#f0b92c;display:flex;align-items:center;justify-content:center}
+.vp-ci .ic{width:21px;height:21px}
+.vp-cm{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.vp-cm b{font:700 14px var(--font-d,sans-serif)}
+.vp-cm>span{font-size:12px;color:var(--muted)}
+.vp-cb{flex:none;padding:7px 13px;border-radius:99px;background:linear-gradient(135deg,#ffe27a,#f0b92c);color:#2a1c02;font:700 12px var(--font-d,sans-serif)}
+.vp-strip{display:flex;align-items:center;gap:10px;width:100%;min-height:44px;margin:0 0 14px;padding:10px 14px;border-radius:14px;border:1px solid var(--border2);background:var(--surface);color:var(--muted);font:500 12px var(--font-b);cursor:pointer;text-align:left}
+.vp-strip:hover{border-color:rgba(240,185,44,.5)}
+.vp-strip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.vp-st-i{flex:none;color:#f0b92c;display:flex}.vp-st-i .ic{width:16px;height:16px}
+.vp-st-t{flex:1;min-width:0}
+.vp-strip b{flex:none;color:#f0b92c;font-weight:700}
+
+/* thin meter used on the settings card */
+.vp-bar{display:block;height:6px;border-radius:99px;background:var(--surface3,var(--surface2));overflow:hidden}
+.vp-bar i{display:block;height:100%;border-radius:inherit;background:var(--accent);transition:width .5s}
+.vp-bar.warn i{background:var(--amber,#e8a020)}
+.vp-bar.full i{background:#f0b92c}
+.vp-bar.mini{height:4px;margin-top:5px}
+
+/* ───────── the upgrade sheet: Fin talks, plans are coin stacks ───────── */
+.vp-back{position:fixed;inset:0;z-index:3300;background:rgba(0,0,0,.7);display:flex;align-items:flex-end;justify-content:center;animation:vp-fade .2s ease-out}
+.vp-sheet{position:relative;width:100%;max-width:520px;max-height:94vh;overflow:auto;background:var(--surface);border:1px solid var(--border2);border-bottom:0;border-radius:26px 26px 0 0;padding:20px 18px 0;animation:vp-up .32s cubic-bezier(.2,.9,.3,1)}
+@media(min-width:600px){.vp-back{align-items:center}.vp-sheet{border-radius:26px;border-bottom:1px solid var(--border2)}}
+.vp-sheet:focus{outline:none}
+.vp-x{position:absolute;top:8px;right:8px;width:44px;height:44px;border-radius:50%;border:1px solid var(--border2);background:var(--surface2);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2}
+.vp-x .ic{width:15px;height:15px}
+
+/* pixel-notched box: the corners are "missing" like a game UI */
+.vp-px{position:relative;margin:3px;background:var(--surface2);box-shadow:0 -3px 0 0 var(--vpb,#4a3a14),0 3px 0 0 var(--vpb,#4a3a14),-3px 0 0 0 var(--vpb,#4a3a14),3px 0 0 0 var(--vpb,#4a3a14)}
+
+/* Fin + his speech bubble */
+.vp-talk{display:flex;align-items:center;gap:6px;margin:0 44px 18px 0}
+.vp-fin{flex:none;position:relative;width:92px}
+.vp-fin svg.finc{display:block;width:92px;height:auto;overflow:visible}
+.vp-fin .vp-coin-fb{width:74px;height:74px;margin:14px 9px 0;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe27a,#f0b92c 55%,#b57a0b);border:3px solid #4a2c05}
+.vp-fin::before{content:"";position:absolute;left:50%;bottom:2px;width:70px;height:12px;margin-left:-35px;border-radius:50%;background:radial-gradient(ellipse,rgba(240,185,44,.34),transparent 70%)}
+.vp-bubble{flex:1;min-width:0;--vpb:#5a4410;padding:11px 13px 12px}
+.vp-bubble::before{content:"";position:absolute;left:-12px;top:50%;margin-top:-6px;width:9px;height:12px;background:var(--vpb);clip-path:polygon(100% 0,100% 100%,0 50%)}
+.vp-bubble::after{content:"";position:absolute;left:-7px;top:50%;margin-top:-4px;width:7px;height:8px;background:var(--surface2);clip-path:polygon(100% 0,100% 100%,0 50%)}
+.vp-t{margin:0 0 3px;font:800 19px/1.1 var(--font-d,sans-serif);letter-spacing:-.02em;color:#f0b92c}
+.vp-say{margin:0;font-size:13px;line-height:1.45;color:var(--text)}
+.vp-status{margin:0 0 14px;font-size:12.5px;line-height:1.45;color:var(--muted)}
+.vp-status b{color:#f0b92c;font-weight:700}
+
+/* how full the free plan is, as coin pips */
+.vp-space{display:flex;flex-direction:column;gap:9px;margin:0 0 18px}
+.vp-row{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted)}
+.vp-row>span:first-child{flex:none;width:60px}
+.vp-pips{flex:none;display:flex;gap:4px}
+.vp-pips i{display:block;width:11px;height:11px;border-radius:50%;border:2px solid var(--border2);background:transparent}
+.vp-pips i.on{border-color:#4a2c05;background:radial-gradient(circle at 35% 30%,#ffe27a,#f0b92c 60%,#b57a0b)}
+.vp-pips.blocks{gap:3px}
+.vp-pips.blocks i{width:8px;height:11px;border-radius:2px}
+.vp-pips.blocks i.on{border-color:#4a2c05;background:#f0b92c}
+.vp-row b{margin-left:auto;white-space:nowrap;font-weight:600;color:var(--text);font-variant-numeric:tabular-nums;text-align:right}
+.vp-row.full b{color:#f0b92c}
+
+/* plans as coin stacks: taller stack = more months */
+.vp-plans{display:grid;grid-template-columns:1fr 1fr 1.1fr;gap:9px;margin:0 0 16px;align-items:end}
+.vp-plan{--vpb:var(--border2);position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;padding:12px 6px 12px;border:0;color:var(--text);font-family:var(--font-b);text-align:center;cursor:pointer;-webkit-tap-highlight-color:transparent;background:var(--surface2)}
+.vp-plan:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.vp-plan.sel{--vpb:#f0b92c;background:rgba(240,185,44,.15)}
+.vp-stack{display:flex;flex-direction:column-reverse;align-items:center;height:78px;justify-content:flex-start;margin-bottom:6px;filter:saturate(.35) brightness(.8);transition:filter .15s}
+.vp-plan.sel .vp-stack{filter:none}
+.vp-coin{display:block;width:44px;height:13px;margin-top:-7px;border-radius:50%;background:radial-gradient(ellipse at 40% 35%,#ffe9a0,#f0b92c 62%);border:2px solid #4a2c05;box-shadow:0 3px 0 #a8700a}
+.vp-coin:first-child{margin-top:0}
+.vp-plan.sel .vp-coin{animation:vp-hop .45s cubic-bezier(.3,1.6,.5,1) both;animation-delay:calc(var(--i)*40ms)}
+.vp-pn{font:700 13px var(--font-d,sans-serif)}
+.vp-pp{display:flex;flex-direction:column;align-items:center;line-height:1.15}
+.vp-pp s{font-size:11px;color:var(--muted)}
+.vp-pp b{font:800 21px var(--font-d,sans-serif);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.vp-pd{font-size:11px;color:var(--muted)}
+.vp-tag{margin-top:4px;padding:2px 7px;font:700 10.5px var(--font-b);color:#2a1c02;background:#f0b92c;box-shadow:0 -2px 0 0 #f0b92c,0 2px 0 0 #f0b92c,-2px 0 0 0 #f0b92c,2px 0 0 0 #f0b92c;margin-left:2px;margin-right:2px}
+.vp-tag.best{background:var(--accent);box-shadow:0 -2px 0 0 var(--accent),0 2px 0 0 var(--accent),-2px 0 0 0 var(--accent),2px 0 0 0 var(--accent)}
+
+/* what you get: small stickers, not a checklist */
+.vp-perks{list-style:none;margin:0 0 6px;padding:0;display:flex;flex-wrap:wrap;gap:7px}
+.vp-perks li{display:inline-flex;align-items:center;gap:6px;padding:5px 10px 5px 8px;border-radius:99px;background:var(--surface2);font-size:12px;color:var(--text)}
+.vp-perks .ic{width:14px;height:14px;color:#f0b92c}
+
+/* the buy button stays put while the sheet scrolls */
+.vp-foot{position:sticky;bottom:0;margin:0 -18px;padding:12px 21px calc(8px + env(safe-area-inset-bottom,0px));background:linear-gradient(180deg,transparent 0,var(--surface) 14px)}
+.vp-cta{--vpb:#8a5a06;display:block;width:calc(100% - 6px);margin:3px;min-height:52px;border:0;background:linear-gradient(180deg,#ffe27a,#f0b92c);color:#2a1c02;font:800 16px var(--font-d,sans-serif);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .1s;box-shadow:0 -3px 0 0 #f0b92c,0 3px 0 0 #8a5a06,-3px 0 0 0 #f0b92c,3px 0 0 0 #f0b92c}
+.vp-cta:active{transform:translateY(2px)}
+.vp-cta:disabled{opacity:.6;cursor:default}
+.vp-cta:focus-visible{outline:2px solid var(--text);outline-offset:5px}
+.vp-msg{margin-top:9px;font-size:12.5px;line-height:1.4;color:var(--red,#f04848)}
+.vp-msg:empty{display:none}
+.vp-msg.ok{color:var(--accent)}
+.vp-fine{margin:4px 0 0;padding:0 0 calc(14px + env(safe-area-inset-bottom,0px));font-size:11.5px;line-height:1.5;color:var(--muted);text-align:center}
+@keyframes vp-fade{from{opacity:0}to{opacity:1}}
+@keyframes vp-up{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+@keyframes vp-hop{0%{transform:translateY(-14px);opacity:.4}100%{transform:none;opacity:1}}
+
+/* the star on Fin's level chip */
+#fin-pet-root .fin-lv.vip{background:linear-gradient(135deg,#fff3b0,#f0b92c 55%,#d99a14);box-shadow:0 0 10px rgba(240,185,44,.7)}
+
+@media (prefers-reduced-motion:reduce){.vp-back,.vp-sheet,.vp-plan.sel .vp-coin{animation:none!important}.vp-stack{transition:none}}
+
+/* while a full sheet is open Fin steps aside so his speech bubble never covers a button */
+body.sheet-open #fa-snack,body.sheet-open #fin-pet-root,body.sheet-open #fin-bubble,body.sheet-open [id^="fin-bubble"]{opacity:0!important;pointer-events:none!important;transition:opacity .15s}
+
+/* the page behind a sheet does not scroll */
+body.sheet-open{overflow:hidden}
+
+/* ───────── light theme ───────── */
+body.light .vp-px{--vpb:#d8c28a}
+body.light .vp-bubble{--vpb:#d1b36a}
+body.light .vp-t,body.light .vp-status b,body.light .vp-row.full b,body.light .vp-strip b{color:#946200}
+body.light .vp-perks .ic,body.light .vp-st-i{color:#b07400}
+body.light .vp-fin::before{background:radial-gradient(ellipse,rgba(200,140,0,.28),transparent 70%)}
+body.light .vp-plan.sel{background:rgba(240,185,44,.2)}
+body.light .vp-stack{filter:saturate(.3) brightness(1)}
+body.light .vp-plan.sel .vp-stack{filter:none}
+body.light .vp-pips i{border-color:#c9c9d3}
+body.light .vp-card{background:var(--surface)}
+body.light .vp-foot{background:linear-gradient(180deg,transparent 0,var(--surface) 14px)}
+body.light .vp-fine{color:var(--muted)}
+
+/* "3 free" / "VIP" badge on the Scan Receipt button */
+.vp-pill{display:inline-block;margin-left:7px;padding:1px 8px;border-radius:99px;background:linear-gradient(135deg,#ffe27a,#f0b92c);color:#2a1c02;font:800 10.5px/1.7 var(--font-d,sans-serif);vertical-align:middle;white-space:nowrap}
+.vp-pill.lock{background:rgba(240,185,44,.16);color:#f0b92c;box-shadow:inset 0 0 0 1px rgba(240,185,44,.55)}
+body.light .vp-pill.lock{color:#946200}
+
+/* Fin in a sheet stands still (his live idle spin would catch him edge-on), and the twinkles stay visible */
+.vp-fin svg.finc,.vp-fin svg.finc *{animation:none!important}
+.vp-fin .fin-tw{opacity:1}
+@media(max-width:340px){.vp-fin{width:70px}.vp-fin svg.finc{width:70px}.vp-talk{gap:4px}}
+
+.vp-link{display:inline;padding:0;border:0;background:none;color:#f0b92c;font:inherit;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.vp-link:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+body.light .vp-link{color:#946200}

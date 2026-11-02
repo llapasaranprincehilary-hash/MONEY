@@ -1131,6 +1131,9 @@ label.fa-row{cursor:pointer}
 <link rel="stylesheet" href="learn.css">
 <link rel="stylesheet" href="streak.css">
 <link rel="stylesheet" href="ux.css">
+<link rel="stylesheet" href="life.css">
+<link rel="stylesheet" href="vip.css">
+<link rel="stylesheet" href="scan.css">
 <link rel="stylesheet" href="virtual-pet/tour.css">
 <script>
 /* Instant lock: if this device has a PIN and the session isn't unlocked yet, hide the app
@@ -1861,7 +1864,10 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
         </div>
       </div>
 
-      <!-- 5. Learning, last and light -->
+      <!-- 5. Fin's week: level, challenges, recap -->
+      <div id="dash-life"></div>
+
+      <!-- 6. Learning, last and light -->
       <div id="dash-learn"></div>
 
       <!-- still rendered by the app, shown on their own pages instead -->
@@ -1934,6 +1940,7 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
       </div>
       <div class="page-sub">Manage your wallets and update balances anytime</div>
     </div>
+    <div id="vip-meter"></div>
     <div class="wc-grid" id="balance-cards"></div>
     <div class="card">
       <div class="card-hd"><div class="card-title">Net Worth</div></div>
@@ -2122,6 +2129,7 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
         </div>
 
         <div id="streak-card"></div>
+        <div id="vip-card"></div>
 
         <div class="set-sync" id="set-sync" style="display:none">
           <div class="set-sync-ic" id="set-sync-ic"><svg class="ic" aria-hidden="true"><use href="#i-cloud"/></svg></div>
@@ -2478,6 +2486,7 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
   </div>
 </div>
 
+<script src="legal-data.js"></script>
 <script src="app.js"></script>
 
 <!-- LEGAL VIEWER MODAL -->
@@ -2640,10 +2649,10 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
 <div id="receipt-info-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3000;align-items:safe center;justify-content:safe center;padding:20px;overflow-y:auto">
   <div style="background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:28px 24px 22px;max-width:380px;width:100%;box-shadow:var(--shadow-lg)">
     <div class="ic-plate"><svg class="ic" aria-hidden="true"><use href="#i-receipt"/></svg></div>
-    <div style="font-size:15px;font-weight:700;color:var(--text);text-align:center;margin-bottom:8px">Scan a receipt - free</div>
+    <div style="font-size:15px;font-weight:700;color:var(--text);text-align:center;margin-bottom:8px">Scan a receipt</div>
     <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px">Take a photo and FINUITY reads the total, store and date for you. Your photo is read right on your phone - it is <b>never uploaded or saved</b>.</div>
     <div style="font-size:12.5px;color:var(--muted);line-height:1.65;margin-bottom:16px;padding:10px 12px;background:var(--surface2);border:1px solid var(--border2);border-radius:10px">
-      Because this reader is free, it has limits:<br>
+      This reader runs right on your phone, so it has limits:<br>
       • Works best on flat, well-lit, printed receipts<br>
       • Blurry, faded, crumpled or handwritten ones may be misread<br>
       • The first scan downloads a small reader (~10 MB), so it needs internet once<br>
@@ -3040,6 +3049,9 @@ window.finGuessCat=guessCat;   // lets the receipt scanner reuse the keyword cat
 <script defer src="virtual-pet/fin-ambient.js"></script>
 <script defer src="a11y.js"></script>
 <script defer src="virtual-pet/pet-coach.js"></script>
+<script defer src="life.js"></script>
+<script defer src="scan.js"></script>
+<script defer src="vip.js"></script>
 <script>
 (function(){
 var W=window,L=function(k,v){try{return v===undefined?localStorage.getItem(k):localStorage.setItem(k,v)}catch(e){}};

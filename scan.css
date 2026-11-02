@@ -1,0 +1,66 @@
+/* FINUITY receipt scanner: camera, review panel, "Fin is reading" overlay. Builds on the VIP sheet styles (vip.css). */
+
+/* ───────── camera ───────── */
+.sc-cam{position:fixed;inset:0;z-index:3400;background:#000;color:#fff;overflow:hidden}
+.sc-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
+.sc-top{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:calc(12px + env(safe-area-inset-top,0px)) 14px 22px;background:linear-gradient(180deg,rgba(0,0,0,.65),transparent)}
+.sc-title{display:inline-flex;align-items:center;gap:8px;font:700 15px var(--font-d,sans-serif)}
+.sc-title .ic{width:18px;height:18px;color:#f0b92c}
+.sc-round{width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(0,0,0,.4);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.sc-round .ic{width:18px;height:18px}
+.sc-frame{position:absolute;left:50%;top:48%;width:min(78vw,380px);height:min(62vh,520px);transform:translate(-50%,-50%);pointer-events:none}
+.sc-frame i{position:absolute;width:34px;height:34px;border:4px solid var(--accent,#a8e038)}
+.sc-frame .c1{top:0;left:0;border-right:0;border-bottom:0;border-radius:12px 0 0 0}
+.sc-frame .c2{top:0;right:0;border-left:0;border-bottom:0;border-radius:0 12px 0 0}
+.sc-frame .c3{bottom:0;left:0;border-right:0;border-top:0;border-radius:0 0 0 12px}
+.sc-frame .c4{bottom:0;right:0;border-left:0;border-top:0;border-radius:0 0 12px 0}
+.sc-hint{position:absolute;left:0;right:0;bottom:calc(128px + env(safe-area-inset-bottom,0px));margin:0;text-align:center;font-size:13px;text-shadow:0 1px 6px rgba(0,0,0,.8)}
+.sc-bar{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-around;padding:22px 18px calc(22px + env(safe-area-inset-bottom,0px));background:linear-gradient(0deg,rgba(0,0,0,.75),transparent)}
+.sc-shutter{width:72px;height:72px;border-radius:50%;border:4px solid #fff;background:transparent;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}
+.sc-shutter i{display:block;width:54px;height:54px;border-radius:50%;background:#fff;transition:transform .1s}
+.sc-shutter:active i{transform:scale(.88)}
+.sc-shutter:focus-visible,.sc-round:focus-visible,.sc-side:focus-visible{outline:3px solid var(--accent,#a8e038);outline-offset:3px}
+.sc-side{width:64px;min-height:56px;border:0;background:transparent;color:#fff;font:600 11px var(--font-b,sans-serif);display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer}
+.sc-side .ic{width:24px;height:24px}
+.sc-side.ghost{visibility:hidden}
+
+/* ───────── "Fin is reading" ───────── */
+.sc-busy{position:fixed;inset:0;z-index:3500;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;padding:24px}
+.sc-busy-in{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding:26px 24px 20px;border-radius:22px;background:var(--surface);border:1px solid var(--border2);color:var(--text);max-width:320px;width:100%}
+.sc-busy-in b{font:700 16px var(--font-d,sans-serif)}
+.sc-busy-in>span:not(.sc-spin){font-size:12.5px;color:var(--muted)}
+.sc-spin{width:46px;height:46px;border-radius:50%;margin-bottom:6px;background:radial-gradient(circle at 35% 30%,#ffe27a,#f0b92c 55%,#b57a0b);border:3px solid #4a2c05;animation:sc-flip 1s linear infinite}
+@keyframes sc-flip{0%{transform:rotateY(0)}100%{transform:rotateY(360deg)}}
+
+/* ───────── review panel ───────── */
+.sc-sheet .vp-talk{margin-bottom:14px}
+.sc-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.sc-f{display:flex;flex-direction:column;gap:5px;min-width:0}
+.sc-f.wide{grid-column:1/-1}
+.sc-f>span{font-size:12px;color:var(--muted)}
+.sc-f input,.sc-f select{width:100%;min-height:46px;padding:0 12px;border-radius:12px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font:600 15px var(--font-b,sans-serif)}
+.sc-f input[type=number]{font:800 20px var(--font-d,sans-serif);font-variant-numeric:tabular-nums}
+.sc-f input:focus,.sc-f select:focus{outline:2px solid var(--accent);outline-offset:1px}
+.sc-f.warn input{border-color:#f0b92c;box-shadow:0 0 0 3px rgba(240,185,44,.18)}
+.sc-items-hd{display:flex;justify-content:space-between;align-items:baseline;margin:2px 0 6px;font-size:13px;color:var(--text)}
+.sc-items-hd span{font-size:12px;color:var(--muted)}
+.sc-items{list-style:none;margin:0 0 8px;padding:4px 12px;max-height:168px;overflow:auto;border-radius:14px;background:var(--surface2)}
+.sc-items li{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:baseline;padding:8px 0;font-size:13px;border-bottom:1px solid var(--border2)}
+.sc-items li:last-child{border-bottom:0}
+.sc-items .n{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
+.sc-items .q{color:var(--muted);font-size:12px}
+.sc-items .p{font-variant-numeric:tabular-nums;color:var(--text);font-weight:600}
+.sc-chk{display:flex;align-items:center;gap:10px;min-height:44px;margin-bottom:6px;font-size:13px;color:var(--text);cursor:pointer}
+.sc-chk input[type=checkbox]{-webkit-appearance:checkbox;appearance:auto;width:22px;height:22px;min-height:0;padding:0;margin:0;border-radius:4px;box-shadow:none;accent-color:var(--accent);flex:none;cursor:pointer}
+.sc-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;margin:6px 0 12px;font-size:12px}
+.sc-meta div{min-width:0}
+.sc-meta dt{color:var(--muted);margin:0}
+.sc-meta dd{margin:2px 0 0;color:var(--text);font-weight:600;overflow-wrap:anywhere}
+.sc-up{margin:0 0 10px;padding:9px 12px;border-radius:12px;background:rgba(240,185,44,.1);font-size:12.5px;color:var(--text)}
+.sc-ghost{min-height:44px;padding:0 16px;border-radius:12px;border:1px solid var(--border2);background:transparent;color:var(--text);font:600 13px var(--font-b,sans-serif);cursor:pointer}
+.sc-ghost.wide{display:block;width:calc(100% - 6px);margin:8px 3px 0}
+.sc-ghost:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sc-consent .vp-talk{margin-bottom:12px}
+body.light .sc-up{background:rgba(240,185,44,.2)}
+
+@media (prefers-reduced-motion:reduce){.sc-spin{animation:none}.sc-shutter i{transition:none}}
