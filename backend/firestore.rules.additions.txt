@@ -1,0 +1,18 @@
+// ADD these two blocks inside your existing  match /databases/{database}/documents { ... }  in firestore.rules.
+// Do NOT replace your whole rules file: your admin page and the users collection already depend on it.
+
+    // VIP status. The app can only READ its own record. Only the payment webhook (server) can write it.
+    match /entitlements/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
+    }
+
+    // Payment records. Server only.
+    match /payments/{id} {
+      allow read, write: if false;
+    }
+
+    // Per-account scan counters for Smart receipt scan. Server only.
+    match /usage/{uid} {
+      allow read, write: if false;
+    }
