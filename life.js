@@ -375,22 +375,43 @@ function markNoSpend(){
 }
 
 /* — the card on the dashboard — */
+function isFolded(){try{return localStorage.getItem('finLifeFold')==='1'}catch(e){return false}}
+function toggleFold(){try{localStorage.setItem('finLifeFold',isFolded()?'0':'1')}catch(e){}renderCard()}
 function renderCard(){
   var el=$('dash-life'),l=L();if(!el||!l)return;
   var s=S();if(!s||!s.username){el.innerHTML='';el._h='';return}
   var inf=lvInfo(),ch=activeChallenges(),t=td();
   var doneN=ch.filter(function(c){return c.done}).length;
-  var h='<div class="lf-card" data-tour="fin-week">'
-   +'<div class="lf-top"><div class="lf-coin" aria-hidden="true">'+inf.lv+'</div><div class="lf-who">'
-   +'<div class="lf-name">Fin · '+esc(inf.name)+'</div>'
-   +'<div class="lf-xp" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+inf.pct+'"><i style="width:'+inf.pct+'%"></i></div>'
-   +'<div class="lf-xp-t">'+(inf.to?(inf.to-inf.xp)+' XP to '+esc(LEVELS[inf.lv].n):'Top level reached. Fin is a legend.')+'</div></div></div>'
-   +'<div><div class="lf-h">This week<small>'+doneN+' of '+ch.length+' done · resets Monday</small></div><div class="lf-ch" style="margin-top:10px">'
-   +ch.map(function(c){return '<div class="lf-c'+(c.done?' done':'')+'"><span class="lf-c-i">'+ic(c.done?'check':c.def.icon)+'</span><div class="lf-c-b"><div class="lf-c-t">'+esc(c.def.text)+'</div><div class="lf-bar"><i style="width:'+Math.round(c.prog/c.def.goal*100)+'%"></i></div></div><span class="lf-c-n">'+c.prog+'/'+c.def.goal+'</span></div>'}).join('')
-   +'</div></div>'
+  var last=LEVELS.length-1;
+  var fill=inf.lv>last?100:Math.round(((inf.lv-1)+inf.pct/100)/last*100);
+  var nodes=LEVELS.map(function(lv,i){
+    var cls=i<inf.lv-1?' got':i===inf.lv-1?' now':'';
+    return '<i class="lf-nd'+cls+'" title="'+esc(lv.n)+'">'+(i<inf.lv-1?ic('check'):(i+1))+'</i>';
+  }).join('');
+  var spentToday=!l.nospend[t]&&hasExpenseToday();
+  var btnTxt=l.nospend[t]?'No-spend day logged':spentToday?'You logged spending today':'Nothing spent today';
+  var folded=isFolded();
+  var h='<div class="lf-card'+(folded?' is-c':'')+'" data-tour="fin-week">'
+   +'<div class="lf-hero" role="button" tabindex="0" data-lf="fold" aria-expanded="'+(!folded)+'" aria-label="Fin\'s week, '+(folded?'expand':'collapse')+'">'
+   +'<span class="lf-fold" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>'
+   +'<div class="lf-hero-t"><span class="lf-hero-s">Fin is level '+inf.lv+'</span><span class="lf-hero-n">'+esc(inf.name)+'</span></div>'
+   +'<div class="lf-trk" role="progressbar" aria-label="Fin level progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+fill+'"><span class="lf-trk-l"><i style="width:'+fill+'%"></i></span>'+nodes+'</div>'
+   +'<div class="lf-hero-x">'+(inf.to?'<b>'+(inf.to-inf.xp)+' XP</b> to '+esc(LEVELS[inf.lv].n):'Top level reached. Fin is a legend.')+'</div>'
+   +'</div>'
+   +'<div class="lf-body">'
+   +'<div class="lf-h">This week<small>'+doneN+' of '+ch.length+' done, resets Monday</small></div>'
+   +'<div class="lf-ch">'
+   +ch.map(function(c){
+      var g=c.def.goal,pips='';
+      if(g>1){pips='<span class="lf-pips" aria-hidden="true">';for(var k=0;k<g;k++)pips+='<i'+(k<c.prog?' class="on"':'')+'></i>';pips+='</span>'}
+      return '<div class="lf-c'+(c.done?' done':'')+'"><span class="lf-ck" aria-hidden="true">'+ic(c.done?'check':c.def.icon)+'</span>'
+        +'<div class="lf-c-t">'+esc(c.def.text)+'<span class="lf-sr"> '+c.prog+' of '+g+'</span></div>'+pips+'</div>';
+   }).join('')
+   +'</div>'
    +'<div class="lf-row">'
-   +'<button type="button" class="lf-btn pri" data-lf="nospend"'+((l.nospend[t]||hasExpenseToday())?' disabled':'')+'>'+ic('shield')+(l.nospend[t]?'No-spend day logged':'Nothing spent today')+'</button>'
-   +'<button type="button" class="lf-btn" data-lf="recap">'+ic('chart')+'Weekly recap</button></div></div>';
+   +'<button type="button" class="lf-btn pri'+(l.nospend[t]?' is-done':'')+'" data-lf="nospend"'+((l.nospend[t]||spentToday)?' disabled':'')+'>'+ic(l.nospend[t]?'check':'shield')+btnTxt+'</button>'
+   +'<button type="button" class="lf-btn" data-lf="recap">'+ic('chart')+'Weekly recap</button></div>'
+   +'</div></div>';
   if(el._h!==h){el._h=h;el.innerHTML=h}
 }
 
@@ -639,7 +660,8 @@ function wire(){
   D.addEventListener('click',function(e){
     var b=e.target.closest&&e.target.closest('[data-lf]');if(!b)return;
     var k=b.getAttribute('data-lf');
-    if(k==='nospend')markNoSpend();
+    if(k==='fold')toggleFold();
+    else if(k==='nospend')markNoSpend();
     else if(k==='recap')openRecap();
     else if(k==='close')closeRecap();
     else if(k==='go'){try{show(b.getAttribute('data-page'))}catch(err){}}
@@ -650,6 +672,7 @@ function wire(){
       decoratePanel();
     }
   });
+  D.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===' ')&&e.target.getAttribute&&e.target.getAttribute('data-lf')==='fold'){e.preventDefault();toggleFold()}});
   D.addEventListener('change',function(e){
     var t=e.target;if(t&&t.getAttribute&&t.getAttribute('data-lf')==='time'&&/^\d{2}:\d{2}$/.test(t.value)){var l=L();l.remind.time=t.value;l.remind.notified='';persist();syncCache()}
   });

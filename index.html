@@ -735,6 +735,54 @@ body.light .bottom-nav{box-shadow:0 -4px 24px rgba(0,0,0,.08) !important}
 /* Two-col gap */
 .two-col{gap:18px !important;margin-bottom:18px !important}
 
+/* metal chip + contactless on wallet cards */
+.wc>.wc-chip,.hwm>.hwm-chip{position:absolute;display:block;border-radius:6px;pointer-events:none;
+  background:linear-gradient(135deg,#f6f6f4 0%,#bcc0c8 38%,#eceef1 55%,#a7acb6 100%);
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.7),0 2px 5px rgba(0,0,0,.25)}
+.wc>.wc-chip{right:18px;top:58px;width:42px;height:32px;z-index:1}
+.wc>.wc-chip.is-credit{top:55px;width:36px;height:27px}
+.hwm>.hwm-chip{right:12px;bottom:11px;width:25px;height:19px;border-radius:4px;z-index:1}
+.wc-chip svg,.hwm-chip svg{display:block;width:100%;height:100%;fill:none;stroke:rgba(40,44,52,.55);stroke-width:.9;stroke-linejoin:round}
+.wc>.wc-nfc{position:absolute;right:20px;top:96px;width:26px;height:26px;z-index:1;opacity:.92;pointer-events:none;transform:rotate(-90deg)}
+.wc-nfc svg{display:block;width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+.wc>.wc-emb,.hwm>.hwm-emb{position:absolute;display:flex;align-items:center;justify-content:center;pointer-events:none;background:rgba(255,255,255,.2);box-shadow:inset 0 0 0 1px rgba(255,255,255,.28);z-index:1}
+.wc.dark>.wc-emb,.hwm.dark>.hwm-emb{background:rgba(0,0,0,.1);box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
+.wc>.wc-emb{right:18px;top:58px;width:42px;height:32px;border-radius:10px}
+.hwm>.hwm-emb{right:12px;bottom:11px;width:26px;height:20px;border-radius:7px}
+.wc-emb svg,.hwm-emb svg{fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.wc-emb svg{width:20px;height:20px}.hwm-emb svg{width:13px;height:13px}
+.hwm.dark .hwm-chip{box-shadow:inset 0 0 0 1px rgba(0,0,0,.3),0 2px 5px rgba(0,0,0,.2)}
+.hwm:has(.hwm-chip,.hwm-emb) .hwm-bal{font-size:clamp(13px,9.5cqw,18px);padding-right:32px}
+/* Hero wallet chips: mini versions of the wallet cards on the Balances page */
+.hwm{position:relative;overflow:hidden;container-type:inline-size;display:flex;flex-direction:column;justify-content:space-between;gap:14px;min-height:82px;padding:11px 13px 12px;border:0;border-radius:16px;text-align:left;color:#fff;font-family:var(--font-b);cursor:pointer;
+  background:linear-gradient(135deg,var(--c1),var(--c2));box-shadow:0 10px 20px -12px var(--c2),0 1px 3px rgba(0,0,0,.2);transition:transform .2s cubic-bezier(.2,.7,.2,1),box-shadow .2s}
+.hwm:hover{transform:translateY(-2px);box-shadow:0 14px 24px -12px var(--c2),0 1px 3px rgba(0,0,0,.2)}
+.hwm:active{transform:scale(.975)}
+.hwm:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.hwm.dark{color:#15200d}
+.hwm::before{content:'';position:absolute;right:-26px;top:-28px;width:92px;height:92px;border-radius:50%;background:rgba(255,255,255,.14)}
+.hwm::after{content:'';position:absolute;right:14px;bottom:-46px;width:84px;height:84px;border-radius:50%;background:rgba(255,255,255,.07)}
+.hwm>*{position:relative;z-index:1}
+.hwm-top{display:flex;align-items:center;gap:8px;min-width:0}
+.hwm-logo{flex:none;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.95);display:flex;align-items:center;justify-content:center;overflow:hidden;font-family:var(--font-d);font-weight:800;letter-spacing:-.04em;line-height:1;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.hwm-logo img{width:100%;height:100%;object-fit:cover;display:block}
+.hwm-name{min-width:0;font-family:var(--font-d);font-weight:700;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hwm-bal{font-family:var(--font-d);font-weight:800;letter-spacing:-.02em;line-height:1.1;font-size:clamp(14px,11cqw,19px);overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+/* expense pie */
+.ep-range{margin-bottom:14px}
+.ep-main{display:flex;align-items:center;gap:22px}
+.ep-main svg{flex:none;width:150px;height:150px;overflow:visible}
+.ep-main svg path,.ep-main svg circle{stroke:var(--surface);stroke-width:1.6;stroke-linejoin:round}
+.ep-leg{list-style:none;flex:1;min-width:0;display:flex;flex-direction:column;gap:11px}
+.ep-leg li{display:flex;align-items:center;gap:10px;min-width:0}
+.ep-leg li i{flex:none;width:11px;height:11px;border-radius:50%}
+.ep-n{flex:1;min-width:0;font-size:13.5px;color:var(--text);line-height:1.2;display:flex;flex-direction:column;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ep-n small{font-size:11.5px;color:var(--muted);margin-top:2px}
+.ep-leg b{flex:none;font-family:var(--font-d);font-size:13px;font-variant-numeric:tabular-nums}
+.ep-tot{margin-top:14px;padding-top:12px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
+.ep-tot b{font-family:var(--font-d);color:var(--red);font-size:15px}
+.ep-empty{padding:18px 4px 8px;text-align:center;font-size:13px;color:var(--muted)}
+@media(max-width:520px){.ep-main{flex-direction:column;align-items:stretch;gap:18px}.ep-main svg{align-self:center;width:168px;height:168px}}
 /* Hero wallet chips */
 .hw{border-radius:12px !important;padding:14px 16px !important}
 .hw-name{font-size:9.5px !important;letter-spacing:.12em !important;font-weight:700 !important}
@@ -2001,6 +2049,10 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
       </button>
     </div>
     <div id="recurring-panel" style="display:none"></div>
+    <div class="card" id="exp-pie-card" data-tour="expense-pie">
+      <div class="card-hd"><div class="card-title">Where your money goes</div></div>
+      <div id="exp-pie"></div>
+    </div>
     <div class="card">
       <div class="card-hd">
         <div class="card-title">Expense Log</div>

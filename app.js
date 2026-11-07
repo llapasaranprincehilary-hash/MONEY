@@ -1019,7 +1019,7 @@ function renderDash(){
     const _ws=_many?_all.slice().sort((a,b)=>((b.balance<0)-(a.balance<0))||(b.balance-a.balance)):_all;
     const _show=(_many&&!_open)?_ws.slice(0,_HW_LIMIT):_ws;
     hwContainer.classList.toggle('is-open',_many&&_open);
-    hwContainer.innerHTML=_show.map(w=>`<div class="hw"><div class="hw-name">${esc(w.label)}</div><div class="hw-val">${fmtBal(w.balance)}</div></div>`).join('')
+    hwContainer.innerHTML=_show.map(walMiniHTML).join('')
       +(_many?`<div class="hw-actions"><button type="button" class="hw hw-more" onclick="toggleHeroWallets()" aria-expanded="${_open}">${_open?'Show fewer':'+'+(_all.length-_HW_LIMIT)+' more'}</button>${_open?`<button type="button" class="hw hw-more" onclick="show('balances')">Manage wallets →</button>`:''}</div>`:'');
   }
 
@@ -1094,11 +1094,28 @@ function renderDash(){
   const _lw=document.getElementById('dash-loans-wrap');if(_lw)_lw.classList.toggle('is-empty',!lh);
   const _od=document.getElementById('dash-owed');
   if(_od){
-    const _soon=state.loans.filter(l=>!l.settled&&l.due&&!isNaN(ldate(l.due))&&(ldate(l.due)-Date.now())/864e5<=7).length;
-    const _bits=[];
-    if(totalPay>0)_bits.push(`<button type="button" onclick="show('loans')">You owe <b class="n">${fmt(totalPay)}</b></button>`);
-    if(totalRec>0)_bits.push(`<button type="button" onclick="show('loans')">Owed to you <b class="p">${fmt(totalRec)}</b></button>`);
-    _od.innerHTML=_bits.length?`<div class="owed-strip">${_bits.join('')}${_soon?`<span class="owed-soon">${_soon} due soon</span>`:''}</div>`:'';
+    // two cards: money going out (You owe) and money coming in (Owed to you)
+    const _t0=new Date().setHours(0,0,0,0);
+    const _card=(type,cls,label,total,arrow)=>{
+      const ls=state.loans.filter(l=>l.type===type&&!l.settled);
+      if(!(total>0)||!ls.length)return '';
+      let next=null;
+      ls.forEach(l=>{if(!l.due)return;const d=ldate(l.due);if(isNaN(d))return;const diff=Math.round((d.setHours(0,0,0,0)-_t0)/864e5);if(next===null||diff<next)next=diff;});
+      const init=n=>String(n||'?').trim().split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase()||'?';
+      const seen=[],people=[];
+      ls.forEach(l=>{const k=String(l.name||'').trim().toLowerCase();if(seen.indexOf(k)<0){seen.push(k);people.push(l.name)}});
+      const av=people.slice(0,3).map(n=>'<i class="od-av">'+esc(init(n))+'</i>').join('')+(people.length>3?'<i class="od-av more">+'+(people.length-3)+'</i>':'');
+      let due='';
+      if(next!==null&&next<0)due='<span class="od-due hot">Overdue '+Math.abs(next)+'d</span>';
+      else if(next!==null&&next<=7)due='<span class="od-due">'+(next===0?'Due today':'Due in '+next+'d')+'</span>';
+      const who=people.length===1?esc(people[0]):people.length+' people';
+      return '<button type="button" class="od-card '+cls+'" onclick="show(\'loans\')" aria-label="'+label+' '+(state.hideBalances?'hidden':fmt(total))+', '+who+'. Open loans">'
+        +'<span class="od-top"><span class="od-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+arrow+'"/></svg></span><span class="od-l">'+label+'</span></span>'
+        +'<span class="od-v">'+(state.hideBalances?'••••••':fmt(total))+'</span>'
+        +'<span class="od-foot"><span class="od-avs">'+av+'</span>'+(due||'<span class="od-who">'+who+'</span>')+'</span></button>';
+    };
+    const _cards=[_card('payable','out','You owe',totalPay,'M7 17L17 7M9 7h8v8'),_card('receivable','in','Owed to you',totalRec,'M17 7L7 17M7 9v8h8')].filter(Boolean);
+    _od.innerHTML=_cards.length?'<div class="owed-grid'+(_cards.length===1?' one':'')+'">'+_cards.join('')+'</div>':'';
   }
 
   // Recent expenses
@@ -1433,6 +1450,24 @@ function walLogoHTML(w,st){
   return '<span class="wc-logo" style="font-size:'+fs+'px;color:'+(st.dark?'#15200d':st.c2)+'">'+esc(m)+'</span>';
 }
 function walDot(w){const st=walStyle(w);return '<span class="wal-dot" style="background:linear-gradient(135deg,'+st.c1+','+st.c2+')"></span>';}
+// Corner emblem per account type: real bank cards get the metal chip (+ contactless on the full card),
+// everything else gets a simple glyph that fits what it is. Unknown types get nothing.
+const WAL_EMB={
+  ewallet:'<rect x="3.5" y="3.5" width="6" height="6" rx="1.2"/><rect x="14.5" y="3.5" width="6" height="6" rx="1.2"/><rect x="3.5" y="14.5" width="6" height="6" rx="1.2"/><path d="M14.5 14.5h2.5v2.5M20.5 14.5h0M14.5 20.5h2.5M20.5 17v3.5"/>',
+  cash:'<rect x="2.5" y="6.5" width="19" height="11" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 12h0M18 12h0"/>',
+  crypto:'<circle cx="12" cy="12" r="8.6"/><path d="M9.6 7.5v9M9.6 8h3.9a2 2 0 0 1 0 4H9.6m0 0h4.3a2 2 0 0 1 0 4H9.6"/>',
+  invest:'<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>'
+};
+function walChipHTML(w,mini){
+  const t=walType(w),cls=mini?'hwm':'wc';
+  if(t==='debit'||t==='savings'||t==='credit'){
+    const lines='<svg viewBox="0 0 40 30" aria-hidden="true"><path d="M0 10h13M0 20h13M27 10h13M27 20h13M20 0v9M20 21v9"/><rect x="13" y="9" width="14" height="12" rx="3.5"/></svg>';
+    const nfc=(mini||t==='credit')?'':'<span class="wc-nfc" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 8.5a5.2 5.2 0 0 1 0 7"/><path d="M11 6a9 9 0 0 1 0 12"/><path d="M15 3.5a12.8 12.8 0 0 1 0 17"/></svg></span>';
+    return '<span class="'+cls+'-chip'+(t==='credit'&&!mini?' is-credit':'')+'" aria-hidden="true">'+lines+'</span>'+nfc;
+  }
+  if(WAL_EMB[t])return '<span class="'+cls+'-emb" aria-hidden="true"><svg viewBox="0 0 24 24">'+WAL_EMB[t]+'</svg></span>';
+  return '';
+}
 function walCardHTML(w,o){
   o=o||{};const st=walStyle(w),t=walType(w),F=o.preview?fmt:fmtBal,cur=(window.FinX&&FinX.getCur)?FinX.getCur():'PHP';
   const credit=t==='credit',bal=+w.balance||0,limit=+w.limit||0,used=Math.max(0,-bal);
@@ -1448,7 +1483,16 @@ function walCardHTML(w,o){
     +'<div><div class="wc-top">'+walLogoHTML(w,st)+'<div class="wc-name">'+esc(w.label||'Account name')+'</div>'
     +(o.preview?'':'<button type="button" class="wc-more" aria-label="Card options" onclick="event.stopPropagation();walMenu(event,\''+w.id+'\')">'+dots+'</button>')
     +'</div><div class="wc-sub">'+(t?WAL_TYPES[t]:'Wallet')+' • '+cur+'</div></div>'
-    +'<div>'+body+(o.preview?'':'<div class="wc-upd">Updated '+(fmtDate(w.updated)||'-')+'</div>')+'</div></div>';
+    +'<div>'+body+(o.preview?'':'<div class="wc-upd">Updated '+(fmtDate(w.updated)||'-')+'</div>')+'</div>'+walChipHTML(w,false)+'</div>';
+}
+// mini version of the wallet card, used in the dashboard hero
+function walMiniHTML(w){
+  const st=walStyle(w),m=st.mono,fs=m.length>=4?7.5:m.length===3?9:m.length===2?11:13;
+  const logo=w.logo?'<span class="hwm-logo"><img src="'+escAttr(w.logo)+'" alt=""></span>'
+    :'<span class="hwm-logo" style="font-size:'+fs+'px;color:'+(st.dark?'#15200d':st.c2)+'">'+esc(m)+'</span>';
+  return '<button type="button" class="hwm'+(st.dark?' dark':'')+'" style="--c1:'+st.c1+';--c2:'+st.c2+'" onclick="show(\'balances\')" aria-label="'+escAttr(w.label)+', '+escAttr(state.hideBalances?'balance hidden':fmtBal(w.balance))+'. Open balances">'
+    +'<span class="hwm-top">'+logo+'<span class="hwm-name">'+esc(w.label)+'</span></span>'
+    +'<span class="hwm-bal">'+fmtBal(w.balance)+'</span>'+walChipHTML(w,true)+'</button>';
 }
 function walAddTile(){
   return '<button type="button" class="wc-add" data-tour="add-wallet" onclick="openWalModal(\'add\')"><span class="wc-plus">+</span><span>Add account</span><small>Banks, e-wallets, cards, cash</small></button>';
@@ -1750,8 +1794,47 @@ function renderExpenses(){
           +'<button type="button" class="row-more" aria-label="More actions" aria-haspopup="menu" onclick="rowMenu(event,\'expense\','+e.id+')">'+FinIcons.ic('more')+'</button></div></div>';
       }).join('')
     :'<div class="empty"><div class="empty-icon">'+FinIcons.ic(searchQ?'search':'receipt')+'</div><div class="empty-title">'+(searchQ?'No matching expenses':'No expenses yet')+'</div><div class="empty-sub">'+(searchQ?'Try a different term.':'Start logging above.')+'</div></div>';
+  renderExpPie();
 }
 
+
+/* ── Expenses: spending pie by category ── */
+const CAT_COLOR={food:'#f5b52e',transport:'#4f9cf7',shopping:'#b573f2',utilities:'#22bfae',health:'#f2587a',entertainment:'#3fcf6e','loan-payment':'#7d8aa0','other-exp':'#a1a1aa'};
+window._expPieRange=window._expPieRange||'month';
+function setExpPieRange(r){window._expPieRange=r;renderExpPie();}
+function renderExpPie(){
+  const box=document.getElementById('exp-pie');if(!box)return;
+  const rng=window._expPieRange,now=new Date();
+  const ym=(d)=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+  const cur=ym(now),prev=ym(new Date(now.getFullYear(),now.getMonth()-1,1));
+  const want=rng==='month'?cur:rng==='last'?prev:null;
+  const by={};let tot=0;
+  (state.expenses||[]).forEach(e=>{
+    if(want&&String(e.date||'').slice(0,7)!==want)return;
+    const v=+e.amount||0;if(v<=0)return;
+    const k=CAT_LABELS[e.cat]?e.cat:'other-exp';by[k]=(by[k]||0)+v;tot+=v;
+  });
+  const rows=Object.keys(by).map(k=>({k:k,v:by[k]})).sort((a,b)=>b.v-a.v);
+  const pills=[['month','This month'],['last','Last month'],['all','All time']].map(x=>'<button type="button" class="pill'+(rng===x[0]?' active':'')+'" onclick="setExpPieRange(\''+x[0]+'\')">'+x[1]+'</button>').join('');
+  let body;
+  if(!rows.length){
+    body='<div class="ep-empty">'+(rng==='all'?'Log an expense and your spending pie shows up here.':'Nothing logged for this period.')+'</div>';
+  }else{
+    const R=48,pt=a=>[(50+R*Math.sin(a)).toFixed(2),(50-R*Math.cos(a)).toFixed(2)];
+    let a0=0,paths='';
+    if(rows.length===1)paths='<circle cx="50" cy="50" r="'+R+'" fill="'+CAT_COLOR[rows[0].k]+'"/>';
+    else rows.forEach(r=>{
+      const a1=a0+r.v/tot*Math.PI*2,p0=pt(a0),p1=pt(a1);
+      paths+='<path d="M50 50L'+p0[0]+' '+p0[1]+'A'+R+' '+R+' 0 '+(a1-a0>Math.PI?1:0)+' 1 '+p1[0]+' '+p1[1]+'Z" fill="'+CAT_COLOR[r.k]+'"><title>'+esc(CAT_LABELS[r.k])+' '+fmt(r.v)+'</title></path>';
+      a0=a1;
+    });
+    const leg=rows.map(r=>{const p=r.v/tot*100;
+      return '<li><i style="background:'+CAT_COLOR[r.k]+'"></i><span class="ep-n">'+esc(CAT_LABELS[r.k])+'<small>'+fmt(r.v)+'</small></span><b>'+(p<1?'<1':Math.round(p))+'%</b></li>';}).join('');
+    body='<div class="ep-main"><svg viewBox="0 0 100 100" role="img" aria-label="Spending by category">'+paths+'</svg><ul class="ep-leg">'+leg+'</ul></div>'
+      +'<div class="ep-tot">Total <b>'+fmt(tot)+'</b></div>';
+  }
+  box.innerHTML='<div class="filter-bar ep-range">'+pills+'</div>'+body;
+}
 
 function renderLoans(){
   const today_=today();
