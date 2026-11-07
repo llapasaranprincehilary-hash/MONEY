@@ -582,6 +582,7 @@ function doSignOut(){
   localStorage.removeItem('kwentadoV1');
   localStorage.removeItem('mtTutDone');
   clearCloudLinked();bioClear();
+  try{if(window.FinVip&&FinVip.cleanupLocal)FinVip.cleanupLocal();}catch(e){}
   fbAuth.signOut();
 }
 
@@ -1827,7 +1828,14 @@ function renderLoans(){
 }
 
 /* ACTIONS */
+
+// ── Double-submit guard: prevents duplicate entries from rapid taps or async await gaps ──
+const _submitting = new Set();
+function _guard(key) { if (_submitting.has(key)) return true; _submitting.add(key); return false; }
+function _unguard(key) { _submitting.delete(key); }
+
 function addIncome(){
+  if(_guard('income'))return;
   const month=document.getElementById('inc-month').value;
   const year=parseInt(document.getElementById('inc-year').value);
   const type=document.getElementById('inc-type').value;
@@ -1843,7 +1851,7 @@ function addIncome(){
   }
   state.income.push({id:uid(),month,year,type,amount,note,wallet:walletId,dateAdded:today()});
   document.getElementById('inc-amount').value='';document.getElementById('inc-note').value='';
-  save();renderAfterIncome();toast('Income added'+(wallet?' - '+wallet.label+' updated':'')+' ✓');
+  save();renderAfterIncome();_unguard('income');toast('Income added'+(wallet?' - '+wallet.label+' updated':'')+' ✓');
   window.dispatchEvent(new CustomEvent('fin:income-added',{detail:{amount,walletId}}));
 }
 function walletOptionsHTML(selectedId){
@@ -1986,6 +1994,7 @@ function saveEditExpense(){
   save();renderAfterExpense();toast('Expense updated ✓');
 }
 async function addExpense(){
+  if(_guard('expense'))return;
   const desc=document.getElementById('exp-desc').value.trim();
   const amount=cents(parseFloat(document.getElementById('exp-amount').value));
   const cat=document.getElementById('exp-cat').value;
@@ -1993,13 +2002,13 @@ async function addExpense(){
   const date=document.getElementById('exp-date').value||today();
   const note=document.getElementById('exp-note').value.trim();
   const recurring=document.getElementById('exp-recurring').checked;
-  if(!desc){toast('Add a description','error');return;}
-  if(!amount||amount<=0){toast('Enter a valid amount','error');return;}
+  if(!desc){_unguard('expense');toast('Add a description','error');return;}
+  if(!amount||amount<=0){_unguard('expense');toast('Enter a valid amount','error');return;}
 
   const walletPreview=(state.wallets||[]).find(w=>w.id===source);
   if(walletPreview&&walShort(walletPreview,amount)){
     const goNeg=await mtConfirm(walShortMsg(walletPreview),'⚠️','Continue','var(--amber)');
-    if(!goNeg)return;
+    if(!goNeg){_unguard('expense');return;}
   }
   const wallet=deductWalletBalance(source,amount);
 
@@ -2021,7 +2030,7 @@ async function addExpense(){
   document.getElementById('exp-date').value=today();document.getElementById('exp-note').value='';
   document.getElementById('exp-recurring').checked=false;
   rcHideBanner();
-  save();renderAfterExpense();toast('Expense logged'+(wallet?' - '+wallet.label+' updated':'')+' ✓');
+  _unguard('expense');save();renderAfterExpense();toast('Expense logged'+(wallet?' - '+wallet.label+' updated':'')+' ✓');
   window.dispatchEvent(new CustomEvent('fin:expense-logged',{detail:{desc,amount,cat,source}}));
 }
 /* ══ RECEIPT SCANNER (on-device OCR via Tesseract.js; VIP perk with 3 free tries, see vip.js) ══
@@ -2241,14 +2250,15 @@ function rcApply(r,rawText){
 }
 
 async function addLoan(){
+  if(_guard('loan'))return;
   const name=document.getElementById('loan-name').value.trim();
   const amount=cents(parseFloat(document.getElementById('loan-amount').value)||0);
   const type=document.getElementById('loan-type').value;
   const note=document.getElementById('loan-note').value.trim();
   const due=document.getElementById('loan-due').value||'';
   const walletId=type==='receivable'?document.getElementById('loan-wallet').value:'';
-  if(!name){toast('Enter a name','error');return;}
-  if(!amount||amount<=0){toast('Enter a valid amount','error');return;}
+  if(!name){_unguard('loan');toast('Enter a name','error');return;}
+  if(!amount||amount<=0){_unguard('loan');toast('Enter a valid amount','error');return;}
 
   const loan={id:uid(),name,amount,type,note,due,settled:false};
   let walletMsg='';
@@ -2257,7 +2267,7 @@ async function addLoan(){
     if(wallet){
       if(walShort(wallet,amount)){
         const goNeg=await mtConfirm(walShortMsg(wallet),'⚠️','Continue','var(--amber)');
-        if(!goNeg)return;
+        if(!goNeg){_unguard('loan');return;}
       }
       wallet.balance=Math.round((wallet.balance-amount)*100)/100;
       wallet.updated=today();
@@ -2267,7 +2277,7 @@ async function addLoan(){
   }
   state.loans.push(loan);
   document.getElementById('loan-name').value='';document.getElementById('loan-amount').value='';document.getElementById('loan-note').value='';document.getElementById('loan-due').value='';document.getElementById('loan-wallet').value='';
-  save();renderAfterLoan();toast('Loan added'+walletMsg+' ✓');
+  _unguard('loan');save();renderAfterLoan();toast('Loan added'+walletMsg+' ✓');
   window.dispatchEvent(new CustomEvent('fin:loan-added',{detail:{loan}}));
 }
 function openEditLoan(id){
@@ -2826,17 +2836,18 @@ function setBudgetLimit(v){
 }
 window.setBudgetLimit=setBudgetLimit;
 function addGoal(){
+  if(_guard('goal'))return;
   const name=document.getElementById('goal-name').value.trim();
   const target=cents(parseFloat(document.getElementById('goal-target').value)||0);
   const saved=Math.max(0,cents(parseFloat(document.getElementById('goal-saved').value)||0));
   const note=document.getElementById('goal-note').value.trim();
-  if(!name){toast('Enter a goal name','error');return;}
-  if(!target||target<=0){toast('Enter a target amount','error');return;}
+  if(!name){_unguard('goal');toast('Enter a goal name','error');return;}
+  if(!target||target<=0){_unguard('goal');toast('Enter a target amount','error');return;}
   if(!state.goals)state.goals=[];
   state.goals.push({id:uid(),name,target,saved,note});
   document.getElementById('goal-name').value='';document.getElementById('goal-target').value='';
   document.getElementById('goal-saved').value='';document.getElementById('goal-note').value='';
-  save();renderAfterGoal();toast('Goal added ✓');
+  _unguard('goal');save();renderAfterGoal();toast('Goal added ✓');
   window.dispatchEvent(new CustomEvent('fin:goal-added',{detail:{goal:state.goals[state.goals.length-1]}}));
 }
 function addToGoal(id,amountOverride){
@@ -4484,6 +4495,8 @@ async function deleteAccountAndData(){
   const u=cloudUser;
   clearTimeout(cloudSyncTimer);cloudPushPending=false;
   try{
+    // Clean up server-side VIP/scan records before deleting the account
+    if(window.FinVip&&FinVip.cleanupServer)await FinVip.cleanupServer(u).catch(()=>{});
     await fbDb.collection('users').doc(u.uid).delete();
     await u.delete();
   }catch(e){
@@ -4495,6 +4508,7 @@ async function deleteAccountAndData(){
   sessionStorage.removeItem('mtUnlocked');stateLoadedForUid=null;
   Object.keys(state).forEach(k=>delete state[k]);Object.assign(state,defaultState());
   ['kwentadoV1','mtTutDone','mtGuestBannerDismissAt','mtGuestNudge3Shown','mtGuestRemindAt','mtMoneyTab','finCloudLinked','finBioCred','finPinLock'].forEach(k=>localStorage.removeItem(k));
+  try{if(window.FinVip&&FinVip.cleanupLocal)FinVip.cleanupLocal();}catch(e){}
   toast('Account and data deleted');
 }
 

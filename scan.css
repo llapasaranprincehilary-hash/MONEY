@@ -64,3 +64,10 @@
 body.light .sc-up{background:rgba(240,185,44,.2)}
 
 @media (prefers-reduced-motion:reduce){.sc-spin{animation:none}.sc-shutter i{transition:none}}
+
+.sc-row{display:flex;gap:8px;margin:8px 3px 0}
+.sc-row .sc-ghost{flex:1 1 0;min-width:0;margin:0}
+/* a gentle pulse on the Add Expense button after a scan, so the next step is obvious */
+.sc-flash{animation:sc-flash 1.4s ease-out 2}
+@keyframes sc-flash{0%{box-shadow:0 0 0 0 rgba(168,224,56,.75)}100%{box-shadow:0 0 0 16px rgba(168,224,56,0)}}
+@media (prefers-reduced-motion:reduce){.sc-flash{animation:none;outline:2px solid var(--accent);outline-offset:3px}}

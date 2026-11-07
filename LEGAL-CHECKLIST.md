@@ -37,9 +37,9 @@ and for how FINUITY now actually works. **Please have a Philippine lawyer review
 Do not promise anything you cannot do. If you cannot reply in 3 business days, change the text.
 
 ## Things the text says that you must make true
-1. **Delete on request.** The Privacy Policy says VIP and scan-counter records are removed when you process an account deletion.
-   The in-app "delete account" removes the user's data, but the server-side records (`entitlements`, `usage`, `payments`) can only be
-   removed by you (Firebase console) or by a small admin function. Payment records may be kept as the law requires.
+1. **Delete on request.** The Privacy Policy says VIP and scan-counter records are removed when someone deletes their account.
+   This is now automatic once you set `deleteData` in `vip.js` (see SETUP-PAYMENTS.md, section J). Payment records are kept on purpose (law).
+   If the server was unreachable at that moment, remove leftovers in the Firebase console.
 2. **Official receipts.** The Terms say people can email you for an official receipt. Check BIR rules for your business type
    and how you will issue them.
 3. **Taxes.** The text does not say prices include or exclude VAT. Ask an accountant what applies to you and add it if needed.
@@ -48,3 +48,8 @@ Do not promise anything you cannot do. If you cannot reply in 3 business days, c
    you need to register with the National Privacy Commission.
 6. **Payment provider onboarding.** Providers like PayMongo normally want a public website with terms, privacy and refund pages.
    Use the three links above after you publish.
+
+## Bible verses
+All 131 verses are now the **King James Version**, which is in the public domain, with the translation shown on each verse ("... KJV").
+The wording is the real KJV text, pulled from a public dataset and checked reference by reference, not retyped. If you prefer a modern
+translation you must get permission from its publisher and show their required notice.
