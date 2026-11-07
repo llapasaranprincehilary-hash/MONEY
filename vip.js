@@ -26,10 +26,10 @@ var CFG={
     {id:'m3', months:3, price:129,tag:''},
     {id:'m1', months:1, price:49, tag:''}
   ],
-  api:{checkout:''},                         // paste the createCheckout function URL here (backend/SETUP-PAYMENTS.md)
+  api:{checkout:'',scan:'',deleteData:''},                         // paste the createCheckout function URL here (backend/SETUP-PAYMENTS.md)
   methodsText:'GCash or QR Ph',
   demoFlag:false,                            // leave false. Only automated tests turn this on
-  help:''                                    // e.g. 'support@yourdomain.com', shown if a payment has a problem
+  help:'pcpservicehelp@gmail.com'            // support email shown if a payment has a problem
 };
 
 /* ───────── helpers ───────── */
@@ -216,7 +216,7 @@ function listen(){
       var d=snap.exists?snap.data():null,was=isVip(),until=d?(+d.until||0):0;
       var cur=ent();
       if(cur&&cur.demo&&!d)until=cur.until;       // keep a local demo grant until a real record exists
-      setEnt({uid:u,until:until,plan:d?(d.plan||''):(cur&&cur.plan)||'',demo:(cur&&cur.demo&&!d)||false,at:Date.now()});
+      setEnt({uid:u,until:until,plan:d?(d.plan||''):(cur&&cur.plan)||'',history:d?(Array.isArray(d.history)?d.history.slice(-30):[]):((cur&&cur.history)||[]),demo:(cur&&cur.demo&&!d)||false,at:Date.now()});
       if(!was&&isVip())upgraded();
       renderAll();
     },function(){/* offline or rules not set up yet: keep the cached answer */});
@@ -252,7 +252,7 @@ function buy(){
   }
   if(demoOK()){
     var base=Math.max(Date.now(),(ent()&&ent().until)||0);
-    setEnt({uid:u,until:base+p.months*30*864e5,plan:p.id,demo:true,at:Date.now()});
+    var dd=new Date(base);dd.setMonth(dd.getMonth()+p.months);setEnt({uid:u,until:dd.getTime(),plan:p.id,history:((ent()&&ent().history)||[]).concat([{at:Date.now(),plan:p.id,months:p.months,amount:p.price,via:'demo'}]),demo:true,at:Date.now()});
     upgraded();renderAll();return;
   }
   setMsg('Payments are not switched on yet. Please check back very soon.');
@@ -328,18 +328,22 @@ function openSheet(v){
 }
 
 /* ───────── cards: settings + balances page + Fin's nudge ───────── */
+function fdate(ms){try{return new Date(ms).toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'})}catch(e){return ''}}
+function endedAt(){var e=ent();return(e&&e.until>0&&e.until<=Date.now())?e.until:0}
 function renderCard(){
   var el=$('vip-card');if(!el)return;
   var s=S();if(!s||!s.username){el.innerHTML='';el._h='';return}
-  var h,vip=isVip();
+  var h,vip=isVip(),left=daysLeft(),e=ent(),hist=(e&&e.history&&e.history.length)?'<div class="vp-links"><button type="button" class="vp-mini" data-vp="history">Payment history</button></div>':'';
   if(vip){
-    h='<button type="button" class="vp-card vip" data-vp="open">'+'<span class="vp-ci">'+ic('crown')+'</span><span class="vp-cm"><b>VIP</b><span>'+daysLeft()+' days left</span></span><span class="vp-cb">Add time</span></button>';
+    var soon=left<=7;
+    h='<button type="button" class="vp-card vip'+(soon?' soon':'')+'" data-vp="open">'+'<span class="vp-ci">'+ic('crown')+'</span><span class="vp-cm"><b>'+(soon?'VIP ends in '+left+' day'+(left===1?'':'s'):'VIP')+'</b><span>'+(soon?'Ends '+esc(fdate(e.until))+'. Renew and the time is added on top.':left+' days left')+'</span></span><span class="vp-cb">'+(soon?'Renew':'Add time')+'</span></button>';
   }else{
-    var u=usage();
-    h='<button type="button" class="vp-card" data-vp="open"><span class="vp-ci">'+ic('crown')+'</span><span class="vp-cm"><b>Free plan</b><span>'+u.n+' of '+u.wl+' accounts · '+peso(u.assets)+' of '+peso(u.bl)+'</span>'
-     +'<span class="vp-bar mini'+(Math.max(u.pw,u.pb)>=1?' full':Math.max(u.pw,u.pb)>=0.8?' warn':'')+'"><i style="width:'+Math.min(100,Math.round(Math.max(u.pw,u.pb)*100))+'%"></i></span></span><span class="vp-cb">Go VIP</span></button>';
+    var u=usage(),ended=endedAt();
+    h='<button type="button" class="vp-card" data-vp="open"><span class="vp-ci">'+ic('crown')+'</span><span class="vp-cm"><b>Free plan</b><span>'+(ended?'VIP ended '+esc(fdate(ended))+'. Your data is safe. ':'')+u.n+' of '+u.wl+' accounts · '+peso(u.assets)+' of '+peso(u.bl)+'</span>'
+     +'<span class="vp-bar mini'+(Math.max(u.pw,u.pb)>=1?' full':Math.max(u.pw,u.pb)>=0.8?' warn':'')+'"><i style="width:'+Math.min(100,Math.round(Math.max(u.pw,u.pb)*100))+'%"></i></span></span><span class="vp-cb">'+(ended?'Renew':'Go VIP')+'</span></button>';
   }
   if(waiting&&!vip)h='<div class="vp-card wait"><span class="vp-ci">'+ic('clock')+'</span><span class="vp-cm"><b>Confirming your payment…</b><span>This usually takes a few seconds.</span></span></div>';
+  h+=hist;
   if(el._h!==h){el._h=h;el.innerHTML=h}
 }
 function renderMeter(){
@@ -361,6 +365,62 @@ function nudge(){
   if(ok)try{localStorage.setItem(k,String(Date.now()))}catch(e){}
 }
 
+/* ───────── payment history ───────── */
+function histLabel(h){
+  var m=h.months?(h.months===1?'1 month':h.months+' months'):(h.days?h.days+' days':'');
+  if(h.via==='admin'){
+    if(h.plan==='revoked')return 'VIP ended by support';
+    if(h.plan==='adjusted')return 'VIP date changed by support';
+    return 'VIP added by support'+(m?' ('+m+')':'');
+  }
+  if(h.via==='demo')return 'Demo (no payment): '+m;
+  return 'VIP '+m;
+}
+function openHistory(){
+  closeSheet();prevFocus=D.activeElement;
+  var e=ent(),list=((e&&e.history)||[]).slice().sort(function(a,b){return (b.at||0)-(a.at||0)}),vip=isVip();
+  sheet=D.createElement('div');sheet.className='vp-back';sheet.setAttribute('role','dialog');sheet.setAttribute('aria-modal','true');sheet.setAttribute('aria-label','Payment history');
+  sheet.innerHTML='<div class="vp-sheet"><button type="button" class="vp-x" data-vp="close" aria-label="Close">'+ic('x')+'</button>'
+   +'<h2 class="vp-t" style="margin:2px 44px 4px 0">Payment history</h2>'
+   +'<p class="vp-status">'+(vip?'VIP is active until <b>'+esc(fdate(e.until))+'</b>.':(endedAt()?'Your VIP ended on '+esc(fdate(endedAt()))+'. Your data is safe.':'You are on the free plan.'))+'</p>'
+   +(list.length?'<ul class="vp-hist">'+list.map(function(h){return '<li><span class="vp-h-m"><b>'+esc(histLabel(h))+'</b><small>'+esc(fdate(h.at))+(h.note?' · '+esc(h.note):'')+'</small></span><span class="vp-h-a">'+(h.amount>0?'₱'+Number(h.amount).toLocaleString('en-US'):'No charge')+'</span></li>'}).join('')+'</ul>':'<p class="vp-status">No purchases yet.</p>')
+   +'<div class="vp-foot"><button type="button" class="vp-cta" data-vp="open">'+(vip?'Add more time':'Get VIP')+'</button></div>'
+   +'<p class="vp-fine">Questions about a payment or a refund? '+(CFG.help?'Email '+esc(CFG.help)+'. ':'')+'See the <button type="button" class="vp-link" data-vp="legal">Terms and refund policy</button>.</p></div>';
+  D.body.appendChild(sheet);D.body.classList.add('sheet-open');
+  sheet.addEventListener('click',function(ev){if(ev.target===sheet)closeSheet()});
+  D.addEventListener('keydown',onKey);
+  var box=sheet.querySelector('.vp-sheet');box.setAttribute('tabindex','-1');box.focus({preventScroll:true});
+}
+
+/* ───────── "your VIP is ending" (a friendly heads-up, once a day, never nagging) ───────── */
+function expiryNudge(){
+  var e=ent();if(!e||!W.FinLife)return;
+  var today=new Date().toISOString().slice(0,10),left=daysLeft();
+  try{
+    if(isVip()&&left<=7){
+      if(localStorage.getItem('finVipExp')===today)return;
+      localStorage.setItem('finVipExp',today);
+      FinLife.tell("Your VIP ends "+(left<=1?'tomorrow':'in '+left+' days')+" ("+fdate(e.until)+"). Renew any time and the new time is added on top, so nothing is lost.",[{label:'Renew',kind:'custom',onClick:function(){openSheet(null)}},{label:'Later',kind:'custom',onClick:function(){}}],{mood:'happy',rank:2,wait:5000});
+    }else if(!isVip()&&endedAt()&&Date.now()-endedAt()<30*864e5){
+      if(localStorage.getItem('finVipEnded')===String(e.until))return;
+      localStorage.setItem('finVipEnded',String(e.until));
+      FinLife.tell("Your VIP has ended. Everything you saved is safe. You just can't add past the free limits until you renew.",[{label:'Renew',kind:'custom',onClick:function(){openSheet(null)}},{label:'OK',kind:'custom',onClick:function(){}}],{mood:'happy',rank:2,wait:5000});
+    }
+  }catch(x){}
+}
+
+/* ───────── deleting an account also removes the server-side VIP and scan records ───────── */
+function cleanupServer(u){
+  var url=CFG.api.deleteData;
+  if(!url||!u||!u.getIdToken)return Promise.resolve(false);
+  var ctl=(typeof AbortController!=='undefined')?new AbortController():null,t=setTimeout(function(){try{ctl&&ctl.abort()}catch(e){}},8000);
+  return u.getIdToken().then(function(tok){return fetch(url,{method:'POST',signal:ctl?ctl.signal:undefined,headers:{'Content-Type':'application/json','Authorization':'Bearer '+tok},body:'{}'})})
+    .then(function(r){clearTimeout(t);return r.ok}).catch(function(){clearTimeout(t);return false});   // never blocks the person's deletion
+}
+function cleanupLocal(){
+  try{Object.keys(localStorage).forEach(function(k){if(/^(finVipEnt|finVipNudge|finVipExp|finVipEnded|finVipPending|finSmartOk|finScanInfoSeen|finVipDemo)$/.test(k)||k.indexOf('finScanTrial:')===0)localStorage.removeItem(k)})}catch(e){}
+}
+
 /* ───────── events + wiring ───────── */
 function onClick(e){
   var b=e.target.closest&&e.target.closest('[data-vp]');if(!b)return;
@@ -373,6 +433,7 @@ function onClick(e){
     var c=D.querySelector('.vp-cta');if(c&&!busy)c.textContent=ctaText();
   }
   else if(k==='buy'){buy()}
+  else if(k==='history'){openHistory()}
   else if(k==='legal'){try{openLegal('terms')}catch(x){}}      // the legal screen opens on top of the sheet
 }
 function afterCheckout(){
@@ -387,8 +448,8 @@ function afterCheckout(){
 var started=false;
 function tick(){
   var s=S();if(!s||!s.username)return;
-  if(!started){started=true;D.addEventListener('click',onClick);afterCheckout();setTimeout(nudge,12000)}
+  if(!started){started=true;D.addEventListener('click',onClick);afterCheckout();setTimeout(nudge,12000);setTimeout(expiryNudge,16000)}
   wrapGuards();listen();renderAll();
 }
-W.FinVip={demoOK:demoOK,hero:finHero,canScan:canScan,scansLeft:scansLeft,tick:tick,isVip:isVip,open:function(reason){openSheet(reason?{kind:reason}:null)},limits:limits,usage:usage,freezeCap:freezeCap,config:CFG,daysLeft:daysLeft,_metrics:metrics,_violation:violation};
+W.FinVip={expiryNudge:expiryNudge,cleanupServer:cleanupServer,cleanupLocal:cleanupLocal,openHistory:openHistory,demoOK:demoOK,hero:finHero,canScan:canScan,scansLeft:scansLeft,tick:tick,isVip:isVip,open:function(reason){openSheet(reason?{kind:reason}:null)},limits:limits,usage:usage,freezeCap:freezeCap,config:CFG,daysLeft:daysLeft,_metrics:metrics,_violation:violation};
 })();
