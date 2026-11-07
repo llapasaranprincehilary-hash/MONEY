@@ -23,9 +23,11 @@ const REGION = 'asia-southeast1';                                   // Singapore
 // Only these websites may call createCheckout. Add your real address(es).
 const ALLOWED_ORIGINS = ['https://YOUR-SITE.example', 'http://localhost:5000', 'http://127.0.0.1:5000'];
 // Cards cost 3.5% + P15, which would eat about a third of a P49 plan, so they are not offered.
-// 'gcash' and 'qrph' are the names PayMongo's current docs use; if you want Maya too, add the method name
-// shown in your PayMongo dashboard (test mode) after checking it.
-const PAYMENT_METHODS = ['gcash', 'qrph'];
+// 'paymaya' is Maya's name in PayMongo checkout. PayMongo makes you ACTIVATE each method in your dashboard first
+// (Maya can take a few business days). If a method is not active yet, checkout creation is retried automatically
+// with the SAFE_METHODS below, so a not-yet-activated method can never break buying VIP.
+const PAYMENT_METHODS = ['gcash', 'paymaya', 'qrph'];
+const SAFE_METHODS = ['gcash', 'qrph'];
 
 const PLANS = {
   m1:  { months: 1,  amount: 4900,  name: 'FINUITY VIP - 1 month' },
@@ -33,6 +35,14 @@ const PLANS = {
   m12: { months: 12, amount: 39900, name: 'FINUITY VIP - 12 months' }
 };
 const DAY = 24 * 60 * 60 * 1000;
+// Calendar months, so "12 months" really is a year (30-day months would shortchange a 12-month buyer by 5 days).
+function addMonths(ms, n) {
+  const d = new Date(ms), day = d.getUTCDate();
+  d.setUTCDate(1); d.setUTCMonth(d.getUTCMonth() + n);
+  const last = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate();
+  d.setUTCDate(Math.min(day, last));                                   // Jan 31 + 1 month = Feb 28/29, not early March
+  return d.getTime();
+}
 
 function cors(req, res) {
   const origin = req.get('origin') || '';
@@ -69,7 +79,7 @@ exports.createCheckout = onRequest({ region: REGION, secrets: [PAYMONGO_SECRET],
     const ref = db.collection('payments').doc();
     await ref.set({ uid: user.uid, plan: req.body.plan, months: plan.months, amount: plan.amount, status: 'pending', createdAt: Date.now() });
 
-    const r = await fetch('https://api.paymongo.com/v2/checkout_sessions', {
+    const makeSession = methods => fetch('https://api.paymongo.com/v2/checkout_sessions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -78,7 +88,7 @@ exports.createCheckout = onRequest({ region: REGION, secrets: [PAYMONGO_SECRET],
       body: JSON.stringify({
         data: { attributes: {
           line_items: [{ name: plan.name, amount: plan.amount, currency: 'PHP', quantity: 1 }],
-          payment_method_types: PAYMENT_METHODS,
+          payment_method_types: methods,
           reference_number: ref.id,
           success_url: back + (back.includes('?') ? '&' : '?') + 'vip=success',
           cancel_url: back + (back.includes('?') ? '&' : '?') + 'vip=cancel',
@@ -87,7 +97,13 @@ exports.createCheckout = onRequest({ region: REGION, secrets: [PAYMONGO_SECRET],
         } }
       })
     });
-    const j = await r.json();
+    let r = await makeSession(PAYMENT_METHODS);
+    let j = await r.json();
+    if (r.status === 400 || r.status === 422) {                       // most likely a method that is not activated yet: retry with the safe ones
+      console.warn('Checkout rejected with', PAYMENT_METHODS.join(','), '- retrying with', SAFE_METHODS.join(','), JSON.stringify(j).slice(0, 300));
+      r = await makeSession(SAFE_METHODS);
+      j = await r.json();
+    }
     const url = j && j.data && j.data.attributes && j.data.attributes.checkout_url;
     if (!r.ok || !url) {
       console.error('PayMongo error', r.status, JSON.stringify(j));
@@ -144,7 +160,10 @@ exports.paymongoWebhook = onRequest({ region: REGION, secrets: [WEBHOOK_SECRET],
       const ent = await tx.get(entRef);
       const now = Date.now();
       const from = Math.max(now, ent.exists ? Number(ent.data().until) || 0 : 0);        // paying early stacks on top
-      tx.set(entRef, { until: from + p.months * 30 * DAY, plan: p.plan, updatedAt: now }, { merge: true });
+      tx.set(entRef, {
+        until: addMonths(from, p.months), plan: p.plan, updatedAt: now,
+        history: admin.firestore.FieldValue.arrayUnion({ at: now, plan: p.plan, months: p.months, amount: p.amount / 100, via: 'paymongo', ref: refId })
+      }, { merge: true });
       tx.update(payRef, { status: 'paid', paidAt: now, livemode: live, paymentId: paid.id || null });
       return 'ok';
     });
@@ -280,5 +299,91 @@ exports.scanReceipt = onRequest({ region: REGION, secrets: [ANTHROPIC_KEY], invo
       try { await usageRef.update({ scans: admin.firestore.FieldValue.increment(-1) }); } catch (x) { /* ignore */ }
     }
     return res.status(502).json({ error: 'read_failed' });
+  }
+});
+
+
+/* ───────── 4. Admin: look up, grant, set or revoke VIP (used by admin.html) ─────────
+   Anyone can CALL this address, but the server only obeys signed-in people on the admin list.
+   Admin list: put your admin account's User UID (Firebase console -> Authentication -> Users) in ADMIN_UIDS below, or in a
+   functions/.env file as  ADMIN_UIDS=uid1,uid2  . Verified emails in ADMIN_EMAILS work too. Every action is written to adminLog. */
+const ADMIN_UIDS = [].concat((process.env.ADMIN_UIDS || '').split(',').map(x => x.trim()).filter(Boolean));   // EDIT or use .env
+const ADMIN_EMAILS = [].concat((process.env.ADMIN_EMAILS || '').split(',').map(x => x.trim().toLowerCase()).filter(Boolean));
+function isAdmin(dec) {
+  return ADMIN_UIDS.includes(dec.uid) || (dec.email_verified === true && ADMIN_EMAILS.includes(String(dec.email || '').toLowerCase()));
+}
+async function statusOf(uid) {
+  const [ent, use] = await Promise.all([db.collection('entitlements').doc(uid).get(), db.collection('usage').doc(uid).get()]);
+  let email = null;
+  try { email = (await admin.auth().getUser(uid)).email || null; } catch (e) { /* user may not exist in Auth */ }
+  const e = ent.exists ? ent.data() : {};
+  return { uid, email, until: Number(e.until) || 0, plan: e.plan || null, active: Number(e.until) > Date.now(),
+    history: (Array.isArray(e.history) ? e.history : []).slice(-20), scansToday: use.exists ? use.data() : null };
+}
+
+exports.adminVip = onRequest({ region: REGION, invoker: 'public' }, async (req, res) => {
+  if (cors(req, res)) return;
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Use POST.' });
+  try {
+    const m = /^Bearer (.+)$/.exec(req.get('authorization') || '');
+    if (!m) return res.status(401).json({ error: 'Please sign in first.' });
+    const dec = await admin.auth().verifyIdToken(m[1]);
+    if (!isAdmin(dec)) return res.status(403).json({ error: 'Not an admin account.' });
+
+    const b = req.body || {};
+    let uid = typeof b.uid === 'string' ? b.uid.trim() : '';
+    if (!uid && typeof b.email === 'string' && b.email.trim()) {
+      try { uid = (await admin.auth().getUserByEmail(b.email.trim())).uid; }
+      catch (e) { return res.status(404).json({ error: 'No user with that email.' }); }
+    }
+    if (!uid) return res.status(400).json({ error: 'Enter an email or a UID.' });
+    const action = b.action || 'lookup';
+    const note = typeof b.note === 'string' ? b.note.slice(0, 200) : '';
+    if (action === 'lookup') return res.json({ ok: true, status: await statusOf(uid) });
+
+    const entRef = db.collection('entitlements').doc(uid);
+    const now = Date.now();
+    let item = null, until = null;
+    const cur = (await entRef.get()).data() || {};
+    const base = Math.max(now, Number(cur.until) || 0);
+    if (action === 'grant') {
+      const months = Number(b.months) || 0, days = Number(b.days) || 0;
+      if (months > 0 && months <= 36) until = addMonths(base, Math.floor(months));
+      else if (days > 0 && days <= 3650) until = base + Math.floor(days) * DAY;
+      else return res.status(400).json({ error: 'Choose 1 to 36 months, or 1 to 3650 days.' });
+      item = { at: now, plan: 'manual', months: months || null, days: days || null, amount: 0, via: 'admin', note };
+    } else if (action === 'set') {
+      until = Number(b.until);
+      if (!Number.isFinite(until) || until < 0 || until > now + 20 * 365 * DAY) return res.status(400).json({ error: 'That date is not valid.' });
+      item = { at: now, plan: 'adjusted', amount: 0, via: 'admin', note };
+    } else if (action === 'revoke') {
+      until = 0;
+      item = { at: now, plan: 'revoked', amount: 0, via: 'admin', note };
+    } else return res.status(400).json({ error: 'Unknown action.' });
+
+    await entRef.set({ until, plan: until ? (action === 'grant' ? 'manual' : (cur.plan || 'manual')) : (cur.plan || null), updatedAt: now,
+      history: admin.firestore.FieldValue.arrayUnion(item) }, { merge: true });
+    await db.collection('adminLog').doc().set({ at: now, admin: dec.uid, action, target: uid, note, until });
+    return res.json({ ok: true, status: await statusOf(uid) });
+  } catch (e) {
+    console.error('adminVip failed:', e && e.message);
+    return res.status(500).json({ error: 'Something went wrong.' });
+  }
+});
+
+/* ───────── 5. "Delete my account": also remove the person's server-side VIP and scan records ─────────
+   The app calls this just before it deletes the account. Payment records are deliberately KEPT (tax and accounting law). */
+exports.deleteMyData = onRequest({ region: REGION, invoker: 'public' }, async (req, res) => {
+  if (cors(req, res)) return;
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Use POST.' });
+  try {
+    const m = /^Bearer (.+)$/.exec(req.get('authorization') || '');
+    if (!m) return res.status(401).json({ error: 'Please sign in first.' });
+    const user = await admin.auth().verifyIdToken(m[1]);
+    await Promise.all([db.collection('entitlements').doc(user.uid).delete(), db.collection('usage').doc(user.uid).delete()]);
+    return res.json({ ok: true });
+  } catch (e) {
+    console.error('deleteMyData failed:', e && e.message);
+    return res.status(500).json({ error: 'Something went wrong.' });
   }
 });
