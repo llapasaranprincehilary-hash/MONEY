@@ -126,3 +126,68 @@ All amount inputs (income, expense, loan, goal, budget, loan payment, add-to-goa
 centavos before validation, so 0.004 is rejected and 12.345 becomes 12.35.
 
 Known small quirk (left as designed): "days logged" totals count the two days a streak freeze covered.
+
+---
+
+## Design pass, triad colour, Bills first (this release)
+
+**Look and feel**
+- One triad of colours, driven by Settings > Appearance. The accent you pick is the "main" colour; the app adds two more 120 degrees
+  around the colour wheel at the same perceived lightness (OKLCH, `applyTriad()` in app.js). Roles are fixed: main = yours / progress / buttons,
+  calm = bills and money owed to you, careful = spending, overdue, over budget. Amber, purple and teal are gone; every old colour name now points
+  at the triad. Appearance shows a live preview of the three.
+- Warm neutrals (charcoal / paper) instead of cold black and grey. Inter for the interface; a soft serif (Fraunces) only for personal moments
+  (greeting, the big number, card names). Sora is no longer loaded (one less font request).
+- Flat surfaces with hairlines instead of glows and coloured outlines. The Fin's week card is a calm checklist with a level ring (the ring is the XP meter).
+- "Test your money know-how" is a full banner with an original illustration (piggy bank, graduation cap, coin, quiz sheet). It uses the triad, so it
+  follows Appearance. After the quiz it becomes a smaller card in the same style.
+- Toasts sit above the bottom bar instead of on top of it. No more Android tap-highlight square on the eye button.
+
+**Bills first (new)**
+- Add bills (name, amount, due day, wallet). "Left to spend" becomes "Yours to spend, after bills": income - everything logged - bills still to pay.
+- Pizza chart: bills are slices, paid ones ghosted, overdue in the careful colour, the rest is yours. Plus a plain equation under it.
+- Mark paid logs a real expense, takes the money from the bill's wallet, and does not change "yours". Deleting that expense un-pays the bill.
+  Logging the same name by hand (e.g. "Wi-Fi") also counts as paid, so nothing is counted twice.
+- Import from your recurring expenses in one tap. Month rollover resets automatically.
+
+**Hide numbers (rebuilt)**
+- Hiding is now a CSS crossfade to bullets: no re-render, no flash, no layout jump. Everything on Home is covered (left to spend, income, spent,
+  balance, wallets, owed, recent, Bills first, Fin's speech) and screen readers skip hidden amounts.
+- Fin's dialogue, the coach and the VIP meter no longer say amounts out loud while numbers are hidden.
+
+**Bugs fixed along the way**
+1. First screen could paint before the deferred scripts (Fin's week, VIP, Bills) loaded and stay incomplete. The app now renders once more when all have loaded.
+2. A full re-render fired 3.5 s after every launch (it rebuilt the dashboard mid-use). Removed; the add-ons are attached once instead.
+3. One-tap repeat chips and the Automation card were only refreshed by full renders; partial renders now refresh them on their pages.
+4. Hidden bullets were painted transparent (inherited text-fill); fixed and covered by a test that checks the paint colour.
+
+**Verification** (headless Chromium, Firebase stubbed): 33 regression + 17 VIP + 26 edge-case + 13 hide-numbers + 39 Bills-first checks, all passing.
+The hide-numbers test scans every amount, aria-label, title and Fin bubble on Home and Balances for leaks. Not covered: real Google sign-in and sync,
+real payments, camera scan, background reminders, real phones.
+
+### Learn banner v2 (Home)
+The "Test your money know-how" card is now a hero banner in the style of an app-onboarding screen, at about the same size as the old pig banner
+(about 420px tall on a phone): a bamboo alkansya (the traditional Filipino coin bank) with a face and a coin dropping into the slot, in a soft frame, four floating tilted lesson cards (Budgeting 101, Save First, Smart Spending,
+Money Safety, the real lessons), the headline "Money for every you.", step dots and a full-width pill with an arrow. Colours are the triad,
+so it follows Settings > Appearance. The whole banner is one keyboard-reachable button that starts the Starter Quiz; the cards are decorative.
+After the quiz it turns into the smaller "For you today" lesson card. Side-by-side layout on desktop. Cache is now `v53`.
+
+### Merge v4 (learn hero + Learning polish + design-chat features)
+- Cash on Hand card uses the supplied hand-and-money icon (FinArt.handMoney in icons.js).
+- Learning polish merged from "FINAL (3)": friendlier coach-tip copy, lesson check shows the lesson title, wrong answers dim,
+  feedback has an icon + label, and lesson results list every question with the right answer. Two fixes on top of that file:
+  the lesson result now actually carries the questions/answers (it was dropped, so the review never showed), and the review
+  styles are scoped so they no longer collide with the starter-quiz review rows.
+- Quiz right/wrong colours now come from the triad (accent / "careful") instead of fixed green/red.
+- Lesson buttons use --on-accent so the text is readable on the light theme.
+- Weekly challenge wording, the no-spend button ("Mark as no-spend day") and the reminder notification text were aligned.
+- Everything from the earlier merge stays (wallet chip + type emblems, mini wallets, owed cards, expense pie, collapsible loans, Fin fold).
+- Cache is now `v64`.
+
+### Merge v5 (bamboo alkansya)
+- Learn hero art is now the bamboo alkansya (from the alkansya build). Its colours come from the accent, so it follows Settings > Appearance.
+- The hand-and-money icon stays on the Cash on Hand card. To use it in the hero instead, swap `ART_ALKANSYA` for `FinArt.handMoney()` in learn.js (dl-frame).
+- Frame is a light card behind the art so the bamboo reads on both themes. Cache is now `v65`.
+
+### Merge v6 (smaller card icons)
+- On the full wallet cards the metal chip, contactless waves, wallet illustration, cash badge and the other type symbols are about 30% smaller. Cache is now `v66`.

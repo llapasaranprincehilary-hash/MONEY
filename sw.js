@@ -11,7 +11,7 @@
    CACHE_NAME — so an unchanged cache name means old, stale assets (icons
    included) can keep being served indefinitely even after you replace the
    underlying files. */
-const CACHE_NAME = 'finuity-shell-v58';
+const CACHE_NAME = 'finuity-shell-v66';
 
 // Small JSON the page writes (reminder time, last logged day) so a background reminder can run with the app closed.
 const LIFE_CACHE = 'finuity-life-data';
@@ -33,6 +33,9 @@ const APP_SHELL = [
   './streak.js',
   './life.css',
   './life.js',
+  './bills.js',
+  './bills.css',
+  './polish.css',
   './vip.css',
   './scan.css',
   './scan.js',
@@ -148,7 +151,7 @@ async function remindIfNeeded() {
     if (hm < (d.time || '20:00') || d.loggedDay === today || d.notified === today) return;
     const n = d.streak || 0;
     await self.registration.showNotification(n >= 2 ? 'Your ' + n + '-day streak is waiting' : 'Quick check-in from Fin', {
-      body: n >= 2 ? 'Log anything, or tap "Nothing spent today". It takes five seconds.' : 'Anything to log today? A no-spend day counts too.',
+      body: n >= 2 ? 'Log anything or mark a no-spend day. It takes five seconds.' : 'Anything to log today? A no-spend day counts too.',
       icon: 'icon-192.png', badge: 'icon-192.png', tag: 'finuity-streak', data: { url: './index.html' }
     });
     d.notified = today;

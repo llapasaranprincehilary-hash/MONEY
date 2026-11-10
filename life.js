@@ -165,7 +165,7 @@ function levelUp(lv){
   if(root&&!reduced()){root.classList.add('fin-leveling');setTimeout(function(){root.classList.remove('fin-leveling')},1200)}
   celebrate('level');
   try{toast('Fin reached level '+lv+': '+info.n)}catch(e){}
-  setTimeout(function(){tell("Level "+lv+": "+info.n+"! "+info.gift+" That came from you showing up, not from how much money you have.",null,{mood:'happy',rank:5})},1200);
+  setTimeout(function(){tell("Level "+lv+"! "+info.gift+" That came from showing up, not from how much money you have.",null,{mood:'happy',rank:5})},1200);
   try{if(W.FinStreak&&FinStreak.award&&lv>=5)FinStreak.award('fin-legend')}catch(e){}
 }
 function seed(){
@@ -323,13 +323,13 @@ function loggedDays(a,b){
 function catsIn(a,b){var m={};(S().expenses||[]).forEach(function(e){if(inRange(e.date,a,b))m[e.cat||'other-exp']=1});return Object.keys(m).length}
 function nospendIn(a,b){var l=L();return Object.keys(l.nospend).filter(function(d){return inRange(d,a,b)}).length}
 var POOL={
-  log5:{grp:'habit',icon:'calendar',goal:5,text:'Log on 5 different days',prog:function(a,b){return loggedDays(a,b)}},
-  nospend2:{grp:'habit',icon:'shield',goal:2,text:'Mark 2 no-spend days',prog:function(a,b){return nospendIn(a,b)}},
-  save1:{grp:'money',icon:'savings',goal:1,text:'Put money toward a savings goal',prog:function(){return cnt('goal')}},
-  income1:{grp:'money',icon:'cash',goal:1,text:'Log some income',prog:function(){return cnt('income')}},
-  cats3:{grp:'money',icon:'pie',goal:3,text:'Log spending in 3 different categories',prog:function(a,b){return catsIn(a,b)}},
-  learn1:{grp:'grow',icon:'book',goal:1,text:'Finish a lesson in Learn',prog:function(){return cnt('learn')}},
-  recap1:{grp:'grow',icon:'chart',goal:1,text:"Open last week's recap",prog:function(){return cnt('recap')}}
+  log5:{grp:'habit',icon:'calendar',goal:5,text:'Show up for 5 days this week',prog:function(a,b){return loggedDays(a,b)}},
+  nospend2:{grp:'habit',icon:'shield',goal:2,text:'Two days with nothing spent',prog:function(a,b){return nospendIn(a,b)}},
+  save1:{grp:'money',icon:'savings',goal:1,text:'Add something to a savings goal',prog:function(){return cnt('goal')}},
+  income1:{grp:'money',icon:'cash',goal:1,text:'Record your income this week',prog:function(){return cnt('income')}},
+  cats3:{grp:'money',icon:'pie',goal:3,text:'Spend in 3 different categories',prog:function(a,b){return catsIn(a,b)}},
+  learn1:{grp:'grow',icon:'book',goal:1,text:'Learn something new',prog:function(){return cnt('learn')}},
+  recap1:{grp:'grow',icon:'chart',goal:1,text:"Check in on last week",prog:function(){return cnt('recap')}}
 };
 function activeChallenges(){
   var ws=weekStart(td()),wn=Math.floor(parse(ws).getTime()/(7*864e5));
@@ -347,9 +347,9 @@ function checkChallenges(announce){
       addXP(60,'challenge',{silent:false});
       if(announce){
         celebrate('badge');
-        try{toast('Challenge done: '+c.def.text)}catch(e){}
+        try{toast(c.def.text+' — done! +60 XP')}catch(e){}
         emit('fin:challenge-done',{id:c.id});
-        setTimeout(function(){tell("Challenge done: "+c.def.text.toLowerCase()+". That's +60 XP for you.",null,{mood:'happy',rank:3})},1200);
+        setTimeout(function(){tell("Nice one — "+c.def.text.toLowerCase()+". +60 XP.",null,{mood:'happy',rank:3})},1200);
       }
     }
   });
@@ -357,7 +357,7 @@ function checkChallenges(announce){
     dn.all=1;persist();
     addXP(50,'challenge-all');
     try{if(W.FinStreak&&FinStreak.award)FinStreak.award('perfect-week')}catch(e){}
-    if(announce){celebrate('big');setTimeout(function(){tell("All three challenges this week. That's the whole set. Bonus +50 XP!",null,{mood:'happy',rank:4})},1500)}
+    if(announce){celebrate('big');setTimeout(function(){tell("Three for three this week. That's the full set. +50 XP bonus!",null,{mood:'happy',rank:4})},1500)}
   }
 }
 function hasExpenseToday(){var t=td();return (S().expenses||[]).some(function(e){return e.date===t})}
@@ -371,7 +371,7 @@ function markNoSpend(){
   celebrate('small');
   try{toast('No-spend day logged. Your streak counts it.')}catch(e){}
   checkChallenges(true);renderCard();
-  setTimeout(function(){tell(pick(["A day with no spending is a real win. Zero-spend days are how big savings start.","Nothing spent, still showed up. That counts, and I counted it.","No-spend day! Your streak is safe."]),null,{mood:'happy',rank:3})},1200);
+  setTimeout(function(){tell(pick(["A no-spend day is a real win. Those are how big savings happen.","Nothing spent and you still showed up. That counts.","No-spend day! Your streak is safe."]),null,{mood:'happy',rank:3})},1200);
 }
 
 /* — the card on the dashboard — */
@@ -382,36 +382,23 @@ function renderCard(){
   var s=S();if(!s||!s.username){el.innerHTML='';el._h='';return}
   var inf=lvInfo(),ch=activeChallenges(),t=td();
   var doneN=ch.filter(function(c){return c.done}).length;
-  var last=LEVELS.length-1;
-  var fill=inf.lv>last?100:Math.round(((inf.lv-1)+inf.pct/100)/last*100);
-  var nodes=LEVELS.map(function(lv,i){
-    var cls=i<inf.lv-1?' got':i===inf.lv-1?' now':'';
-    return '<i class="lf-nd'+cls+'" title="'+esc(lv.n)+'">'+(i<inf.lv-1?ic('check'):(i+1))+'</i>';
-  }).join('');
-  var spentToday=!l.nospend[t]&&hasExpenseToday();
-  var btnTxt=l.nospend[t]?'No-spend day logged':spentToday?'You logged spending today':'Nothing spent today';
+  var spentToday=!!(l.nospend[t]||hasExpenseToday());
   var folded=isFolded();
   var h='<div class="lf-card'+(folded?' is-c':'')+'" data-tour="fin-week">'
-   +'<div class="lf-hero" role="button" tabindex="0" data-lf="fold" aria-expanded="'+(!folded)+'" aria-label="Fin\'s week, '+(folded?'expand':'collapse')+'">'
-   +'<span class="lf-fold" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>'
-   +'<div class="lf-hero-t"><span class="lf-hero-s">Fin is level '+inf.lv+'</span><span class="lf-hero-n">'+esc(inf.name)+'</span></div>'
-   +'<div class="lf-trk" role="progressbar" aria-label="Fin level progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+fill+'"><span class="lf-trk-l"><i style="width:'+fill+'%"></i></span>'+nodes+'</div>'
-   +'<div class="lf-hero-x">'+(inf.to?'<b>'+(inf.to-inf.xp)+' XP</b> to '+esc(LEVELS[inf.lv].n):'Top level reached. Fin is a legend.')+'</div>'
+   +'<div class="lf-top">'
+   +'<div class="lf-ring" style="--p:'+inf.pct+'" role="progressbar" aria-label="Progress to the next level" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+inf.pct+'"><b>'+inf.lv+'</b></div>'
+   +'<div class="lf-who"><div class="lf-eyebrow">Fin · Level '+inf.lv+'</div>'
+   +'<div class="lf-name">'+esc(inf.name)+'</div>'
+   +'<div class="lf-xp-t">'+(inf.to?(inf.to-inf.xp)+' XP to '+esc(LEVELS[inf.lv].n):'Top level reached. Fin is a legend.')+'</div></div>'
+   +'<button type="button" class="lf-link" data-lf="recap">'+ic('chart')+'<span>Recap</span></button>'
+   +'<button type="button" class="lf-fold" data-lf="fold" aria-expanded="'+(!folded)+'" aria-label="'+(folded?'Expand':'Collapse')+' Fin\'s week"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>'
    +'</div>'
-   +'<div class="lf-body">'
-   +'<div class="lf-h">This week<small>'+doneN+' of '+ch.length+' done, resets Monday</small></div>'
+   +'<div class="lf-h"><span>This week</span><small>'+doneN+' of '+ch.length+' done</small></div>'
    +'<div class="lf-ch">'
-   +ch.map(function(c){
-      var g=c.def.goal,pips='';
-      if(g>1){pips='<span class="lf-pips" aria-hidden="true">';for(var k=0;k<g;k++)pips+='<i'+(k<c.prog?' class="on"':'')+'></i>';pips+='</span>'}
-      return '<div class="lf-c'+(c.done?' done':'')+'"><span class="lf-ck" aria-hidden="true">'+ic(c.done?'check':c.def.icon)+'</span>'
-        +'<div class="lf-c-t">'+esc(c.def.text)+'<span class="lf-sr"> '+c.prog+' of '+g+'</span></div>'+pips+'</div>';
-   }).join('')
+   +ch.map(function(c){var multi=c.def.goal>1;return '<div class="lf-c'+(c.done?' done':'')+'"><span class="lf-c-i" aria-hidden="true">'+(c.done?ic('check'):'')+'</span><div class="lf-c-b"><div class="lf-c-t">'+esc(c.def.text)+'</div>'+(multi&&!c.done?'<div class="lf-bar"><i style="width:'+Math.round(c.prog/c.def.goal*100)+'%"></i></div>':'')+'</div><span class="lf-c-n">'+(c.done?'Done':c.prog+'/'+c.def.goal)+'</span></div>'}).join('')
    +'</div>'
-   +'<div class="lf-row">'
-   +'<button type="button" class="lf-btn pri'+(l.nospend[t]?' is-done':'')+'" data-lf="nospend"'+((l.nospend[t]||spentToday)?' disabled':'')+'>'+ic(l.nospend[t]?'check':'shield')+btnTxt+'</button>'
-   +'<button type="button" class="lf-btn" data-lf="recap">'+ic('chart')+'Weekly recap</button></div>'
-   +'</div></div>';
+   +'<div class="lf-foot"><span class="lf-reset">Resets Monday</span>'
+   +'<button type="button" class="lf-btn" data-lf="nospend"'+(spentToday?' disabled':'')+'>'+ic(l.nospend[t]?'check':'shield')+(l.nospend[t]?'No-spend day ✓':hasExpenseToday()?'You logged spending today':'Mark as no-spend day')+'</button></div></div>';
   if(el._h!==h){el._h=h;el.innerHTML=h}
 }
 
@@ -492,7 +479,7 @@ function syncCache(){
 }
 function remindText(){
   var n=W.FinStreak?FinStreak.current():0,fz=(ST()&&ST().freezes)||0;
-  if(n>=2)return{t:'Your '+n+'-day streak is waiting',b:'Log anything, or tap "Nothing spent today". It takes five seconds.'+(fz?' (You also have a freeze in reserve.)':'')};
+  if(n>=2)return{t:'Your '+n+'-day streak is waiting',b:'Log anything or mark a no-spend day. It takes five seconds.'+(fz?' (You also have a freeze in reserve.)':'')};
   return{t:'Quick check-in from Fin',b:'Anything to log today? A no-spend day counts too.'};
 }
 function notify(){
@@ -651,7 +638,7 @@ function wire(){
   ON('fin:badge',function(d){addXP(d.secret?60:40,'badge');celebrate(d.tier==='gold'||d.secret?'big':'badge')});
   ON('fin:freeze-earned',function(){
     try{toast('You earned a streak freeze')}catch(e){}
-    setTimeout(function(){tell("You earned a streak freeze! If life gets busy, it covers up to two missed days. You can hold up to "+((W.FinVip&&FinVip.freezeCap())||2)+".",null,{mood:'happy',rank:2})},1500);
+    setTimeout(function(){tell("You earned a streak freeze. It covers up to two missed days when life gets in the way. You can hold up to "+((W.FinVip&&FinVip.freezeCap())||2)+".",null,{mood:'happy',rank:2})},1500);
   });
   ON('fin:freeze-used',function(d){
     try{toast('Streak freeze used. Your streak is safe.')}catch(e){}
@@ -672,7 +659,6 @@ function wire(){
       decoratePanel();
     }
   });
-  D.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===' ')&&e.target.getAttribute&&e.target.getAttribute('data-lf')==='fold'){e.preventDefault();toggleFold()}});
   D.addEventListener('change',function(e){
     var t=e.target;if(t&&t.getAttribute&&t.getAttribute('data-lf')==='time'&&/^\d{2}:\d{2}$/.test(t.value)){var l=L();l.remind.time=t.value;l.remind.notified='';persist();syncCache()}
   });

@@ -31,68 +31,47 @@
 @keyframes life-levelup{0%{transform:scale(1)}25%{transform:scale(1.28) translateY(-10px)}55%{transform:scale(.94)}100%{transform:scale(1)}}
 
 /* ───────── "Fin's week" card on the dashboard ─────────
-   Same visual language as the wallet cards: one saturated panel with the two soft circles,
-   then a quiet body. The panel colour follows the person's accent. */
-#dash-life{margin:0 0 16px}
-.lf-card{border:1px solid var(--border2);background:var(--surface);border-radius:22px;overflow:hidden;box-shadow:var(--shadow-sm)}
-.lf-hero{position:relative;overflow:hidden;padding:18px 18px 16px;color:#fff;
-  background:#25360f;
-  background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 58%,#000),color-mix(in srgb,var(--accent) 26%,#000))}
-.lf-hero::before{content:'';position:absolute;right:-46px;top:-52px;width:170px;height:170px;border-radius:50%;background:rgba(255,255,255,.12)}
-.lf-hero::after{content:'';position:absolute;right:34px;bottom:-84px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.07)}
-.lf-hero>*{position:relative;z-index:1}
-.lf-hero{cursor:pointer;-webkit-tap-highlight-color:transparent}
-.lf-hero:focus-visible{outline:2px solid #fff;outline-offset:-4px}
-.lf-fold{position:absolute;right:14px;top:14px;z-index:2;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;transition:background .15s,transform .2s}
-.lf-fold svg{width:15px;height:15px;fill:none;stroke:#fff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
-.lf-hero:hover .lf-fold{background:rgba(255,255,255,.3)}
-.lf-card.is-c .lf-fold{transform:rotate(-90deg)}
-.lf-card.is-c .lf-body,.lf-card.is-c .lf-trk{display:none}
-.lf-card.is-c .lf-hero{padding-bottom:14px}
-.lf-hero-t{padding-right:40px}
-.lf-card.is-c .lf-hero-x{margin-top:6px}
-.lf-hero-t{display:flex;flex-direction:column;gap:1px}
-.lf-hero-s{font-size:12px;opacity:.78}
-.lf-hero-n{font:800 26px/1.15 var(--font-d,sans-serif);letter-spacing:-.025em}
-.lf-trk{position:relative;display:flex;justify-content:space-between;align-items:center;margin:18px 0 12px;height:24px}
-.lf-trk-l{position:absolute;left:12px;right:12px;top:50%;height:4px;margin-top:-2px;border-radius:99px;background:rgba(255,255,255,.22)}
-.lf-trk-l i{display:block;height:100%;border-radius:inherit;background:#fff;transition:width .7s cubic-bezier(.3,.9,.3,1)}
-.lf-nd{position:relative;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:700 10.5px var(--font-d,sans-serif);font-style:normal;font-variant-numeric:tabular-nums;
-  background:color-mix(in srgb,var(--accent) 30%,#000);border:2px solid rgba(255,255,255,.28);color:rgba(255,255,255,.7)}
-.lf-nd .ic{width:12px;height:12px;stroke-width:3}
-.lf-nd.got{background:#fff;border-color:#fff;color:color-mix(in srgb,var(--accent) 50%,#000)}
-.lf-nd.now{background:#fff;border-color:#fff;color:color-mix(in srgb,var(--accent) 45%,#000);transform:scale(1.22);box-shadow:0 0 0 5px rgba(255,255,255,.2),0 4px 12px rgba(0,0,0,.3)}
-.lf-hero-x{font-size:12.5px;opacity:.86}
-.lf-hero-x b{font-weight:700;opacity:1}
-.lf-body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:6px}
-.lf-h{font:700 14px var(--font-d,sans-serif);color:var(--text);display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
-.lf-h small{font:500 11.5px var(--font-b,sans-serif);color:var(--muted)}
-.lf-ch{display:flex;flex-direction:column}
-.lf-c{display:flex;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid var(--border)}
-.lf-c:last-child{border-bottom:0}
-.lf-ck{flex:none;width:30px;height:30px;border-radius:50%;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;color:var(--muted);transition:background .2s,border-color .2s,color .2s}
-.lf-ck .ic{width:15px;height:15px}
-.lf-c.done .lf-ck{background:var(--accent);border-color:var(--accent);color:var(--on-accent,#0b1204)}
-.lf-c.done .lf-ck .ic{stroke-width:3}
-.lf-c-t{flex:1;min-width:0;font-size:13.5px;line-height:1.3;color:var(--text)}
+   Flat surface, hairlines, one accent. The level is a ring that doubles as the XP meter. */
+#dash-life{margin:0 0 12px}
+.lf-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:20px;display:flex;flex-direction:column}
+.lf-top{display:flex;align-items:center;gap:14px}
+.lf-ring{position:relative;flex:none;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--accent) calc(var(--p,0)*1%),var(--border2) 0)}
+.lf-ring::before{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--surface)}
+.lf-ring b{position:relative;font:600 15px/1 var(--font-d);color:var(--text);font-variant-numeric:tabular-nums}
+.lf-who{flex:1;min-width:0}
+.lf-eyebrow{font-size:12px;font-weight:500;color:var(--muted);line-height:1.3}
+.lf-name{font:600 17px/1.25 var(--font-d);letter-spacing:-.015em;color:var(--text);margin-top:1px}
+.lf-xp-t{margin-top:2px;font-size:12.5px;color:var(--muted);line-height:1.4}
+.lf-link{flex:none;align-self:flex-start;display:inline-flex;align-items:center;gap:6px;margin:-6px -8px 0 0;padding:8px;border:0;border-radius:10px;background:transparent;color:var(--muted);font:500 13px var(--font-b);cursor:pointer;min-height:36px}
+.lf-link .ic{width:15px;height:15px}
+.lf-link:hover{color:var(--text);background:var(--surface2)}
+.lf-link:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.lf-h{display:flex;justify-content:space-between;align-items:baseline;margin-top:18px;padding-top:16px;border-top:1px solid var(--border);font:600 14px var(--font-d);color:var(--text)}
+.lf-h small{font:400 12.5px var(--font-b);color:var(--muted);font-variant-numeric:tabular-nums}
+.lf-ch{display:flex;flex-direction:column;margin-top:4px}
+.lf-c{display:flex;align-items:center;gap:12px;min-height:48px;padding:6px 0}
+.lf-c-i{flex:none;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--border2);display:grid;place-items:center;transition:background .2s,border-color .2s}
+.lf-c-i .ic{width:12px;height:12px;stroke-width:3;color:var(--on-accent,#0a0a0a)}
+.lf-c.done .lf-c-i{background:var(--accent);border-color:var(--accent)}
+.lf-c-b{flex:1;min-width:0}
+.lf-c-t{font-size:14px;line-height:1.35;color:var(--text)}
 .lf-c.done .lf-c-t{color:var(--muted)}
-.lf-pips{flex:none;display:flex;gap:4px}
-.lf-pips i{width:18px;height:8px;border-radius:99px;background:var(--surface3,var(--surface2));border:1px solid var(--border2);transition:background .25s,border-color .25s}
-.lf-pips i.on{background:var(--accent);border-color:var(--accent)}
-.lf-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.lf-row{display:flex;gap:8px;margin-top:10px}
-.lf-row .lf-btn.pri{flex:1.5 1 0}
-.lf-row .lf-btn:not(.pri){flex:1 1 0}
-.lf-btn{flex:1 1 auto;min-height:46px;padding:0 14px;border-radius:14px;border:1px solid var(--border2);background:transparent;color:var(--text);font:600 13px var(--font-b,sans-serif);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px;-webkit-tap-highlight-color:transparent;transition:border-color .15s,transform .12s,background .15s}
-.lf-btn:hover{border-color:rgba(var(--accent-rgb),.5);background:var(--surface2)}
-.lf-btn:active{transform:scale(.97)}
+.lf-bar{margin-top:7px;height:3px;border-radius:99px;background:var(--border2);overflow:hidden}
+.lf-bar i{display:block;height:100%;border-radius:inherit;background:var(--accent);transition:width .5s cubic-bezier(.2,.7,.2,1)}
+.lf-c-n{flex:none;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.lf-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px;padding-top:16px;border-top:1px solid var(--border)}
+.lf-reset{font-size:12px;color:var(--muted)}
+.lf-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border-radius:12px;border:1px solid var(--border2);background:transparent;color:var(--text);font:500 14px var(--font-b);cursor:pointer;transition:background .15s,transform .1s}
+.lf-btn:hover{background:var(--surface2)}
+.lf-btn:active{transform:scale(.98)}
 .lf-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.lf-btn .ic{width:16px;height:16px}
-.lf-btn.pri{background:var(--accent);border-color:var(--accent);color:var(--on-accent,#0b1204);box-shadow:0 8px 18px -10px rgba(var(--accent-rgb),.9)}
-.lf-btn.pri:hover{background:var(--accent);filter:brightness(1.06)}
-.lf-btn[disabled],.lf-btn.pri[disabled]{cursor:default;transform:none;filter:none;box-shadow:none;background:var(--surface2);border-color:var(--border2);color:var(--muted)}
-.lf-btn.pri.is-done[disabled]{color:var(--accent);background:rgba(var(--accent-rgb),.12);border-color:rgba(var(--accent-rgb),.4)}
-@media (max-width:380px){.lf-row{flex-direction:column}.lf-hero-n{font-size:23px}}
+.lf-btn .ic{width:16px;height:16px;color:var(--muted)}
+.lf-btn[disabled]{color:var(--muted);cursor:default;background:transparent}
+.lf-btn[disabled]:hover{background:transparent}
+/* the one solid button: used for "Got it" in the recap sheet */
+.lf-btn.pri{background:var(--accent);border-color:transparent;color:var(--on-accent,#0a0a0a);font-weight:600}
+.lf-btn.pri:hover{background:var(--accent-hover,var(--accent))}
+@media(max-width:380px){.lf-foot{flex-direction:column;align-items:stretch}.lf-reset{order:2;text-align:center}}
 
 /* ───────── weekly recap sheet ───────── */
 .lf-back{position:fixed;inset:0;z-index:3200;background:rgba(0,0,0,.62);display:flex;align-items:flex-end;justify-content:center;animation:life-fade .2s ease-out}
@@ -161,3 +140,13 @@
   .finc .fin-tw{opacity:1}
   .lf-trk-l i,.lf-ck,.lf-pips i{transition:none}
 }
+
+/* collapse: tap the chevron to fold Fin's week down to the level header (remembered) */
+.lf-fold{flex:none;align-self:flex-start;width:32px;height:32px;margin:-4px -6px 0 0;border-radius:50%;border:1px solid var(--border2);background:transparent;color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .2s,background .15s,color .15s}
+.lf-fold svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.lf-fold:hover{background:var(--surface2);color:var(--text)}
+.lf-fold:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.lf-card.is-c .lf-fold{transform:rotate(-90deg)}
+.lf-card.is-c .lf-h,.lf-card.is-c .lf-ch,.lf-card.is-c .lf-foot{display:none}
+.lf-card.is-c{padding-bottom:16px}
+@media(prefers-reduced-motion:reduce){.lf-fold{transition:none}}

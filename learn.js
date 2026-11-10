@@ -166,40 +166,40 @@ function insights(){
   try{MO=MONTH_ORDER}catch(e){}
   var exM=ex.filter(function(e){return String(e.date||'').slice(0,7)===mk}),spent=exM.reduce(function(a,b){return a+(+b.amount||0)},0);
   var earned=inc.filter(function(i){return i.month===MO[mi]&&(i.year||yr)===yr}).reduce(function(a,b){return a+(+b.amount||0)},0);
-  if(!ex.length)out.push({id:'first',icon:'edit',title:'Log your first expense',text:'Tracking is the first money habit. Even one entry a day shows you where your money goes.',lesson:'tracking',cta:{label:'Log an expense',page:'expenses'}});
+  if(!ex.length)out.push({id:'first',icon:'edit',title:'Log your first expense',text:'One entry a day is enough to start. You can\'t manage what you can\'t see.',lesson:'tracking',cta:{label:'Log an expense',page:'expenses'}});
   else{
     var last=ex.map(function(e){return String(e.date||'')}).sort().pop(),days=Math.floor((new Date(td())-new Date(last))/864e5);
-    if(days>=3)out.push({id:'stale',icon:'clock',title:'It has been '+days+' days since your last expense',text:'Logging right when you spend keeps your numbers honest. Anything to catch up on?',lesson:'tracking',cta:{label:'Log an expense',page:'expenses'}});
+    if(days>=3)out.push({id:'stale',icon:'clock',title:'Last log was '+days+' days ago',text:'Logging as you go keeps things accurate. Anything to catch up on?',lesson:'tracking',cta:{label:'Log an expense',page:'expenses'}});
   }
   if(earned>0&&exM.length){
     var rate=Math.round((earned-spent)/earned*100);
-    if(spent>earned)out.push({id:'over',icon:'alert',title:'You have spent '+money(spent-earned)+' more than you earned this month',text:'It happens. Look at your biggest category and see what can wait. A simple budget helps.',lesson:'budgeting',cta:{label:'Set a budget',page:'goals'}});
-    else if(rate>=20)out.push({id:'rate',icon:'trend-up',title:'You are saving about '+rate+'% this month',text:'That meets the 20% savings share in the 50/30/20 rule. Nice. Keep it going.',lesson:'saving'});
-    else out.push({id:'rate',icon:'chart',title:'You are saving about '+rate+'% this month',text:'A common target is around 20%. Even a small bump adds up over a year.',lesson:'saving'});
+    if(spent>earned)out.push({id:'over',icon:'alert',title:'You\'re '+money(spent-earned)+' over your income this month',text:'It happens. Look at your biggest category first — that\'s usually where the room is.',lesson:'budgeting',cta:{label:'Set a budget',page:'goals'}});
+    else if(rate>=20)out.push({id:'rate',icon:'trend-up',title:'Saving about '+rate+'% of income this month',text:'That\'s the 50/30/20 target. Keep going — that habit compounds.',lesson:'saving'});
+    else out.push({id:'rate',icon:'chart',title:'Saving about '+rate+'% of income this month',text:'Around 20% is a solid target. Even bumping it by 2–3% makes a difference over a year.',lesson:'saving'});
   }
   if(exM.length>=3){
     var by={};exM.forEach(function(e){by[e.cat||'other']=(by[e.cat||'other']||0)+(+e.amount||0)});
     var k=Object.keys(by).sort(function(a,b){return by[b]-by[a]})[0],pct=Math.round(by[k]/spent*100),lab=k;
     try{lab=(CAT_LABELS[k]||k)}catch(e){}
-    if(pct>=40)out.push({id:'cat',icon:'search',title:String(lab).replace(/^[^\p{L}\p{N}]+/u,'')+' is '+pct+'% of your spending this month',text:'One category taking this much is worth a look. Is it a need, a want, or a habit?',lesson:'spending'});
+    if(pct>=40)out.push({id:'cat',icon:'search',title:String(lab).replace(/^[^\p{L}\p{N}]+/u,'')+' is '+pct+'% of your spending this month',text:'One category carrying this much is worth a closer look. Is it a need, a want, or just a habit?',lesson:'spending'});
   }
   var lim=+s.budgetLimit||0;
-  if(!lim)out.push({id:'nobud',icon:'target',title:'No monthly budget yet',text:'A budget gives your money a job before you spend it. Start with a number you can really follow.',lesson:'budgeting',cta:{label:'Set a budget',page:'goals'}});
-  else if(spent>=lim*.8)out.push({id:'bud',icon:'gauge',title:'You have used '+Math.round(spent/lim*100)+'% of this month’s budget',text:'Time to slow down on wants for the rest of the month.',lesson:'budgeting'});
+  if(!lim)out.push({id:'nobud',icon:'target',title:'No monthly budget set',text:'A budget isn\'t a restriction — it\'s just a plan. Start with a number you can actually stick to.',lesson:'budgeting',cta:{label:'Set a budget',page:'goals'}});
+  else if(spent>=lim*.8)out.push({id:'bud',icon:'gauge',title:'At '+Math.round(spent/lim*100)+'% of your budget',text:'Getting close. Focus on needs for the rest of the month — wants can wait.',lesson:'budgeting'});
   var cash=ws.filter(function(w){return(w.type!=='credit')&&(+w.balance>0)}).reduce(function(a,b){return a+(+b.balance)},0);
   var months={};ex.forEach(function(e){var m=String(e.date||'').slice(0,7);if(m)months[m]=(months[m]||0)+(+e.amount||0)});
   var mkeys=Object.keys(months).sort().slice(-3);
   if(mkeys.length){
     var avg=mkeys.reduce(function(a,m){return a+months[m]},0)/mkeys.length;
     if(avg>0){var cover=cash/avg;
-      out.push({id:'fund',icon:'lifering',title:'Your cash covers about '+(cover<1?Math.max(1,Math.round(cover*4))+' week'+(Math.round(cover*4)===1?'':'s'):cover.toFixed(1)+' months')+' of spending',text:'A common emergency fund target is 3 to 6 months. Build it a little at a time.',lesson:'saving',cta:{label:'Make a goal',page:'goals'}});}
+      out.push({id:'fund',icon:'lifering',title:'Your cash covers about '+(cover<1?Math.max(1,Math.round(cover*4))+' week'+(Math.round(cover*4)===1?'':'s'):cover.toFixed(1)+' months')+' of spending',text:'Most people aim for 3–6 months of expenses saved. Even a small goal is a start.',lesson:'saving',cta:{label:'Make a goal',page:'goals'}});}
   }
-  if(!goals.length)out.push({id:'nogoal',icon:'flag',title:'No savings goal yet',text:'Goals with an amount and a date are far easier to reach than "save more".',lesson:'saving',cta:{label:'Create a goal',page:'goals'}});
+  if(!goals.length)out.push({id:'nogoal',icon:'flag',title:'No savings goal yet',text:'A goal with a number and a date beats "save more" every time. Even a small one.',lesson:'saving',cta:{label:'Create a goal',page:'goals'}});
   var owe=loans.filter(function(l){return l.type==='payable'&&!l.settled}).reduce(function(a,b){return a+(+b.amount||0)},0);
-  if(owe>0)out.push({id:'owe',icon:'swap',title:'You owe '+money(owe)+' in total',text:'Write down what is due and when. Paying a bit more than the minimum saves interest.',lesson:'debt',cta:{label:'See loans',page:'loans'}});
+  if(owe>0)out.push({id:'owe',icon:'swap',title:'Owing '+money(owe)+' in total',text:'Know what\'s due and when. Even a little extra on the minimum saves real money on interest.',lesson:'debt',cta:{label:'See loans',page:'loans'}});
   ws.forEach(function(w){
     var l=+w.limit||0,used=Math.max(0,-(+w.balance||0));
-    if(w.type==='credit'&&l>0&&used/l>.3)out.push({id:'util-'+w.id,icon:'card',title:w.label+' is at '+Math.round(used/l*100)+'% of its limit',text:'Many people aim to stay under about 30% and pay the full statement on time.',lesson:'debt'});
+    if(w.type==='credit'&&l>0&&used/l>.3)out.push({id:'util-'+w.id,icon:'card',title:w.label+' is at '+Math.round(used/l*100)+'% of its limit',text:'Keeping it under 30% and paying the full statement on time is a good habit — your credit score notices.',lesson:'debt'});
   });
   return out;
 }
@@ -246,10 +246,10 @@ function viewHome(){
     +'<div class="lrn-bar"><i style="width:'+Math.round(n/LESSONS.length*100)+'%"></i></div></div>';
   // quiz banner
   if(!pre){
-    h+='<div class="lrn-ban" data-tour="learn-quiz"><div class="lrn-ban-t"><b>Take the Starter Quiz first</b><span>10 questions, about '+QUIZ_MIN.pre+'. No pressure. It shows where you are starting, so we can see how much you grow.</span></div><button class="lrn-btn" onclick="FinLearn.startQuiz(\'pre\')">Start quiz</button></div>';
+    h+='<div class="lrn-ban" data-tour="learn-quiz"><div class="lrn-ban-t"><b>Quick quiz before you start</b><span>About '+QUIZ_MIN.pre+'. No pressure — it just shows where you\'re at so the lessons fit.</span></div><button class="lrn-btn" onclick="FinLearn.startQuiz(\'pre\')">Start quiz</button></div>';
   }else if(!post){
     var ready=n>=POST_UNLOCK;
-    h+='<div class="lrn-ban'+(ready?'':' off')+'" data-tour="learn-quiz"><div class="lrn-ban-t"><b>Progress Quiz</b><span>'+(ready?'You are ready. Same topics, new questions. See how far you have come.':'Finish '+(POST_UNLOCK-n)+' more lesson'+(POST_UNLOCK-n===1?'':'s')+' to unlock. Starter score: '+pre.pct+'%.')+'</span></div>'+(ready?'<button class="lrn-btn" onclick="FinLearn.startQuiz(\'post\')">Take it</button>':'<span class="lrn-lock"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></span>')+'</div>';
+    h+='<div class="lrn-ban'+(ready?'':' off')+'" data-tour="learn-quiz"><div class="lrn-ban-t"><b>Progress Quiz</b><span>'+(ready?'Same topics, new questions. Let\'s see how much has sunk in.':'Finish '+(POST_UNLOCK-n)+' more lesson'+(POST_UNLOCK-n===1?'':'s')+' to unlock. Starter score: '+pre.pct+'%.')+'</span></div>'+(ready?'<button class="lrn-btn" onclick="FinLearn.startQuiz(\'post\')">Take it</button>':'<span class="lrn-lock"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></span>')+'</div>';
   }else{
     var d=post.pct-pre.pct;
     h+='<div class="lrn-ban done" data-tour="learn-quiz"><div class="lrn-ban-t"><b>Starter '+pre.pct+'%  →  Progress '+post.pct+'%</b><span>'+(d>0?'You gained '+d+' points. That is real learning.':d===0?'Holding steady. Revisit a lesson to push higher.':'Down a bit. Retry a lesson and see what changed.')+'</span></div><button class="lrn-btn ghost" onclick="FinLearn.showResult(\'post\')">View</button></div>';
@@ -284,7 +284,7 @@ function viewLesson(){
 function step(d){
   var l=LMAP[V.id];if(!l)return;
   var i=V.i+d;
-  if(i>=l.cards.length){go({t:'check',id:V.id,i:0,qs:l.check.map(prep),picked:null,score:0});return}
+  if(i>=l.cards.length){go({t:'check',id:V.id,i:0,qs:l.check.map(prep),picks:[],picked:null,score:0});return}
   if(i<0)i=0;
   go({t:'lesson',id:V.id,i:i});
 }
@@ -293,23 +293,34 @@ function prep(q){return{id:q.id||'',t:q.t||'',q:q.q,e:q.e,opts:shuffle(q.o.map(f
 /* lesson check (instant feedback) */
 function viewCheck(){
   var l=LMAP[V.id],q=V.qs[V.i];if(!l||!q)return viewHome();
-  var h='<button class="lrn-back" onclick="FinLearn.openLesson(\''+l.id+'\')">← Back to lesson</button><div class="lrn-rd"><div class="lrn-rd-top"><span class="lrn-rd-e">'+ico(l.e)+'</span><span class="lrn-rd-t">Check yourself · '+(V.i+1)+' of '+V.qs.length+'</span></div>'
+  var h='<button class="lrn-back" onclick="FinLearn.openLesson(\''+l.id+'\')">← Back to lesson</button><div class="lrn-rd"><div class="lrn-rd-top"><span class="lrn-rd-e">'+ico(l.e)+'</span><span class="lrn-rd-t">'+l.title+' · '+(V.i+1)+' of '+V.qs.length+'</span></div>'
    +'<div class="lrn-bar sm"><i style="width:'+Math.round(V.i/V.qs.length*100)+'%"></i></div><h2 class="lrn-q">'+q.q+'</h2><div class="lrn-opts">';
   q.opts.forEach(function(o,i){
     var cls='lrn-opt';
-    if(V.picked!==null){if(o.ok)cls+=' ok';else if(i===V.picked)cls+=' bad';}
+    if(V.picked!==null){
+      if(o.ok) cls+=' ok';
+      else if(i===V.picked) cls+=' bad';
+      else cls+=' dim';
+    }
     h+='<button type="button" class="'+cls+'" '+(V.picked!==null?'disabled':'')+' onclick="FinLearn.answer('+i+')"><span>'+o.t+'</span></button>';
   });
   h+='</div>';
   if(V.picked!==null){
     var good=q.opts[V.picked].ok;
-    h+='<div class="lrn-fb '+(good?'ok':'bad')+'"><b>'+(good?'Correct.':'Not quite.')+'</b> '+q.e+'</div><div class="lrn-nav"><span></span><button class="lrn-btn" onclick="FinLearn.next()">'+(V.i===V.qs.length-1?'Finish':'Next')+' →</button></div>';
+    var label=good?'That\'s right.':'Not quite.';
+    h+='<div class="lrn-fb '+(good?'ok':'bad')+' lrn-fb-in"><span class="lrn-fb-icon">'+(good?'✓':'✗')+'</span><div><b>'+label+'</b><span>'+q.e+'</span></div></div>'
+      +'<div class="lrn-nav"><span></span><button class="lrn-btn" onclick="FinLearn.next()">'+(V.i===V.qs.length-1?'See results →':'Next question →')+'</button></div>';
   }
   return h+'</div>';
 }
 function answer(i){
   if(V.picked!==null)return;
-  var q=V.qs[V.i];V.picked=i;if(q.opts[i].ok)V.score++;render();
+  var q=V.qs[V.i];V.picked=i;
+  var ok=q.opts[i].ok;
+  if(ok)V.score++;
+  if(!V.picks)V.picks=[];
+  V.picks.push({ok:ok,q:q.q,correct:q.opts.filter(function(o){return o.ok})[0].t,e:q.e});
+  render();
 }
 function next(){
   if(V.i<V.qs.length-1){V.i++;V.picked=null;render();return}
@@ -317,16 +328,20 @@ function next(){
   L.done[V.id]={score:prev?Math.max(prev.score,sc):sc,total:tot,at:new Date().toISOString(),tries:(prev?(prev.tries||1)+1:1)};
   persist();
   try{W.dispatchEvent(new CustomEvent('fin:learn-complete',{detail:{id:V.id,score:sc,total:tot}}))}catch(e){}
-  go({t:'done',id:V.id,score:sc,total:tot});
+  go({t:'done',id:V.id,score:sc,total:tot,qs:V.qs,picks:V.picks});
 }
 function viewDone(){
   var l=LMAP[V.id],idx=LESSONS.indexOf(l),nx=LESSONS[idx+1],n=doneCount();
-  var msg=V.score===V.total?'Perfect. You got it.':V.score>=2?'Nice work.':'Good try. Read it once more and retry.';
+  var msg=V.score===V.total?'Every question right. The habit part comes next.':V.score>=2?'Solid. Check the ones you missed below.':'Take another look at the lesson, then come back.';
   var ready=LS().pre&&!LS().post&&n>=POST_UNLOCK;
   return '<div class="lrn-rd center"><div class="lrn-big">'+ico(l.e)+'</div><h2>'+l.title+' complete</h2><div class="lrn-score">'+V.score+' / '+V.total+'</div><p>'+msg+'</p>'
    +(l.tryIt?'<div class="lrn-try"><b>Try it in FINUITY</b><button class="lrn-btn" onclick="show(\''+l.tryIt.page+'\')">'+l.tryIt.label+' →</button></div>':'')
    +(ready?'<div class="lrn-try"><b>The Progress Quiz is unlocked</b><button class="lrn-btn" onclick="FinLearn.startQuiz(\'post\')">Take it →</button></div>':'')
-   +'<div class="lrn-nav stack">'+(nx?'<button class="lrn-btn ghost" onclick="FinLearn.openLesson(\''+nx.id+'\')">Next: '+nx.title+' →</button>':'')+'<button class="lrn-btn ghost" onclick="FinLearn.home()">Back to Learn</button></div></div>';
+   +(V.qs&&V.qs.length?'<div class="lrn-review">'+V.qs.map(function(q,i){
+    var pick=V.picks?V.picks[i]:null,good=pick&&pick.ok,right=q.opts.filter(function(o){return o.ok})[0].t;
+    return '<div class="lrn-ri '+(good?'ok':'bad')+'"><span class="lrn-ri-icon">'+(good?'✓':'✗')+'</span><div class="lrn-ri-body"><b>'+q.q+'</b>'+(good?'':'<span>Answer: '+right+'</span><em>'+q.e+'</em>')+'</div></div>';
+  }).join('')+'</div>':'')
+  +'<div class="lrn-nav stack">'+(nx?'<button class="lrn-btn" onclick="FinLearn.openLesson(\''+nx.id+'\')">Next: '+nx.title+' →</button>':'')+'<button class="lrn-btn ghost" onclick="FinLearn.home()">Back to Learn</button></div></div>';
 }
 
 /* quiz (no feedback until the end, so the score is honest) */
@@ -387,17 +402,63 @@ function viewResult(){
   return h+'<div class="lrn-nav stack"><button class="lrn-btn ghost" onclick="FinLearn.home()">Back to Learn</button></div></div>';
 }
 
-/* ───────── dashboard card ───────── */
+/* ───────── dashboard card ─────────
+   First visit: a proper banner with a picture (quiz invite). After the quiz: a smaller card in the same family
+   that surfaces the lesson that fits what the person just did. */
+// hero: a bamboo alkansya (the traditional Filipino coin bank) in a soft frame, with a coin dropping into the slot
+var ART_ALKANSYA='<svg viewBox="140 0 190 200" aria-hidden="true" focusable="false">'
+ +'<ellipse class="a-shadow" cx="235" cy="189" rx="54" ry="6"/>'
+ // slender bamboo leaves rising from behind the top
+ +'<path class="bb-leaf" d="M204 64C192 52 176 42 156 26C176 28 196 38 212 56z"/><path class="bb-leaf2" d="M207 60C201 46 195 34 184 20C198 26 211 40 214 56z"/>'
+ +'<path class="bb-leaf" d="M266 64C278 52 294 42 314 26C294 28 274 38 258 56z"/><path class="bb-leaf2" d="M263 60C269 46 275 34 286 20C272 26 259 40 256 56z"/>'
+ // the tube
+ +'<path class="bb-body" d="M197 62v116a38 9 0 0 0 76 0V62z"/>'
+ +'<rect class="bb-hi" x="204" y="70" width="7" height="102" rx="3.5"/><path class="bb-sh" d="M259 68h14v110a38 9 0 0 1-14 7z"/>'
+ +'<path class="bb-grain" d="M222 72v32M247 70v30M221 163v9M250 164v8"/>'
+ // thin nodes, slightly wider than the tube
+ +'<path class="bb-node" d="M193 106Q235 124 277 106V112Q235 130 193 112z"/><path class="bb-node" d="M193 150Q235 168 277 150V156Q235 174 193 156z"/>'
+ // cut top with the coin slot
+ +'<ellipse class="bb-top" cx="235" cy="62" rx="38" ry="9"/><rect class="bb-slot" x="219" y="58.5" width="32" height="7" rx="3.5"/>'
+ // face
+ +'<ellipse class="bb-cheek" cx="213" cy="142" rx="6" ry="3.4"/><ellipse class="bb-cheek" cx="257" cy="142" rx="6" ry="3.4"/>'
+ +'<circle class="bb-ink" cx="222" cy="134" r="4"/><circle class="bb-ink" cx="248" cy="134" r="4"/><circle class="a-white" cx="223.3" cy="132.7" r="1.3"/><circle class="a-white" cx="249.3" cy="132.7" r="1.3"/>'
+ +'<path class="bb-smile" d="M228 142q7 7 14 0"/>'
+ // coin dropping in
+ +'<g><path class="a-motion" d="M235 2v8M226 5v7M244 5v7"/><circle class="a-ac" cx="235" cy="29" r="14"/><circle class="a-coin-ring" cx="235" cy="29" r="9.5"/><text class="a-peso" x="235" y="34.4" text-anchor="middle">₱</text></g>'
+ +'<path class="m-b" d="M152 112l2.4 6.4 6.4 2.4-6.4 2.4-2.4 6.4-2.4-6.4-6.4-2.4 6.4-2.4z"/><path class="m-c" d="M318 128l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/>'
+ +'</svg>';
+// little pictures for the four floating cards (real lessons from LESSONS)
+var MINI={
+ pie:'<svg viewBox="0 0 40 40" aria-hidden="true"><circle class="m-a" cx="20" cy="20" r="15"/><path class="m-b" d="M20 20V5a15 15 0 0 1 13 22.5z"/><path class="m-c" d="M20 20l13 7.5A15 15 0 0 1 12 33z"/></svg>',
+ sprout:'<svg viewBox="0 0 40 40" aria-hidden="true"><path class="m-c" d="M11 26h18l-2.4 11H13.4z"/><path class="m-line" d="M20 26V15"/><path class="m-a" d="M20 17c-1-6-6-8-11-7 0 6 4 9 11 7z"/><path class="m-b" d="M20 14c1-5 5-8 11-7-1 6-5 9-11 7z"/></svg>',
+ bag:'<svg viewBox="0 0 40 40" aria-hidden="true"><path class="m-line" d="M14 15v-3a6 6 0 0 1 12 0v3"/><rect class="m-b" x="8" y="14" width="24" height="22" rx="5"/><path class="m-tick" d="M15 25l4 4 7-8"/></svg>',
+ shield:'<svg viewBox="0 0 40 40" aria-hidden="true"><path class="m-a" d="M20 4l13 5v10c0 9-6 15-13 17C13 34 7 28 7 19V9z"/><path class="m-tick" d="M14 20l5 5 8-10"/></svg>'
+};
+function chip(cls,label,icon){return '<div class="dl-chip '+cls+'"><b>'+label+'</b><i class="dl-play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg></i><span class="dl-mini">'+MINI[icon]+'</span></div>'}
+var TICKS='<svg class="dl-ticks t1" viewBox="0 0 30 30" aria-hidden="true"><path d="M5 6l8 4M2 16h10M5 26l8-5"/></svg><svg class="dl-ticks t2" viewBox="0 0 30 30" aria-hidden="true"><path d="M25 6l-8 4M28 16H18M25 26l-8-5"/></svg>';
 function renderDash(){
   var el=$('dash-learn');if(!el)return;
   var L=LS(),h='';
+  var kb=' role="button" tabindex="0" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();this.click()}"';
+  var arrow='<svg class="dl-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
   if(!L.pre){
-    h='<div class="dl-card" onclick="FinLearn.startQuiz(\'pre\')"><div class="dl-e"><svg class="ic" aria-hidden="true"><use href="#i-graduation"/></svg></div><div class="dl-b"><div class="dl-t">Test your money know-how</div><div class="dl-x">Take the 10-question Starter Quiz, then unlock short lessons.</div></div><div class="dl-go">Start →</div></div>';
+    h='<div class="dl-ad dl-hero"'+kb+' onclick="FinLearn.startQuiz(\'pre\')" aria-label="Take the 10 question money quiz, about 3 minutes">'
+     +'<div class="dl-stage" aria-hidden="true">'+TICKS
+     +'<div class="dl-frame">'+ART_ALKANSYA+'</div>'
+     +chip('c1','Budgeting<br>101','pie')+chip('c2','Save<br>First','sprout')+chip('c3','Smart<br>Spending','bag')+chip('c4','Money<br>Safety','shield')
+     +'</div>'
+     +'<div class="dl-ad-body"><div class="dl-ad-t">Money for every you.</div>'
+     +'<div class="dl-ad-x">Take a 3-minute quiz, then unlock short lessons built around how you actually spend.</div>'
+     +'<div class="dl-dots" aria-hidden="true"><i class="on"></i><i></i><i></i></div><span class="sr-only">Step 1 of 3: take the quiz. Then lessons. Then level up.</span>'
+     +'<span class="dl-pill"><span>Take the quiz</span><span class="dl-go-c">'+arrow+'</span></span></div></div>';
   }else{
     var day=Math.floor(Date.now()/864e5),arr=insights().slice(0,5),i=arr.length?arr[day%arr.length]:null,t=null;
     if(!i)t=TIPS[day%TIPS.length];
     var title=i?i.title:'Money tip',text=i?i.text:t.t,lesson=i?i.lesson:t.l;
-    h='<div class="dl-card" onclick="FinLearn.openLesson(\''+lesson+'\')"><div class="dl-e">'+ico(i?i.icon:'bulb')+'</div><div class="dl-b"><div class="dl-t">'+esc(title)+'</div><div class="dl-x">'+esc(text)+'</div></div><div class="dl-go">Learn →</div></div>';
+    h='<div class="dl-ad sm"'+kb+' onclick="FinLearn.openLesson(\''+lesson+'\')">'
+     +'<div class="dl-ad-art" aria-hidden="true"><span class="dl-ad-ico">'+ico(i?i.icon:'bulb')+'</span></div>'
+     +'<div class="dl-ad-body"><div class="dl-ad-kicker">For you today</div><div class="dl-ad-t">'+esc(title)+'</div><div class="dl-ad-x">'+esc(text)+'</div>'
+     +'<div class="dl-ad-row"><span class="dl-ad-cta ghost">Read the lesson'+arrow+'</span></div></div></div>';
   }
   if(el._h===h)return;el._h=h;el.innerHTML=h;
 }

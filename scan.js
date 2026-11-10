@@ -164,17 +164,13 @@ function catOptions(sel){
   var s=$('exp-cat');if(!s)return '<option value="other-exp">Other</option>';
   return Array.prototype.map.call(s.options,function(o){return '<option value="'+esc(o.value)+'"'+(o.value===sel?' selected':'')+'>'+esc(o.textContent)+'</option>'}).join('');
 }
-function srcOptions(){
-  var s=$('exp-source');if(!s)return '';
-  return Array.prototype.map.call(s.options,function(o){return '<option value="'+esc(o.value)+'"'+(o.selected?' selected':'')+'>'+esc(o.textContent)+'</option>'}).join('');
-}
 function review(f,onUse){
   closeRev();revPrev=D.activeElement;revDone=onUse;
   f=f||{};var items=Array.isArray(f.items)?f.items:[];
   var cat=f.category;
   if(!cat){var g=(typeof W.finGuessCat==='function')?W.finGuessCat:null;cat=(g&&f.merchant&&g(f.merchant))||'other-exp'}
   var low=f.confidence==='low'||f.conf==='low'||f.conf==='none'||f.total==null;
-  var say=low?'I am not sure about the total, so please check it before you use it.':(f.demo?'This is a demo receipt, so you can see how it works.':'Here is what I read. Fix anything that looks off, then tap Add expense and I will log it for you.');
+  var say=low?'I am not sure about the total, so please check it before you use it.':(f.demo?'This is a demo receipt, so you can see how it works.':'Here is what I read. Fix anything that looks off, then I will fill in the form.');
   var meta=[];
   if(f.time)meta.push(['Time',f.time]);
   if(f.receiptNo)meta.push(['Receipt no.',f.receiptNo]);
@@ -189,51 +185,27 @@ function review(f,onUse){
    +'<label class="sc-f wide"><span>Store</span><input id="sc-merchant" type="text" maxlength="60" value="'+esc(f.merchant||'')+'" placeholder="Store name"></label>'
    +'<label class="sc-f'+(low?' warn':'')+'"><span>Total</span><input id="sc-total" type="number" inputmode="decimal" step="0.01" min="0" value="'+(f.total!=null?Number(f.total).toFixed(2):'')+'" placeholder="0.00"></label>'
    +'<label class="sc-f"><span>Date</span><input id="sc-date" type="date" value="'+esc(f.date||td())+'"></label>'
-   +'<label class="sc-f"><span>Category</span><select id="sc-cat">'+catOptions(cat)+'</select></label>'
-   +'<label class="sc-f"><span>Paid from</span><select id="sc-src">'+srcOptions()+'</select></label></div>'
+   +'<label class="sc-f wide"><span>Category</span><select id="sc-cat">'+catOptions(cat)+'</select></label></div>'
    +(items.length?'<div class="sc-items-hd"><b>Items I found</b><span>'+items.length+'</span></div><ul class="sc-items">'+items.map(function(i){return '<li><span class="n">'+esc(i.name)+'</span><span class="q">'+(i.qty&&i.qty!==1?'x'+i.qty:'')+'</span><span class="p">'+(i.price!=null?money(i.price):'')+'</span></li>'}).join('')+'</ul>'
      +'<label class="sc-chk"><input type="checkbox" id="sc-note" checked><span>Put the items in the note</span></label>':'')
    +(meta.length?'<dl class="sc-meta">'+meta.map(function(m){return '<div><dt>'+esc(m[0])+'</dt><dd>'+esc(m[1])+'</dd></div>'}).join('')+'</dl>':'')
    +hint
-   +'<div class="vp-foot"><button type="button" class="vp-cta" data-sc="save">Add expense</button><div class="sc-row"><button type="button" class="sc-ghost" data-sc="use">Edit in the form</button><button type="button" class="sc-ghost" data-sc="retake">Retake photo</button></div></div>'
+   +'<div class="vp-foot"><button type="button" class="vp-cta" data-sc="use">Use these details</button><button type="button" class="sc-ghost wide" data-sc="retake">Retake photo</button></div>'
    +'<p class="vp-fine">'+(f.items!==undefined&&(f.demo||api())&&vip()?'Your photo was read securely and not saved.':'Read on your phone. Your photo was not uploaded or saved.')+' You always review before anything is added.</p></div>';
   rev._f=f;D.body.appendChild(rev);D.body.classList.add('sheet-open');D.addEventListener('keydown',revKey);
   rev.addEventListener('click',function(e){if(e.target===rev)closeRev()});
   var box=rev.querySelector('.vp-sheet');box.setAttribute('tabindex','-1');box.focus({preventScroll:true});
 }
-function useReview(mode){
+function useReview(){
   var f=rev._f,out={
     merchant:($('sc-merchant').value||'').trim()||'Receipt',
-    total:parseFloat($('sc-total').value),date:$('sc-date').value||td(),category:$('sc-cat').value,source:($('sc-src')&&$('sc-src').value)||'',
-    items:f.items||[],withNote:!!($('sc-note')&&$('sc-note').checked)};
+    total:parseFloat($('sc-total').value),date:$('sc-date').value||td(),category:$('sc-cat').value,
+    items:f.items||[],withNote:!!($('sc-note')&&$('sc-note').checked),source:f.source}
+  ;
   if(!(out.total>0)){$('sc-total').focus();toastMsg('Please enter the total amount.','error');return}
   var cb=revDone;closeRev();
-  if(cb)cb(out);else fill(out);                  // fills the Add Expense form (quick scan goes through the original reader code)
-  if(out.source)setVal('exp-source',out.source);
-  revealForm();
-  try{if(W.FinLife)FinLife.addXP(5,'scan',{daily:true})}catch(e){}
-  if(mode==='save')saveNow(out);
-  else{try{if(W.FinLife)FinLife.celebrate('tick')}catch(e){}toastMsg('Filled in. Check it, then tap Add Expense.')}
-}
-// Your cards fold shut by default, so open the form and bring it into view; otherwise a filled form is invisible.
-function revealForm(){
-  var a=$('exp-amount'),card=a&&a.closest&&a.closest('.card');
-  if(!card)return;
-  card.classList.remove('fx-c');
-  try{card.scrollIntoView({block:'start',behavior:'smooth'})}catch(e){}
-  var btn=card.querySelector('button[onclick="addExpense()"]');
-  if(btn){btn.classList.remove('sc-flash');void btn.offsetWidth;btn.classList.add('sc-flash')}
-}
-// "Add expense": save it right away through the app's own addExpense() so the wallet, log, streak and reports all update
-function saveNow(out){
-  var before=(typeof state!=='undefined'&&state.expenses)?state.expenses.length:0,p;
-  try{p=W.addExpense()}catch(e){toastMsg('Could not add the expense. The form is filled in; please tap Add Expense.','error');return}
-  Promise.resolve(p).then(function(){
-    var added=(typeof state!=='undefined'&&state.expenses)&&state.expenses.length>before;
-    if(added){try{if(W.FinLife)FinLife.celebrate('small')}catch(e){}
-      var lg=$('exp-log')||$('expense-list');if(lg&&lg.scrollIntoView){try{lg.scrollIntoView({block:'center',behavior:'smooth'})}catch(e){}}}
-    // if it was not added (e.g. the wallet-shortfall question was cancelled) the form stays open and filled so nothing is lost
-  });
+  if(cb)cb(out);else fill(out);
+  try{if(W.FinLife){FinLife.addXP(5,'scan',{daily:true});FinLife.celebrate('tick')}}catch(e){}
 }
 function setVal(id,v){var e=$(id);if(!e)return;e.value=v;try{e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}))}catch(x){}}
 function fill(f){
@@ -245,6 +217,7 @@ function fill(f){
   }
   var b=$('receipt-banner');
   if(b){b.style.display='block';b.textContent='Filled in from your receipt. Please check the amount, then tap Add Expense.'}
+  try{var form=$('exp-amount');if(form&&form.scrollIntoView)form.scrollIntoView({block:'center',behavior:'smooth'})}catch(e){}
 }
 
 /* ───────── clicks ───────── */
@@ -255,8 +228,7 @@ function onClick(e){
   else if(k==='cam-close')closeCam();
   else if(k==='gallery'){closeCam();pickFile()}
   else if(k==='cancel'){if(abortCtl){try{abortCtl.abort()}catch(x){}abortCtl=null}busy(false);pendingBlob=null}
-  else if(k==='use')useReview('fill');
-  else if(k==='save')useReview('save');
+  else if(k==='use')useReview();
   else if(k==='retake'){closeRev();start()}
   else if(k==='rev-close')closeRev();
 }

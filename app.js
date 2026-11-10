@@ -582,7 +582,6 @@ function doSignOut(){
   localStorage.removeItem('kwentadoV1');
   localStorage.removeItem('mtTutDone');
   clearCloudLinked();bioClear();
-  try{if(window.FinVip&&FinVip.cleanupLocal)FinVip.cleanupLocal();}catch(e){}
   fbAuth.signOut();
 }
 
@@ -662,6 +661,7 @@ function showConnectionErrorScreen(){
   </div>`;
 }
 const state=loadState();
+document.body.classList.toggle('nums-hidden',!!state.hideBalances);
 function finStock(el){finDrawStock(el);if(!el._ro&&window.ResizeObserver){el._ro=new ResizeObserver(function(){var w=el.clientWidth;if(w&&w!==el._w)finDrawStock(el)});el._ro.observe(el)}}
 function finBuckets(tf){var iso=function(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')},ev=[],ok=/^\d{4}-\d\d-\d\d$/;
  (state.income||[]).forEach(function(e){var d=String(e.dateAdded||'').slice(0,10);if(!ok.test(d)){var m=new Date(e.month+' 1, '+e.year);if(isNaN(m))return;d=iso(m)}ev.push([d,1,+e.amount||0])});
@@ -709,15 +709,23 @@ function dashTab(t){
 function fmt(n){return window.FinX?FinX.money(n):'₱'+Number(n).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});}
 const EYE_ON_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
 const EYE_OFF_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0112 20c-7 0-11-8-11-8a21.8 21.8 0 015.06-6.06M9.9 4.24A10.94 10.94 0 0112 4c7 0 11 8 11 8a21.77 21.77 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
-function fmtBal(n){return state.hideBalances?((window.FinX?FinX.sym():'₱')+' ••••••'):fmt(n);}
-function toggleHideBalances(){state.hideBalances=!state.hideBalances;save();renderAfterHide();}
+// Every amount that can be hidden is wrapped in <span class="mv">. The real number is always in the page and a CSS rule
+// (body.nums-hidden .mv) covers it with bullets, so hide/show is a smooth crossfade: no re-render, no layout jump.
+function fmtBal(n){return '<span class="mv">'+fmt(n)+'</span>';}
+function toggleHideBalances(){state.hideBalances=!state.hideBalances;save();syncEyeButtons();}
 function syncEyeButtons(){
   const hidden=!!state.hideBalances;
+  document.body.classList.toggle('nums-hidden',hidden);
+  // hidden amounts are removed from the accessibility tree too, so a screen reader does not read them out
+  document.querySelectorAll('.mv').forEach(el=>{if(hidden){if(el.getAttribute('aria-hidden')!=='true')el.setAttribute('aria-hidden','true');}else if(el.hasAttribute('aria-hidden'))el.removeAttribute('aria-hidden');});
   ['eye-hero','eye-balpage'].forEach(id=>{
     const b=document.getElementById(id);
     if(!b)return;
-    b.innerHTML=hidden?EYE_OFF_ICON:EYE_ON_ICON;
+    if(b.dataset.on!==String(hidden)){b.innerHTML=hidden?EYE_OFF_ICON:EYE_ON_ICON;b.dataset.on=String(hidden);}
     b.classList.toggle('on',hidden);
+    b.setAttribute('aria-pressed',String(hidden));
+    b.setAttribute('aria-label',hidden?'Show numbers':'Hide numbers');
+    b.title=hidden?'Show numbers':'Hide numbers';
   });
 }
 function fmtDate(d){if(!d)return'';const p=d.split('-');if(p.length===3)return p[1]+'/'+p[2]+'/'+p[0].slice(2);return d;}
@@ -867,6 +875,10 @@ function scheduleRender(){
   requestAnimationFrame(function(){ _renderPending=false; _pendingRenders.clear(); render(); });
 }
 
+// Deferred feature scripts (Fin's week, VIP, Bills, the pet) run after this file, so a fast sign-in can paint the first
+// screen before they exist. Render once more when they have all loaded so nothing is missing or computed without them.
+document.addEventListener('DOMContentLoaded',function(){try{if(state&&state.username)scheduleRender();}catch(e){}});
+
 // ── PARTIAL RENDER SYSTEM (speed) ─────────────────────────────────────────
 // A full render() rebuilds every section. After a single action only what changed
 // needs rebuilding, 3-5x less work. Two rules keep it correct:
@@ -881,6 +893,9 @@ function renderExtras(){
   try{if(window.FinStreak)FinStreak.tick();}catch(e){}
   try{if(window.FinLife)FinLife.tick();}catch(e){}   // Fin's week card on the dashboard
   try{if(window.FinVip)FinVip.tick();}catch(e){}     // VIP card (Settings) + wallet meter (Balances)
+  try{if(window.FinBills)FinBills.tick();}catch(e){} // Bills first card on the dashboard
+  // one-tap repeat chips (Expenses) and the Automation card (Settings) are added after a full render, so refresh them here
+  try{const _s=document.querySelector('.section.active');if(_s&&(_s.id==='expenses'||_s.id==='settings')&&window.finAutoPost)finAutoPost();}catch(e){}
 }
 const _PAGE_RENDER={
   dashboard:[renderDash,renderBalances,syncEyeButtons,renderExtras],
@@ -923,8 +938,9 @@ function renderAfterGoal(){_schedulePartial([renderGoals,renderDash,renderBalanc
 function renderAfterWallet(){_schedulePartial([renderBalances,renderDash,renderIncome,renderExpenses,renderLoans,updateBadges,syncEyeButtons]);}
 function renderAfterSettings(){_schedulePartial([renderSettings,renderDash,renderGuestBanner,syncEyeButtons]);}
 function renderAfterBudget(){_schedulePartial([renderGoals,renderDash]);}
+function renderAfterBills(){_schedulePartial([renderDash,renderExtras]);}
 function renderAfterHide(){_schedulePartial([renderBalances,renderDash,renderIncome,renderExpenses,renderLoans,renderGoals,syncEyeButtons]);}
-function render(){renderBalances();renderDash();renderIncome();renderExpenses();renderLoans();renderGoals();renderSettings();updateBadges();syncEyeButtons();renderGuestBanner();populateReportYears();try{if(window.FinLearn)FinLearn.render();}catch(e){}try{if(window.FinStreak)FinStreak.tick();}catch(e){}try{if(window.FinLife)FinLife.tick();}catch(e){}try{if(window.FinVip)FinVip.tick();}catch(e){}}
+function render(){renderBalances();renderDash();renderIncome();renderExpenses();renderLoans();renderGoals();renderSettings();updateBadges();syncEyeButtons();renderGuestBanner();populateReportYears();try{if(window.FinLearn)FinLearn.render();}catch(e){}try{if(window.FinStreak)FinStreak.tick();}catch(e){}try{if(window.FinLife)FinLife.tick();}catch(e){}try{if(window.FinVip)FinVip.tick();}catch(e){}try{if(window.FinBills)FinBills.tick();}catch(e){}}
 function updateBadges(){
   document.getElementById('nav-badge-income').textContent=state.income.length;
   document.getElementById('nav-badge-expenses').textContent=state.expenses.length;
@@ -958,20 +974,24 @@ function renderDash(){
   // Filter this month's expenses once - reused for the total and the category breakdown
   const _curMonthExp=state.expenses.filter(e=>{const d=ldate(e.date);return !isNaN(d)&&d.getMonth()===now.getMonth()&&d.getFullYear()===curYear;});
   const curExp=_curMonthExp.reduce((a,b)=>a+b.amount,0);
-  const curRem=curInc-curExp;
+  // Bills first: money already promised to bills not yet paid this month is not "left to spend"
+  const _bills=(window.FinBills&&FinBills.count&&FinBills.count())?1:0;
+  const _unpaidBills=_bills?FinBills.unpaid():0;
+  const curRem=curInc-curExp-_unpaidBills;
   // Biggest category this month
   const catTotals={};
   _curMonthExp.forEach(e=>{const c=e.cat||'other-exp';catTotals[c]=(catTotals[c]||0)+e.amount;});
   const topCatEntry=Object.entries(catTotals).sort((a,b)=>b[1]-a[1])[0];
   const topCatStr=topCatEntry?`${catHTML(topCatEntry[0])} ate <strong>${curExp>0?Math.round(topCatEntry[1]/curExp*100):0}%</strong> of your spend`:'No expenses yet this month';
-  const _f=n=>fmt(n).replace(/\.00$/,'');
+  const _f=n=>'<span class="mv">'+fmt(n).replace(/\.00$/,'')+'</span>';
+  const _m=n=>fmtBal(n);
   const _daysLeft=new Date(curYear,now.getMonth()+1,0).getDate()-now.getDate();
   const _elapsed=now.getDate()/new Date(curYear,now.getMonth()+1,0).getDate();
   const _tl=(function(){try{return (localStorage.getItem('finLang')||'')==='tl';}catch(e){return false;}})();
   let _say,_tone;
   if(curInc<=0){_tone='idle';_say=_tl?'I-add mo muna ang kita mo para makita natin kung ano ang natitira.':"Add your income and I'll show what's left this month.";}
-  else if(curRem<0){_tone='over';_say=_tl?`${fmt(Math.abs(curRem))} na ang lampas mo ngayong buwan. Tingnan natin kung ano ang puwedeng bawasan.`:`You're ${fmt(Math.abs(curRem))} over this month. Let's look at what to trim first.`;}
-  else if(curRem<curInc*0.1){_tone='tight';_say=_tl?`${fmt(curRem)} na lang at ${_daysLeft} araw pa. Mga kailangan lang muna.`:`Only ${fmt(curRem)} left with ${_daysLeft} day${_daysLeft===1?'':'s'} to go. Essentials only for now.`;}
+  else if(curRem<0){_tone='over';_say=_tl?`${_m(Math.abs(curRem))} na ang lampas mo ngayong buwan. Tingnan natin kung ano ang puwedeng bawasan.`:`You're ${_m(Math.abs(curRem))} over this month. Let's look at what to trim first.`;}
+  else if(curRem<curInc*0.1){_tone='tight';_say=_tl?`${_m(curRem)} na lang at ${_daysLeft} araw pa. Mga kailangan lang muna.`:`Only ${_m(curRem)} left with ${_daysLeft} day${_daysLeft===1?'':'s'} to go. Essentials only for now.`;}
   else if(curExp/curInc>_elapsed+0.15){_tone='watch';_say=_tl?'Mas mabilis ang gastos mo kaysa sa takbo ng buwan. Dahan-dahan muna.':"You're spending faster than the month is moving. Ease off a little.";}
   else{_tone='good';
     const _bl=state.budgetLimit>0?state.budgetLimit:0;
@@ -990,6 +1010,7 @@ function renderDash(){
   }
 
   const _spentPct=curInc>0?clamp(Math.round(curExp/curInc*100),0,100):0;
+  if(_unpaidBills>0&&_tone!=='idle'){const _bt=_tl?`${_f(_unpaidBills)} pa ang bayarin na hindi pa bayad.`:`${_f(_unpaidBills)} in bills still to pay.`;_ins=_ins?_ins+' '+_bt:_bt;}
   const _barCls=curRem<0?'over':_spentPct>=90?'warn':'';
   document.getElementById('month-snapshot').innerHTML=`
     <div class="snap-row"><div class="snap-fin-slot" id="fin-slot" aria-hidden="true"></div>
@@ -997,12 +1018,12 @@ function renderDash(){
     <div class="snap-main">
     <div class="snap-top">
       <div>
-        <div class="snap-kicker">Left to spend in ${curMonthName}</div>
-        <div class="snap-big ${curInc<=0?'idle':curRem<0?'neg':''}">${curInc<=0?'—':fmt(curRem)}</div>
+        <div class="snap-kicker">${_bills?'Yours to spend in '+curMonthName+', after bills':'Left to spend in '+curMonthName}</div>
+        <div class="snap-big ${curInc<=0?'idle':curRem<0?'neg':''}">${curInc<=0?'—':fmtBal(curRem)}</div>
       </div>
       <div class="snap-pair">
-        <button type="button" class="snap-mini in" onclick="openStatsModal('income','month')" aria-label="Income this month, ${fmt(curInc)}. View details"><span>Income</span><b>${fmt(curInc)}</b><i aria-hidden="true">›</i></button>
-        <button type="button" class="snap-mini out" onclick="openStatsModal('expenses','month')" aria-label="Spent this month, ${fmt(curExp)}. View details"><span>Spent</span><b>${fmt(curExp)}</b><i aria-hidden="true">›</i></button>
+        <button type="button" class="snap-mini in" onclick="openStatsModal('income','month')" ><span>Income</span><b>${fmtBal(curInc)}</b><i aria-hidden="true">›</i></button>
+        <button type="button" class="snap-mini out" onclick="openStatsModal('expenses','month')" ><span>Spent</span><b>${fmtBal(curExp)}</b><i aria-hidden="true">›</i></button>
       </div>
     </div>
     <div class="snap-track"><i class="${_barCls}" style="width:${_spentPct}%"></i></div>
@@ -1010,7 +1031,7 @@ function renderDash(){
 
   // Hero
   const balStr=Number(totalBal).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});
-  document.getElementById('hero-bal').textContent=state.hideBalances?'••••••':balStr;
+  document.getElementById('hero-bal').textContent=balStr;
   // hero wallets - dynamic
   const hwContainer=document.getElementById('hero-wallets-inner');
   if(hwContainer){
@@ -1040,12 +1061,12 @@ function renderDash(){
     budgetEl.innerHTML=`<div class="card" style="margin-bottom:14px">
       <div class="card-hd"><div class="card-title">Monthly Budget · ${curMonthName}</div><span style="font-size:12px;color:${clsColor};font-weight:700">${pct}% used</span></div>
       <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:10px">
-        <span style="font-family:var(--font-d);font-size:24px;font-weight:700;color:${clsColor}">${fmt(curExp)}</span>
-        <span style="font-size:13px;color:var(--muted)">of ${fmt(state.budgetLimit)}</span>
+        <span style="font-family:var(--font-d);font-size:24px;font-weight:700;color:${clsColor}">${fmtBal(curExp)}</span>
+        <span style="font-size:13px;color:var(--muted)">of ${fmtBal(state.budgetLimit)}</span>
       </div>
       ${safeToSpendHTML(curExp)}
       <div class="prog-track"><div class="prog-fill ${cls}" style="width:${pct}%"></div></div>
-      <div style="font-size:11px;color:var(--muted);margin-top:6px">${state.budgetLimit-curExp>=0?fmt(state.budgetLimit-curExp)+' remaining':'Over budget by '+fmt(curExp-state.budgetLimit)}</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:6px">${state.budgetLimit-curExp>=0?fmtBal(state.budgetLimit-curExp)+' remaining':'Over budget by '+fmtBal(curExp-state.budgetLimit)}</div>
     </div>`;
   } else {
     budgetEl.innerHTML=`<div style="font-size:12px;color:var(--muted2);padding:6px 0 10px;cursor:pointer;text-decoration:underline" onclick="show('goals')">+ Set a monthly budget goal →</div>`;
@@ -1109,9 +1130,9 @@ function renderDash(){
       if(next!==null&&next<0)due='<span class="od-due hot">Overdue '+Math.abs(next)+'d</span>';
       else if(next!==null&&next<=7)due='<span class="od-due">'+(next===0?'Due today':'Due in '+next+'d')+'</span>';
       const who=people.length===1?esc(people[0]):people.length+' people';
-      return '<button type="button" class="od-card '+cls+'" onclick="show(\'loans\')" aria-label="'+label+' '+(state.hideBalances?'hidden':fmt(total))+', '+who+'. Open loans">'
+      return '<button type="button" class="od-card '+cls+'" onclick="show(\'loans\')" aria-label="'+label+', '+who+'. Open loans">'
         +'<span class="od-top"><span class="od-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+arrow+'"/></svg></span><span class="od-l">'+label+'</span></span>'
-        +'<span class="od-v">'+(state.hideBalances?'••••••':fmt(total))+'</span>'
+        +'<span class="od-v">'+fmtBal(total)+'</span>'
         +'<span class="od-foot"><span class="od-avs">'+av+'</span>'+(due||'<span class="od-who">'+who+'</span>')+'</span></button>';
     };
     const _cards=[_card('payable','out','You owe',totalPay,'M7 17L17 7M9 7h8v8'),_card('receivable','in','Owed to you',totalRec,'M17 7L7 17M7 9v8h8')].filter(Boolean);
@@ -1121,7 +1142,7 @@ function renderDash(){
   // Recent expenses
   const recent=[...state.expenses].reverse().slice(0,5);
   document.getElementById('dash-recent-exp').innerHTML=recent.length
-    ?recent.map(e=>`<div class="row"><span class="lbl">${esc(e.desc)}${e.note?' <span style="color:var(--muted2);font-size:11px">· '+esc(e.note)+'</span>':''}</span><span class="val an">${fmt(e.amount)}</span></div>`).join('')
+    ?recent.map(e=>`<div class="row"><span class="lbl">${esc(e.desc)}${e.note?' <span style="color:var(--muted2);font-size:11px">· '+esc(e.note)+'</span>':''}</span><span class="val an">${fmtBal(e.amount)}</span></div>`).join('')
     :'<div class="empty"><div class="empty-icon"><svg class="ic" aria-hidden="true"><use href="#i-receipt"/></svg></div><div class="empty-title">No expenses logged yet</div></div>';
 
   // Monthly spend progress
@@ -1453,11 +1474,12 @@ function walDot(w){const st=walStyle(w);return '<span class="wal-dot" style="bac
 // Corner emblem per account type: real bank cards get the metal chip (+ contactless on the full card),
 // everything else gets a simple glyph that fits what it is. Unknown types get nothing.
 const WAL_EMB={
-  ewallet:'<rect x="3.5" y="3.5" width="6" height="6" rx="1.2"/><rect x="14.5" y="3.5" width="6" height="6" rx="1.2"/><rect x="3.5" y="14.5" width="6" height="6" rx="1.2"/><path d="M14.5 14.5h2.5v2.5M20.5 14.5h0M14.5 20.5h2.5M20.5 17v3.5"/>',
+  ewallet:null,
   cash:'<rect x="2.5" y="6.5" width="19" height="11" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 12h0M18 12h0"/>',
   crypto:'<circle cx="12" cy="12" r="8.6"/><path d="M9.6 7.5v9M9.6 8h3.9a2 2 0 0 1 0 4H9.6m0 0h4.3a2 2 0 0 1 0 4H9.6"/>',
   invest:'<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>'
 };
+const WAL_WALLET_SVG='<svg viewBox="0 0 64 56" aria-hidden="true"><rect x="4" y="15" width="16" height="12" rx="4.5" fill="#b05a26"/><rect x="11" y="3" width="31" height="25" rx="3" fill="#bfe3a8" transform="rotate(-27 28 30)"/><rect x="15" y="6" width="31" height="25" rx="3" fill="#8fd078" transform="rotate(-13 28 30)"/><rect x="18" y="9" width="33" height="24" rx="3" fill="#6cbd5c" transform="rotate(1 28 30)"/><rect x="4" y="22" width="52" height="31" rx="5.5" fill="#df8742"/><path d="M10 28.5h33M10 47.5h33" stroke="#b9602a" stroke-width="1.7" stroke-dasharray="3.2 2.5" stroke-linecap="round" fill="none"/><rect x="47" y="30" width="14" height="14" rx="4.5" fill="#bf6128"/><circle cx="54" cy="37" r="2.6" fill="#ffc933"/></svg>';
 function walChipHTML(w,mini){
   const t=walType(w),cls=mini?'hwm':'wc';
   if(t==='debit'||t==='savings'||t==='credit'){
@@ -1465,6 +1487,8 @@ function walChipHTML(w,mini){
     const nfc=(mini||t==='credit')?'':'<span class="wc-nfc" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 8.5a5.2 5.2 0 0 1 0 7"/><path d="M11 6a9 9 0 0 1 0 12"/><path d="M15 3.5a12.8 12.8 0 0 1 0 17"/></svg></span>';
     return '<span class="'+cls+'-chip'+(t==='credit'&&!mini?' is-credit':'')+'" aria-hidden="true">'+lines+'</span>'+nfc;
   }
+  if(t==='ewallet')return '<span class="'+cls+'-emb is-wallet" aria-hidden="true">'+WAL_WALLET_SVG+'</span>';
+  if(t==='cash'&&window.FinArt)return '<span class="'+cls+'-emb is-cash" aria-hidden="true">'+FinArt.handMoney()+'</span>';
   if(WAL_EMB[t])return '<span class="'+cls+'-emb" aria-hidden="true"><svg viewBox="0 0 24 24">'+WAL_EMB[t]+'</svg></span>';
   return '';
 }
@@ -1479,7 +1503,7 @@ function walCardHTML(w,o){
   }else body='<div class="wc-bal-l">Balance</div><div class="wc-bal">'+F(bal)+'</div>';
   const dots='<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>';
   const attrs=o.preview?'':' id="walcard-'+w.id+'" tabindex="0" role="button" aria-label="'+escAttr(w.label)+', update balance" onclick="openWalModal(\'bal\',\''+w.id+'\')" onkeydown="if(event.key===\'Enter\')openWalModal(\'bal\',\''+w.id+'\')"';
-  return '<div class="wc'+(st.dark?' dark':'')+(o.preview?' preview':'')+'" style="--c1:'+st.c1+';--c2:'+st.c2+'"'+attrs+'>'
+  return '<div class="wc'+(st.dark?' dark':'')+((w.label||'').length>7?' wc-long':'')+(o.preview?' preview':'')+'" style="--c1:'+st.c1+';--c2:'+st.c2+'"'+attrs+'>'
     +'<div><div class="wc-top">'+walLogoHTML(w,st)+'<div class="wc-name">'+esc(w.label||'Account name')+'</div>'
     +(o.preview?'':'<button type="button" class="wc-more" aria-label="Card options" onclick="event.stopPropagation();walMenu(event,\''+w.id+'\')">'+dots+'</button>')
     +'</div><div class="wc-sub">'+(t?WAL_TYPES[t]:'Wallet')+' • '+cur+'</div></div>'
@@ -1490,9 +1514,9 @@ function walMiniHTML(w){
   const st=walStyle(w),m=st.mono,fs=m.length>=4?7.5:m.length===3?9:m.length===2?11:13;
   const logo=w.logo?'<span class="hwm-logo"><img src="'+escAttr(w.logo)+'" alt=""></span>'
     :'<span class="hwm-logo" style="font-size:'+fs+'px;color:'+(st.dark?'#15200d':st.c2)+'">'+esc(m)+'</span>';
-  return '<button type="button" class="hwm'+(st.dark?' dark':'')+'" style="--c1:'+st.c1+';--c2:'+st.c2+'" onclick="show(\'balances\')" aria-label="'+escAttr(w.label)+', '+escAttr(state.hideBalances?'balance hidden':fmtBal(w.balance))+'. Open balances">'
+  return '<button type="button" class="hwm'+(st.dark?' dark':'')+'" style="--c1:'+st.c1+';--c2:'+st.c2+'" onclick="show(\'balances\')" aria-label="'+escAttr(w.label)+'. Open balances">'
     +'<span class="hwm-top">'+logo+'<span class="hwm-name">'+esc(w.label)+'</span></span>'
-    +'<span class="hwm-bal">'+fmtBal(w.balance)+'</span>'+walChipHTML(w,true)+'</button>';
+    +'<span class="hwm-bal">'+fmtBal(w.balance)+'</span></button>';
 }
 function walAddTile(){
   return '<button type="button" class="wc-add" data-tour="add-wallet" onclick="openWalModal(\'add\')"><span class="wc-plus">+</span><span>Add account</span><small>Banks, e-wallets, cards, cash</small></button>';
@@ -1713,7 +1737,7 @@ function renderBalances(){
   if(nwRows){
     nwRows.innerHTML=wallets.map(w=>`<div class="row"><span class="lbl" style="display:inline-flex;align-items:center;gap:9px">${walDot(w)}${esc(w.label)}</span><span class="val ap">${fmtBal(w.balance)}</span></div>`).join('');
   }
-  document.getElementById('nw-total').textContent=state.hideBalances?((window.FinX?FinX.sym():'₱')+' ••••••'):fmt(total);
+  document.getElementById('nw-total').innerHTML=fmtBal(total);
   // update expense source dropdown
   const expSrc=document.getElementById('exp-source');
   if(expSrc){
@@ -1799,7 +1823,7 @@ function renderExpenses(){
 
 
 /* ── Expenses: spending pie by category ── */
-const CAT_COLOR={food:'#f5b52e',transport:'#4f9cf7',shopping:'#b573f2',utilities:'#22bfae',health:'#f2587a',entertainment:'#3fcf6e','loan-payment':'#7d8aa0','other-exp':'#a1a1aa'};
+const CAT_COLOR={food:'var(--tri-c)',transport:'var(--tri-b)',shopping:'var(--accent)',utilities:'var(--tri-b-dim)',health:'var(--tri-c-dim)',entertainment:'var(--accent-dim)','loan-payment':'var(--muted)','other-exp':'var(--muted2)'};
 window._expPieRange=window._expPieRange||'month';
 function setExpPieRange(r){window._expPieRange=r;renderExpPie();}
 function renderExpPie(){
@@ -1822,10 +1846,10 @@ function renderExpPie(){
   }else{
     const R=48,pt=a=>[(50+R*Math.sin(a)).toFixed(2),(50-R*Math.cos(a)).toFixed(2)];
     let a0=0,paths='';
-    if(rows.length===1)paths='<circle cx="50" cy="50" r="'+R+'" fill="'+CAT_COLOR[rows[0].k]+'"/>';
+    if(rows.length===1)paths='<circle cx="50" cy="50" r="'+R+'" style="fill:'+CAT_COLOR[rows[0].k]+'"/>';
     else rows.forEach(r=>{
       const a1=a0+r.v/tot*Math.PI*2,p0=pt(a0),p1=pt(a1);
-      paths+='<path d="M50 50L'+p0[0]+' '+p0[1]+'A'+R+' '+R+' 0 '+(a1-a0>Math.PI?1:0)+' 1 '+p1[0]+' '+p1[1]+'Z" fill="'+CAT_COLOR[r.k]+'"><title>'+esc(CAT_LABELS[r.k])+' '+fmt(r.v)+'</title></path>';
+      paths+='<path d="M50 50L'+p0[0]+' '+p0[1]+'A'+R+' '+R+' 0 '+(a1-a0>Math.PI?1:0)+' 1 '+p1[0]+' '+p1[1]+'Z" style="fill:'+CAT_COLOR[r.k]+'"><title>'+esc(CAT_LABELS[r.k])+' '+fmt(r.v)+'</title></path>';
       a0=a1;
     });
     const leg=rows.map(r=>{const p=r.v/tot*100;
@@ -1836,6 +1860,13 @@ function renderExpPie(){
   box.innerHTML='<div class="filter-bar ep-range">'+pills+'</div>'+body;
 }
 
+window._loanOpen=window._loanOpen||{};
+function toggleLoan(id){
+  const el=document.getElementById('loan-entry-'+id);if(!el)return;
+  const on=el.classList.toggle('open');
+  window._loanOpen[id]=on;
+  const b=el.querySelector('.loan-sum');if(b)b.setAttribute('aria-expanded',on);
+}
 function renderLoans(){
   const today_=today();
   const nowMs=new Date().setHours(0,0,0,0);
@@ -1888,22 +1919,38 @@ function renderLoans(){
       }
       const srcWallet=l.sourceWallet?(state.wallets||[]).find(w=>w.id===l.sourceWallet):null;
       const walletLine=srcWallet?`<span style="font-size:11px;color:var(--muted)">${l.type==='payable'?'→ ':'from '}${esc(srcWallet.label)}</span>`:'';
-      return `<div class="entry" style="flex-direction:column;align-items:stretch;gap:8px" id="loan-entry-${l.id}">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
-        <div class="info"><div class="name" style="${l.settled?'opacity:.4':''}">${esc(l.name)}${l.note?' · '+esc(l.note):''}</div>
-        <div class="meta"><span class="badge ${l.settled?'badge-settled':l.type==='payable'?'badge-payable':'badge-receivable'}">${l.settled?'Settled':l.type==='payable'?'I owe':'Owes me'}</span>${statusBadge}${dueLine}${walletLine}</div></div>
-        <div class="right">
-          <span class="amt ${l.settled?'aw':l.type==='payable'?'an':'ap'}" style="${l.settled?'opacity:.4':''}">${fmt(l.amount)}</span>
-          <button class="btn btn-settle btn-sm" onclick="settle(${l.id})">${l.settled?'Undo':'Settle'}</button>
-          <button type="button" class="row-more" aria-label="More actions" aria-haspopup="menu" onclick="rowMenu(event,'loan',${l.id})">${FinIcons.ic('more')}</button>
+      // collapsed: description, due, price. Everything else (type, wallet, settle, adjust) opens on tap.
+      const open=!!(window._loanOpen&&window._loanOpen[l.id]);
+      let dueTxt='',dueCls='';
+      if(l.settled){dueTxt='Settled';dueCls='is-ok';}
+      else if(l.due){
+        const dd=fmtDate(l.due);
+        if(st.type==='overdue'){dueTxt='Overdue '+st.days+'d · '+dd;dueCls='is-hot';}
+        else if(st.type==='due-soon'){dueTxt=(st.days===0?'Due today':'Due in '+st.days+'d')+' · '+dd;dueCls='is-soon';}
+        else dueTxt='Due '+dd;
+      }
+      const kind=l.settled?'settled':l.type==='payable'?'payable':'receivable';
+      return `<div class="entry loan-e ${kind}${open?' open':''}" style="flex-direction:column;align-items:stretch;gap:0" id="loan-entry-${l.id}">
+      <button type="button" class="loan-sum" onclick="toggleLoan(${l.id})" aria-expanded="${open}" aria-controls="loan-more-${l.id}">
+        <span class="loan-main"><span class="loan-name">${esc(l.name)}${l.note?' · '+esc(l.note):''}</span>${dueTxt?`<span class="loan-due ${dueCls}">${dueTxt}</span>`:''}</span>
+        <span class="loan-amt ${l.settled?'aw':l.type==='payable'?'an':'ap'}">${fmt(l.amount)}</span>
+        <span class="loan-chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
+      </button>
+      <div class="loan-more" id="loan-more-${l.id}">
+        <div class="loan-acts">
+          <div class="meta"><span class="badge ${l.settled?'badge-settled':l.type==='payable'?'badge-payable':'badge-receivable'}">${l.settled?'Settled':l.type==='payable'?'I owe':'Owes me'}</span>${walletLine}</div>
+          <div class="loan-btns">
+            <button class="btn btn-settle btn-sm" onclick="settle(${l.id})">${l.settled?'Undo':'Settle'}</button>
+            <button type="button" class="row-more" aria-label="More actions" aria-haspopup="menu" onclick="rowMenu(event,'loan',${l.id})">${FinIcons.ic('more')}</button>
+          </div>
         </div>
+        ${!l.settled?`<div class="adj-row">
+          <span style="font-size:11px;color:var(--muted);flex-shrink:0">Adjust:</span>
+          <input type="number" id="adj-${l.id}" placeholder="Amount" min="0" style="flex:1;padding:5px 9px;font-size:12.5px">
+          <button class="btn btn-ghost btn-sm" onclick="adjustLoan(${l.id},'add')" title="Add to balance" style="padding:5px 10px;color:var(--accent)">${FinIcons.ic('plus')} Add</button>
+          <button class="btn btn-ghost btn-sm" onclick="adjustLoan(${l.id},'deduct')" title="Deduct from balance" style="padding:5px 10px;color:var(--red)">${FinIcons.ic('minus')} Deduct</button>
+        </div>`:''}
       </div>
-      ${!l.settled?`<div class="adj-row">
-        <span style="font-size:11px;color:var(--muted);flex-shrink:0">Adjust:</span>
-        <input type="number" id="adj-${l.id}" placeholder="Amount" min="0" style="flex:1;padding:5px 9px;font-size:12.5px">
-        <button class="btn btn-ghost btn-sm" onclick="adjustLoan(${l.id},'add')" title="Add to balance" style="padding:5px 10px;color:var(--accent)">${FinIcons.ic('plus')} Add</button>
-        <button class="btn btn-ghost btn-sm" onclick="adjustLoan(${l.id},'deduct')" title="Deduct from balance" style="padding:5px 10px;color:var(--red)">${FinIcons.ic('minus')} Deduct</button>
-      </div>`:''}
     </div>`;
     }).join('')
     :sortedAll.length?'<div class="empty"><div class="empty-icon"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg></div><div class="empty-title">No matches</div><div class="empty-sub">Try a different search or filter.</div></div>'
@@ -1911,14 +1958,7 @@ function renderLoans(){
 }
 
 /* ACTIONS */
-
-// ── Double-submit guard: prevents duplicate entries from rapid taps or async await gaps ──
-const _submitting = new Set();
-function _guard(key) { if (_submitting.has(key)) return true; _submitting.add(key); return false; }
-function _unguard(key) { _submitting.delete(key); }
-
 function addIncome(){
-  if(_guard('income'))return;
   const month=document.getElementById('inc-month').value;
   const year=parseInt(document.getElementById('inc-year').value);
   const type=document.getElementById('inc-type').value;
@@ -1934,7 +1974,7 @@ function addIncome(){
   }
   state.income.push({id:uid(),month,year,type,amount,note,wallet:walletId,dateAdded:today()});
   document.getElementById('inc-amount').value='';document.getElementById('inc-note').value='';
-  save();renderAfterIncome();_unguard('income');toast('Income added'+(wallet?' - '+wallet.label+' updated':'')+' ✓');
+  save();renderAfterIncome();toast('Income added'+(wallet?' - '+wallet.label+' updated':'')+' ✓');
   window.dispatchEvent(new CustomEvent('fin:income-added',{detail:{amount,walletId}}));
 }
 function walletOptionsHTML(selectedId){
@@ -2012,9 +2052,10 @@ function deductWalletBalance(walletId,amount){
   }
   return wallet;
 }
-function pushExpense({desc,amount,cat,source,date,note,recurring,recurringTemplateId,loanId,loanApplied}){
+function pushExpense({desc,amount,cat,source,date,note,recurring,recurringTemplateId,loanId,loanApplied,billId}){
   const entry={id:uid(),desc,amount,cat,source,date,note,recurring:!!recurring};
   if(recurringTemplateId)entry.recurringTemplateId=recurringTemplateId;
+  if(billId)entry.billId=billId;                    // which bill this payment settles (see bills.js)
   if(loanId){entry.loanId=loanId;entry.loanApplied=loanApplied||0;}   // remembers which loan this payment reduced, and by how much
   state.expenses.push(entry);
   return entry;
@@ -2077,7 +2118,6 @@ function saveEditExpense(){
   save();renderAfterExpense();toast('Expense updated ✓');
 }
 async function addExpense(){
-  if(_guard('expense'))return;
   const desc=document.getElementById('exp-desc').value.trim();
   const amount=cents(parseFloat(document.getElementById('exp-amount').value));
   const cat=document.getElementById('exp-cat').value;
@@ -2085,13 +2125,13 @@ async function addExpense(){
   const date=document.getElementById('exp-date').value||today();
   const note=document.getElementById('exp-note').value.trim();
   const recurring=document.getElementById('exp-recurring').checked;
-  if(!desc){_unguard('expense');toast('Add a description','error');return;}
-  if(!amount||amount<=0){_unguard('expense');toast('Enter a valid amount','error');return;}
+  if(!desc){toast('Add a description','error');return;}
+  if(!amount||amount<=0){toast('Enter a valid amount','error');return;}
 
   const walletPreview=(state.wallets||[]).find(w=>w.id===source);
   if(walletPreview&&walShort(walletPreview,amount)){
     const goNeg=await mtConfirm(walShortMsg(walletPreview),'⚠️','Continue','var(--amber)');
-    if(!goNeg){_unguard('expense');return;}
+    if(!goNeg)return;
   }
   const wallet=deductWalletBalance(source,amount);
 
@@ -2113,7 +2153,7 @@ async function addExpense(){
   document.getElementById('exp-date').value=today();document.getElementById('exp-note').value='';
   document.getElementById('exp-recurring').checked=false;
   rcHideBanner();
-  _unguard('expense');save();renderAfterExpense();toast('Expense logged'+(wallet?' - '+wallet.label+' updated':'')+' ✓');
+  save();renderAfterExpense();toast('Expense logged'+(wallet?' - '+wallet.label+' updated':'')+' ✓');
   window.dispatchEvent(new CustomEvent('fin:expense-logged',{detail:{desc,amount,cat,source}}));
 }
 /* ══ RECEIPT SCANNER (on-device OCR via Tesseract.js; VIP perk with 3 free tries, see vip.js) ══
@@ -2333,15 +2373,14 @@ function rcApply(r,rawText){
 }
 
 async function addLoan(){
-  if(_guard('loan'))return;
   const name=document.getElementById('loan-name').value.trim();
   const amount=cents(parseFloat(document.getElementById('loan-amount').value)||0);
   const type=document.getElementById('loan-type').value;
   const note=document.getElementById('loan-note').value.trim();
   const due=document.getElementById('loan-due').value||'';
   const walletId=type==='receivable'?document.getElementById('loan-wallet').value:'';
-  if(!name){_unguard('loan');toast('Enter a name','error');return;}
-  if(!amount||amount<=0){_unguard('loan');toast('Enter a valid amount','error');return;}
+  if(!name){toast('Enter a name','error');return;}
+  if(!amount||amount<=0){toast('Enter a valid amount','error');return;}
 
   const loan={id:uid(),name,amount,type,note,due,settled:false};
   let walletMsg='';
@@ -2350,7 +2389,7 @@ async function addLoan(){
     if(wallet){
       if(walShort(wallet,amount)){
         const goNeg=await mtConfirm(walShortMsg(wallet),'⚠️','Continue','var(--amber)');
-        if(!goNeg){_unguard('loan');return;}
+        if(!goNeg)return;
       }
       wallet.balance=Math.round((wallet.balance-amount)*100)/100;
       wallet.updated=today();
@@ -2360,7 +2399,7 @@ async function addLoan(){
   }
   state.loans.push(loan);
   document.getElementById('loan-name').value='';document.getElementById('loan-amount').value='';document.getElementById('loan-note').value='';document.getElementById('loan-due').value='';document.getElementById('loan-wallet').value='';
-  _unguard('loan');save();renderAfterLoan();toast('Loan added'+walletMsg+' ✓');
+  save();renderAfterLoan();toast('Loan added'+walletMsg+' ✓');
   window.dispatchEvent(new CustomEvent('fin:loan-added',{detail:{loan}}));
 }
 function openEditLoan(id){
@@ -2919,18 +2958,17 @@ function setBudgetLimit(v){
 }
 window.setBudgetLimit=setBudgetLimit;
 function addGoal(){
-  if(_guard('goal'))return;
   const name=document.getElementById('goal-name').value.trim();
   const target=cents(parseFloat(document.getElementById('goal-target').value)||0);
   const saved=Math.max(0,cents(parseFloat(document.getElementById('goal-saved').value)||0));
   const note=document.getElementById('goal-note').value.trim();
-  if(!name){_unguard('goal');toast('Enter a goal name','error');return;}
-  if(!target||target<=0){_unguard('goal');toast('Enter a target amount','error');return;}
+  if(!name){toast('Enter a goal name','error');return;}
+  if(!target||target<=0){toast('Enter a target amount','error');return;}
   if(!state.goals)state.goals=[];
   state.goals.push({id:uid(),name,target,saved,note});
   document.getElementById('goal-name').value='';document.getElementById('goal-target').value='';
   document.getElementById('goal-saved').value='';document.getElementById('goal-note').value='';
-  _unguard('goal');save();renderAfterGoal();toast('Goal added ✓');
+  save();renderAfterGoal();toast('Goal added ✓');
   window.dispatchEvent(new CustomEvent('fin:goal-added',{detail:{goal:state.goals[state.goals.length-1]}}));
 }
 function addToGoal(id,amountOverride){
@@ -4163,11 +4201,11 @@ function safeToSpendHTML(curExp){
   const left=allowance-spentToday;
   const over=left<0;
   const clr=over?'var(--red)':left<allowance*0.25?'var(--amber)':'var(--accent)';
-  const big=state.hideBalances?((window.FinX?FinX.sym():'₱')+' ••••••'):fmt(Math.abs(left));
+  const big=fmtBal(Math.abs(left));
   return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;margin-bottom:12px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r-sm)">
     <div><div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600">${over?'Over today\'s limit by':'Safe to spend today'}</div>
     <div style="font-family:var(--font-d);font-size:22px;font-weight:700;color:${clr}">${big}</div></div>
-    <div style="text-align:right;font-size:11px;color:var(--muted);line-height:1.5">${state.hideBalances?'':fmt(allowance)+' / day<br>'}${daysLeft} day${daysLeft===1?'':'s'} left</div>
+    <div style="text-align:right;font-size:11px;color:var(--muted);line-height:1.5">${fmtBal(allowance)} / day<br>${daysLeft} day${daysLeft===1?'':'s'} left</div>
   </div>`;
 }
 
@@ -4223,11 +4261,46 @@ function _hsl2rgb(h,s,l){
   return [r+m,g+m,b+m].map(v=>Math.round(v*255));
 }
 function _rgb2hex(a){return '#'+a.map(v=>v.toString(16).padStart(2,'0')).join('');}
+/* The triad: the accent chosen in Appearance plus two colours 120deg either side of it on the colour wheel, matched in
+   perceived lightness (OKLCH). Each keeps as much chroma as its hue allows, never more than the accent. Roles are fixed:
+   accent = yours / progress, tri-b = calm (bills, owed to you), tri-c = careful (spent, overdue, over budget). */
+function _s2l(c){c/=255;return c<=0.04045?c/12.92:Math.pow((c+0.055)/1.055,2.4);}
+function _l2s(c){return c<=0.0031308?12.92*c:1.055*Math.pow(c,1/2.4)-0.055;}
+function _hex2oklch(hex){
+  const n=parseInt(hex.slice(1),16),r=_s2l(n>>16&255),g=_s2l(n>>8&255),b=_s2l(n&255);
+  const l=Math.cbrt(0.4122214708*r+0.5363325363*g+0.0514459929*b),m=Math.cbrt(0.2119034982*r+0.6806995451*g+0.1073969566*b),s=Math.cbrt(0.0883024619*r+0.2817188376*g+0.6299787005*b);
+  const L=0.2104542553*l+0.7936177850*m-0.0040720468*s,A=1.9779984951*l-2.4285922050*m+0.4505937099*s,B=0.0259040371*l+0.7827717662*m-0.8086757660*s;
+  return [L,Math.hypot(A,B),(Math.atan2(B,A)*180/Math.PI+360)%360];
+}
+function _oklch2lin(L,C,h){
+  const A=C*Math.cos(h*Math.PI/180),B=C*Math.sin(h*Math.PI/180);
+  const l=Math.pow(L+0.3963377774*A+0.2158037573*B,3),m=Math.pow(L-0.1055613458*A-0.0638541728*B,3),s=Math.pow(L-0.0894841775*A-1.2914855480*B,3);
+  return [4.0767416621*l-3.3077115913*m+0.2309699292*s,-1.2684380046*l+2.6097574011*m-0.3413193965*s,-0.0041960863*l-0.7034186147*m+1.7076147010*s];
+}
+function _maxChroma(L,h){let lo=0,hi=.4;for(let i=0;i<24;i++){const mid=(lo+hi)/2;if(_oklch2lin(L,mid,h).every(x=>x>=-1e-4&&x<=1+1e-4))lo=mid;else hi=mid;}return lo;}
+function _oklch2rgb(L,C,h){return _oklch2lin(L,C,h).map(x=>Math.round(255*_l2s(Math.max(0,Math.min(1,x)))));}
+const TRI_PROPS=['--tri-b','--tri-b-dim','--tri-b-hover','--tri-b-rgb','--on-b','--tri-c','--tri-c-dim','--tri-c-hover','--tri-c-rgb','--on-c'];
+function applyTriad(accentHex){
+  const st=document.body.style;
+  TRI_PROPS.forEach(k=>st.removeProperty(k));
+  if(!accentHex)return;                          // the stylesheet already holds the default (lime) triad
+  const [L,C,h]=_hex2oklch(accentHex);
+  [['b',120],['c',240]].forEach(function(p){
+    const hh=(h+p[1])%360,cc=Math.min(C,_maxChroma(L,hh)*0.96);
+    const base=_oklch2rgb(L,cc,hh),dim=_oklch2rgb(Math.max(L-.07,.2),cc,hh),hov=_oklch2rgb(Math.min(L+.05,.95),cc,hh);
+    const lum=(0.2126*base[0]+0.7152*base[1]+0.0722*base[2])/255;
+    st.setProperty('--tri-'+p[0],_rgb2hex(base));
+    st.setProperty('--tri-'+p[0]+'-dim',_rgb2hex(dim));
+    st.setProperty('--tri-'+p[0]+'-hover',_rgb2hex(hov));
+    st.setProperty('--tri-'+p[0]+'-rgb',base.join(','));
+    st.setProperty('--on-'+p[0],lum>.45?'#0b0f14':'#ffffff');
+  });
+}
 function applyAccent(hex){
   const st=document.body.style;
   ['--accent','--accent-dim','--accent-hover','--accent-rgb','--accent-glow','--accent-bg','--on-accent'].forEach(k=>st.removeProperty(k));
   const meta=document.querySelector('meta[name="theme-color"]');
-  if(!hex){ if(meta)meta.setAttribute('content',document.body.classList.contains('light')?'#f0f0ed':'#060608'); return; }
+  if(!hex){ applyTriad(null); if(meta)meta.setAttribute('content',document.body.classList.contains('light')?'#f6f2ea':'#0e0d0b'); return; }
   const light=document.body.classList.contains('light');
   let [h,s,l]=_hex2hsl(hex);
   s=Math.max(s,.45);
@@ -4241,6 +4314,7 @@ function applyAccent(hex){
   st.setProperty('--accent-glow','rgba('+main.join(',')+','+(light?.10:.12)+')');
   st.setProperty('--accent-bg','rgba('+main.join(',')+',.07)');
   st.setProperty('--on-accent',lum>.45?'#050605':'#ffffff');
+  applyTriad(_rgb2hex(main));
 }
 function setAccent(hex){
   try{ if(hex)localStorage.setItem('mtAccent',hex); else localStorage.removeItem('mtAccent'); }catch(e){}
@@ -4578,8 +4652,6 @@ async function deleteAccountAndData(){
   const u=cloudUser;
   clearTimeout(cloudSyncTimer);cloudPushPending=false;
   try{
-    // Clean up server-side VIP/scan records before deleting the account
-    if(window.FinVip&&FinVip.cleanupServer)await FinVip.cleanupServer(u).catch(()=>{});
     await fbDb.collection('users').doc(u.uid).delete();
     await u.delete();
   }catch(e){
@@ -4591,7 +4663,6 @@ async function deleteAccountAndData(){
   sessionStorage.removeItem('mtUnlocked');stateLoadedForUid=null;
   Object.keys(state).forEach(k=>delete state[k]);Object.assign(state,defaultState());
   ['kwentadoV1','mtTutDone','mtGuestBannerDismissAt','mtGuestNudge3Shown','mtGuestRemindAt','mtMoneyTab','finCloudLinked','finBioCred','finPinLock'].forEach(k=>localStorage.removeItem(k));
-  try{if(window.FinVip&&FinVip.cleanupLocal)FinVip.cleanupLocal();}catch(e){}
   toast('Account and data deleted');
 }
 

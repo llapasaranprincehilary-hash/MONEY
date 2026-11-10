@@ -202,25 +202,6 @@
     .erow .acts{grid-column:1/-1}
     .result-count{display:none}
   }
-
-  /* ---------- VIP manager ---------- */
-  #vip-overlay{z-index:250}
-  #vip-dialog{max-width:620px;max-height:calc(100vh - 40px);overflow-y:auto}
-  .vip-help{color:var(--muted);font-size:13px;margin:-8px 0 14px}
-  .vip-find{display:flex;gap:8px}
-  .vip-box{margin:14px 0;padding:14px;border:1px solid var(--border2);border-radius:var(--r-sm);background:var(--surface2)}
-  .vip-box .em{font-weight:600;font-size:15px;overflow-wrap:anywhere}
-  .vip-box .uid{font:12px ui-monospace,Menlo,monospace;color:var(--muted);overflow-wrap:anywhere}
-  .vip-on{color:var(--accent);font-weight:600}.vip-off{color:var(--muted);font-weight:600}
-  .vip-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
-  .vip-row label{flex:none;width:100%;font-size:12px;color:var(--muted)}
-  .vip-row .inp{flex:1 1 140px;min-width:0}
-  .vip-hist{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:6px}
-  .vip-hist{table-layout:auto;min-width:0!important}
-  .vip-hist th,.vip-hist td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--border);overflow-wrap:anywhere;vertical-align:top}
-  .vip-hist td:first-child{white-space:nowrap}
-  @media(max-width:480px){.vip-hist{font-size:12px}.vip-hist th,.vip-hist td{padding:6px 4px}}
-  .vip-hist th{color:var(--muted);font-weight:500}
 </style>
 </head>
 <body>
@@ -256,7 +237,6 @@
       <div class="brand"><img src="icon-512.png" alt=""> FINUITY <span class="chip">Admin</span></div>
       <span class="spacer"></span>
       <span class="who" id="signed-in-as"></span>
-      <button class="btn sm" onclick="openVip()">VIP manager</button>
       <button class="btn sm" onclick="refreshUsers(true)">Refresh</button>
       <button class="btn sm" onclick="signOutAdmin()">Sign out</button>
     </div>
@@ -321,11 +301,6 @@
       <button class="btn danger" id="confirm-ok">Delete</button>
     </div>
   </div>
-</div>
-
-<!-- ============ VIP MANAGER ============ -->
-<div class="overlay" id="vip-overlay" onclick="if(event.target===this)closeVip()">
-  <div class="dialog" id="vip-dialog" role="dialog" aria-modal="true" aria-label="VIP manager"></div>
 </div>
 
 <div id="toast" role="status"></div>
@@ -1115,87 +1090,10 @@ async function deleteUser(uid){
   }
 }
 
-/* ================= VIP manager =================
-   Calls your adminVip Cloud Function (backend/functions). The SERVER checks that you are an admin and logs every change,
-   so this page can not be used to give VIP to anyone unless you are on the admin list (see backend/SETUP-PAYMENTS.md). */
-const VIP_ADMIN_URL = '';   // paste your adminVip function address here
-let vipTarget = null, vipBusy = false;
-function openVip(){ $('vip-overlay').style.display = 'flex'; renderVip(); setTimeout(() => { const q = $('vip-q'); if(q) q.focus(); }, 30); }
-function closeVip(){ $('vip-overlay').style.display = 'none'; vipTarget = null; }
-async function vipCall(body){
-  if(!VIP_ADMIN_URL) throw new Error('Paste your adminVip function address into VIP_ADMIN_URL in admin.html first.');
-  const user = fbAuth && fbAuth.currentUser;
-  if(!user) throw new Error('You are not signed in.');
-  const tok = await user.getIdToken();
-  const r = await fetch(VIP_ADMIN_URL, { method:'POST', headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer ' + tok }, body: JSON.stringify(body) });
-  let j = {}; try{ j = await r.json(); }catch(e){}
-  if(!r.ok) throw new Error(j.error || ('Request failed (' + r.status + ')'));
-  return j;
-}
-function vipLabel(h){
-  const m = h.months ? h.months + ' month' + (h.months === 1 ? '' : 's') : (h.days ? h.days + ' days' : '');
-  if(h.via === 'admin') return h.plan === 'revoked' ? 'Ended by admin' : h.plan === 'adjusted' ? 'Date set by admin' : 'Given by admin ' + m;
-  return 'Paid ' + m;
-}
-function renderVip(msg){
-  const s = vipTarget, d = $('vip-dialog');
-  let h = '<h2>VIP manager</h2><p class="vip-help">Find someone by email or UID. Every change is done on the server and written to a log.</p>'
-    + '<div class="vip-find"><input class="inp" id="vip-q" placeholder="Email or UID" autocomplete="off" value="' + esc(s ? (s.email || s.uid) : '') + '" onkeydown="if(event.key===\'Enter\')vipLookup()">'
-    + '<button class="btn primary" id="vip-go" onclick="vipLookup()">Look up</button></div>'
-    + '<div class="err" id="vip-err" role="alert">' + esc(msg || '') + '</div>';
-  if(s){
-    const left = s.until > Date.now() ? Math.ceil((s.until - Date.now()) / 864e5) : 0;
-    h += '<div class="vip-box"><div class="em">' + esc(s.email || '(no email)') + '</div><div class="uid">' + esc(s.uid) + '</div>'
-      + '<div style="margin-top:8px">' + (s.active ? '<span class="vip-on">VIP active</span> until ' + esc(fmtDate(s.until)) + ' (' + left + ' days left)' : '<span class="vip-off">Not VIP</span>' + (s.until ? ' (ended ' + esc(fmtDate(s.until)) + ')' : '')) + '</div></div>'
-      + '<div class="vip-row"><label for="vip-note">Note (saved in the history, e.g. "paid by GCash, ref 1234")</label><input class="inp" id="vip-note" maxlength="200"></div>'
-      + '<div class="vip-row"><label>Give VIP (adds on top of any time left)</label>'
-      + '<button class="btn" onclick="vipDo(\'grant\',{months:1})">+1 month</button><button class="btn" onclick="vipDo(\'grant\',{months:3})">+3 months</button><button class="btn" onclick="vipDo(\'grant\',{months:12})">+12 months</button>'
-      + '<input class="inp" id="vip-days" type="number" min="1" max="3650" placeholder="days" aria-label="Days to add"><button class="btn" onclick="vipDo(\'grant\',{days:Number($(\'vip-days\').value)})">Add days</button></div>'
-      + '<div class="vip-row"><label for="vip-date">Set the exact end date (use for partial refunds)</label><input class="inp" id="vip-date" type="date"><button class="btn" onclick="vipSetDate()">Set date</button></div>'
-      + '<div class="vip-row"><button class="btn danger" onclick="vipRevoke()">End VIP now</button></div>';
-    const hist = (s.history || []).slice().sort((a, b) => (b.at || 0) - (a.at || 0));
-    h += '<h2 style="margin-top:18px;font-size:14px">History</h2>' + (hist.length
-      ? '<div class="table-scroll"><table class="vip-hist"><thead><tr><th>Date</th><th>What</th><th>Amount</th><th>Note</th></tr></thead><tbody>'
-        + hist.map(x => '<tr><td>' + esc(fmtDate(x.at)) + '</td><td>' + esc(vipLabel(x)) + '</td><td>' + (x.amount > 0 ? '\u20B1' + esc(x.amount) : '-') + '</td><td>' + esc(x.note || x.ref || '') + '</td></tr>').join('') + '</tbody></table></div>'
-      : '<p class="vip-help" style="margin:6px 0 0">No history yet.</p>');
-    if(s.scansToday) h += '<p class="vip-help" style="margin-top:10px">Smart scans: ' + esc(s.scansToday.scans || 0) + ' on ' + esc(s.scansToday.day || '-') + '</p>';
-  }
-  h += '<div class="foot"><button class="btn" onclick="closeVip()">Close</button></div>';
-  d.innerHTML = h;
-}
-async function vipLookup(){
-  const q = ($('vip-q').value || '').trim();
-  if(!q){ $('vip-err').textContent = 'Enter an email or a UID.'; return; }
-  const body = q.includes('@') ? { action:'lookup', email:q } : { action:'lookup', uid:q };
-  $('vip-go').disabled = true;
-  try{ const j = await vipCall(body); vipTarget = j.status; renderVip(); }
-  catch(e){ vipTarget = null; renderVip(e.message); }
-}
-async function vipDo(action, extra){
-  if(!vipTarget || vipBusy) return;
-  const note = ($('vip-note') && $('vip-note').value || '').trim();
-  vipBusy = true;
-  try{
-    const j = await vipCall(Object.assign({ action, uid: vipTarget.uid, note }, extra || {}));
-    vipTarget = j.status; renderVip(); toast('Done. ' + (j.status.active ? 'VIP active until ' + fmtDate(j.status.until) : 'Not VIP now'));
-  }catch(e){ renderVip(e.message); }
-  vipBusy = false;
-}
-async function vipSetDate(){
-  const v = $('vip-date').value;
-  if(!v){ $('vip-err').textContent = 'Pick a date first.'; return; }
-  const ms = new Date(v + 'T23:59:59').getTime();
-  if(await confirmBox('Set this person\'s VIP to end on <b>' + esc(v) + '</b>?', 'Set date', 'primary')) vipDo('set', { until: ms });
-}
-async function vipRevoke(){
-  if(await confirmBox('End VIP for <b>' + esc(vipTarget.email || vipTarget.uid) + '</b> right now? (Refund them in PayMongo first if they paid.)', 'End VIP')) vipDo('revoke');
-}
-
 /* ================= keyboard ================= */
 document.addEventListener('keydown', e => {
   if(e.key !== 'Escape') return;
   if($('confirm-overlay').style.display === 'flex'){ $('confirm-cancel').click(); return; }
-  if($('vip-overlay').style.display === 'flex'){ closeVip(); return; }
   if($('entry-overlay').style.display === 'flex'){ closeEntry(); return; }
   if($('drawer-overlay').classList.contains('open')) tryCloseDrawer();
 });

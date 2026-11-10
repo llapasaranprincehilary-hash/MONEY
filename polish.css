@@ -1,0 +1,183 @@
+/* FINUITY design layer. Loaded last.
+   Principles: warm neutrals, ONE triad of colours (main + two 120deg away), flat surfaces with hairlines,
+   a soft serif only for the moments that should feel personal (greeting, the big number, card names),
+   tabular numerals for money, and no decoration that is not doing a job. */
+
+/* ───────── 1. Tokens ─────────
+   The accent is whatever the person picked in Settings > Appearance (applyAccent() in app.js). The two other
+   colours are derived from it 120deg apart at the same perceived lightness, so every accent gives a real triad.
+   These are the defaults for the standard lime so the very first paint is already right. */
+html:root{
+  --font-d:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --font-h:'Fraunces','Iowan Old Style','Palatino Linotype',Georgia,serif;
+  --ease:cubic-bezier(.2,.7,.2,1);
+  /* warm charcoal, not cold black */
+  --bg:#0e0d0b;--surface:#161512;--surface2:#1d1c18;--surface3:#252420;
+  --border:#2a2823;--border2:#37342d;
+  --text:#f3efe6;--muted:#a8a295;--muted2:#8f897d;
+  /* triad: main (accent), calm, careful */
+  --tri-b:#9fd0fd;--tri-b-dim:#89b9e5;--tri-b-hover:#afe0ff;--tri-b-rgb:159,208,253;--on-b:#0b0f14;
+  --tri-c:#fdb2c0;--tri-c-dim:#e59caa;--tri-c-hover:#ffc2d0;--tri-c-rgb:253,178,192;--on-c:#16090c;
+}
+html body.light{
+  --bg:#f6f2ea;--surface:#fffdf8;--surface2:#f1ece2;--surface3:#e9e3d6;
+  --border:#e6dfd0;--border2:#d8d0be;
+  --text:#1d1a14;--muted:#6f685a;--muted2:#7a7364;
+  --tri-b:#1963a7;--tri-b-dim:#004e91;--tri-b-hover:#2b72b8;--tri-b-rgb:25,99,167;--on-b:#ffffff;
+  --tri-c:#9c3b4e;--tri-c-dim:#85253b;--tri-c-hover:#ad4a5c;--tri-c-rgb:156,59,78;--on-c:#ffffff;
+}
+/* every older colour name in the app now points at the triad (no amber, purple or teal any more) */
+html body,html body.light{
+  --blue:var(--tri-b);--blue-bg:rgba(var(--tri-b-rgb),.10);
+  --red:var(--tri-c);--red-bg:rgba(var(--tri-c-rgb),.10);
+  --amber:var(--tri-c);--amber-bg:rgba(var(--tri-c-rgb),.10);
+  --purple:var(--tri-b);--teal:var(--accent-dim);
+}
+
+/* ───────── 2. Base ───────── */
+html{-webkit-tap-highlight-color:transparent}
+button,a,[role=button],input,select,textarea,label{-webkit-tap-highlight-color:transparent}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+/* money always lines up */
+.mv,.snap-big,.snap-mini b,.hero-amount,.hw-val,.owed-strip b,.row .val,.lf-c-n,.lf-h small,.tb-streak b,.wc-bal,.bl-amt,.bl-eq b{font-variant-numeric:lining-nums tabular-nums}
+/* the soft serif: personal moments only */
+.page-title,.snap-big,.hero-amount,.lf-name,.lf-ring b,.bl-title,.bl-eq .bl-yours b,.dl-ad-t,.pz-amt{font-family:var(--font-h);font-optical-sizing:auto;font-variation-settings:"SOFT" 100,"WONK" 0}
+
+/* ───────── 3. Hidden numbers ─────────
+   Every amount that can be hidden is <span class="mv">. Hiding is a class on <body>: the real digits fade out while
+   bullets fade in at the same spot. Nothing is re-rendered, so nothing jumps. */
+.mv{position:relative;transition:color .24s var(--ease)}
+.mv::after{content:"•••••";position:absolute;left:0;right:0;top:0;bottom:0;display:block;overflow:hidden;white-space:nowrap;text-align:inherit;letter-spacing:.1em;color:var(--mv-c,var(--muted));-webkit-text-fill-color:var(--mv-c,var(--muted));opacity:0;transition:opacity .24s var(--ease);pointer-events:none}
+body.nums-hidden .mv{color:transparent!important;-webkit-text-fill-color:transparent;user-select:none;-webkit-user-select:none}
+body.nums-hidden .mv::after{opacity:1}
+.wc .mv{--mv-c:#fff}.wc.dark .mv{--mv-c:#15200d}
+/* SVG centre label of the pizza uses two text nodes instead of ::after */
+.pz-dots{opacity:0;transition:opacity .24s var(--ease)}
+.pz-amt{transition:opacity .24s var(--ease)}
+body.nums-hidden .pz-amt{opacity:0}
+body.nums-hidden .pz-dots{opacity:1}
+@media(prefers-reduced-motion:reduce){.mv,.mv::after,.pz-dots,.pz-amt{transition:none}}
+
+/* ───────── 4. Top bar and shell ───────── */
+.topbar{background:color-mix(in srgb,var(--bg) 88%,transparent)!important;border-bottom:1px solid var(--border)!important}
+body.light .topbar{background:color-mix(in srgb,var(--bg) 90%,transparent)!important}
+.guest-pill{height:30px!important;border-radius:99px!important;border:1px solid rgba(var(--tri-b-rgb),.35)!important;background:rgba(var(--tri-b-rgb),.10)!important;color:var(--tri-b)!important;font-weight:500!important}
+.gp-dot{background:var(--tri-b)!important}
+.tb-streak{height:32px!important;min-width:32px!important;padding:0 11px 0 9px!important;gap:5px!important;border:1px solid var(--border2)!important;background:transparent!important;font-size:13px}
+.tb-streak .ic{width:16px!important;height:16px!important}
+.tb-streak b{font-weight:600}
+.page-title{font-weight:600!important;letter-spacing:-.02em!important}
+.page-sub,.page-hd .page-sub{color:var(--muted)}
+
+/* bottom bar and the + button: no glow, a clean ring that cuts the bar */
+@media(max-width:900px){
+  .bottom-nav{background:color-mix(in srgb,var(--surface) 94%,transparent)!important;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-top:1px solid var(--border)!important;box-shadow:none!important}
+  .bnav-item{font-size:11px!important;font-weight:500!important;gap:4px!important}
+  .bnav-item.active{color:var(--text)!important}
+  .bnav-item.active svg{color:var(--accent)}
+  .bnav-plus{width:52px!important;height:52px!important;box-shadow:0 0 0 5px var(--bg),0 6px 16px rgba(0,0,0,.28)!important;color:var(--on-accent,#0a0a0a)!important}
+  /* toasts sit above the bar instead of on top of it */
+  .toast{left:16px!important;right:16px!important;bottom:calc(84px + env(safe-area-inset-bottom,0px))!important;max-width:440px;margin-inline:auto;text-align:left}
+}
+
+/* ───────── 5. Dashboard ───────── */
+#dashboard .dash-flow{gap:0}
+#dashboard .card,#dashboard .snapshot-card,#dashboard .hero-card,#dashboard .lf-card,#dashboard .dl-card{border-radius:22px!important}
+
+/* 5a. the answer card */
+#dashboard .snapshot-card,body.light #dashboard .snapshot-card{background:var(--surface)!important;border:1px solid var(--border)!important;box-shadow:none!important;padding:20px!important;margin-bottom:12px!important}
+#dashboard .snap-row{row-gap:16px}
+#dashboard .snap-say{background:var(--surface2)!important;border:0!important;border-radius:16px!important;padding:12px 14px!important;font-size:14px;line-height:1.5;color:var(--text)}
+#dashboard .snap-say::before{border:0!important;left:-4px!important;width:9px!important;height:9px!important;margin-top:-4px!important;background:var(--surface2)!important}
+#dashboard .snap-say.tone-over{background:rgba(var(--tri-c-rgb),.12)!important}
+#dashboard .snap-say.tone-over::before{background:rgba(var(--tri-c-rgb),.12)!important}
+#dashboard .snap-say-2{display:block;margin-top:4px;font-size:13px;color:var(--muted)}
+#dashboard .snap-top{display:block}
+#dashboard .snap-kicker{font-size:13px;font-weight:500;color:var(--muted);margin-bottom:4px}
+#dashboard .snap-big{font-size:42px;font-weight:600;letter-spacing:-.03em;line-height:1.05;color:var(--text)}
+#dashboard .snap-big.neg{color:var(--tri-c)}
+#dashboard .snap-big.idle{color:var(--muted)}
+#dashboard .snap-pair{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:18px;padding-top:14px;border-top:1px solid var(--border)}
+#dashboard .snap-mini{display:flex!important;flex-direction:column;align-items:flex-start;gap:2px;background:transparent!important;border:0!important;border-radius:12px!important;padding:6px 8px!important;margin:-6px -8px;box-shadow:none!important;min-height:48px;cursor:pointer;transition:background .15s}
+#dashboard .snap-mini:hover{background:var(--surface2)!important}
+#dashboard .snap-mini + .snap-mini{margin-left:8px;border-left:0!important}
+#dashboard .snap-mini > span{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted)}
+#dashboard .snap-mini > span::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent)}
+#dashboard .snap-mini.out > span::before{background:var(--tri-c)}
+#dashboard .snap-mini b{font-size:17px;font-weight:600;color:var(--text);letter-spacing:-.01em}
+#dashboard .snap-mini i{display:none}
+/* the amount is a nested mask span: it must not pick up the label's size and colour */
+#dashboard .snap-mini b .mv{font-size:inherit;color:inherit;font-weight:inherit}
+#dashboard .snap-track{height:4px;margin:16px 0 0;background:var(--border2)}
+#dashboard .snap-track i{background:var(--accent)}
+#dashboard .snap-track i.warn{background:var(--tri-c);opacity:.7}
+#dashboard .snap-track i.over{background:var(--tri-c)}
+
+/* 5b. total balance */
+#dashboard .hero-card.slim{background:var(--surface)!important;border:1px solid var(--border)!important;padding:16px 20px!important;margin-bottom:12px!important}
+#dashboard .hero-label{font-size:13px!important;font-weight:500!important;text-transform:none!important;letter-spacing:0!important;color:var(--muted)!important;opacity:1!important;margin:0!important}
+#dashboard .hero-amount{font-size:28px!important;font-weight:600!important;letter-spacing:-.02em!important;color:var(--text)!important}
+#dashboard .hero-amount .hero-peso{font-size:.62em!important;color:var(--muted)!important;margin-right:2px;font-family:var(--font-d)}
+.eye-btn{width:32px!important;height:32px!important;border-radius:50%!important;border:0!important;background:transparent!important;color:var(--muted)!important;transition:background .15s,color .15s,transform .1s}
+.eye-btn:hover,.eye-btn.on{background:var(--surface2)!important;color:var(--text)!important}
+.eye-btn:active{transform:scale(.92)}
+.eye-btn svg{width:18px!important;height:18px!important}
+#dashboard .hero-toggle{border:1px solid var(--border2)!important;color:var(--text);font-weight:500;padding:7px 14px;border-radius:99px;background:transparent}
+#dashboard .hero-toggle:hover{background:var(--surface2)}
+#dashboard .hw{background:var(--surface2)!important;border:0!important;border-radius:14px!important;padding:12px 14px!important}
+#dashboard .hw-name{font-size:12px!important;font-weight:500!important;text-transform:none!important;letter-spacing:0!important;color:var(--muted)!important;margin-bottom:3px!important}
+#dashboard .hw-val{font-size:15px!important;font-weight:600!important;color:var(--text)!important;font-family:var(--font-d)}
+
+/* 5c. owed: a quiet ledger, not three pills */
+#dashboard .owed-strip{display:flex;flex-wrap:wrap;align-items:stretch;gap:0;margin:0 0 12px;background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:hidden}
+#dashboard .owed-strip button{flex:1 1 140px;display:flex;flex-direction:column;align-items:flex-start;gap:2px;background:transparent;border:0;border-radius:0;padding:12px 16px;font-size:12.5px;color:var(--muted);text-align:left}
+#dashboard .owed-strip button + button{border-left:1px solid var(--border)}
+#dashboard .owed-strip button:hover{background:var(--surface2)}
+#dashboard .owed-strip button b{margin:0;font-size:16px;font-weight:600;color:var(--text)}
+#dashboard .owed-strip b.n{color:var(--tri-c)}
+#dashboard .owed-strip b.p{color:var(--tri-b)}
+#dashboard .owed-soon{flex:1 1 100%;display:flex;align-items:center;gap:8px;padding:9px 16px;border-top:1px solid var(--border);font-size:12.5px;color:var(--tri-c)}
+#dashboard .owed-soon::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+
+/* 5d. recent / trend */
+#dashboard #dash-tabs-card{background:var(--surface);border:1px solid var(--border);box-shadow:none;padding:16px 20px;margin-bottom:12px}
+#dashboard .dash-tabs{display:flex;align-items:center;gap:2px;margin:0 0 6px;padding:0;background:transparent}
+#dashboard .dash-tabs button{border-radius:10px;padding:7px 12px;font-size:14px;font-weight:500;color:var(--muted);background:transparent}
+#dashboard .dash-tabs button.on{color:var(--text);background:var(--surface2)}
+#dashboard .dash-tabs-link{color:var(--muted);font-size:13px}
+#dashboard .dash-tabs-link:hover{color:var(--text)}
+#dashboard #dash-tabs-card .row{padding:13px 0!important;font-size:14px}
+#dashboard #dash-tabs-card .row .lbl{color:var(--text)}
+#dashboard #dash-tabs-card .row .val.an{color:var(--text)}
+#dashboard #dash-tabs-card .row .val.ap{color:var(--accent)}
+#dashboard #dash-tabs-card .row:last-child{border-bottom:0}
+
+/* ───────── 6. Appearance: one colour, three roles ───────── */
+.ap-sub{margin-top:3px;font-size:12.5px;font-weight:400;color:var(--muted);line-height:1.45;max-width:30em}
+.ap-triad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.ap-tri{display:flex;flex-direction:column;gap:3px;padding:12px;border-radius:14px;background:var(--surface2);min-width:0}
+.ap-tri i{width:22px;height:22px;border-radius:50%;margin-bottom:6px}
+.ap-tri b{font-size:13px;font-weight:600;color:var(--text)}
+.ap-tri span{font-size:11.5px;line-height:1.35;color:var(--muted)}
+@media(max-width:420px){.ap-triad{grid-template-columns:1fr}.ap-tri{flex-direction:row;align-items:center;gap:10px}.ap-tri i{margin:0;flex:none}.ap-tri span{margin-left:auto;text-align:right}}
+
+/* ───────── 7. Everything else stays inside the triad ───────── */
+/* category badges: three hues, light and dim shades, no extra orange / purple / amber */
+.badge-food{background:rgba(var(--tri-c-rgb),.13);color:var(--tri-c)}
+.badge-transport{background:rgba(var(--tri-b-rgb),.13);color:var(--tri-b)}
+.badge-shopping{background:rgba(var(--accent-rgb),.13);color:var(--accent)}
+.badge-utilities{background:rgba(var(--tri-b-rgb),.13);color:var(--tri-b-dim)}
+.badge-health{background:rgba(var(--tri-c-rgb),.13);color:var(--tri-c-dim)}
+.badge-entertainment{background:rgba(var(--accent-rgb),.13);color:var(--accent-dim)}
+.badge-recurring{background:rgba(var(--tri-b-rgb),.13);color:var(--tri-b)}
+/* Money tabs on phones: one hue per role instead of five */
+@media(max-width:900px){
+  .mt-tab[data-page="income"],body.light .mt-tab[data-page="income"]{--tc:var(--accent-rgb)}
+  .mt-tab[data-page="expenses"],body.light .mt-tab[data-page="expenses"]{--tc:var(--tri-c-rgb)}
+  .mt-tab[data-page="loans"],body.light .mt-tab[data-page="loans"]{--tc:var(--tri-b-rgb)}
+  .mt-tab[data-page="balances"],body.light .mt-tab[data-page="balances"]{--tc:var(--accent-rgb)}
+  .mt-tab[data-page="goals"],body.light .mt-tab[data-page="goals"]{--tc:var(--tri-b-rgb)}
+}
+/* hidden-number bullets: smaller than the digits they replace, vertically centred */
+.mv::after{top:50%;bottom:auto;transform:translateY(-50%);font-size:.7em;line-height:1;letter-spacing:.2em}
+.snap-big .mv::after{font-size:.5em;letter-spacing:.3em}

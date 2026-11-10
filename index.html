@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>FINUITY</title>
 <meta name="description" content="FINUITY - a private, on-device tracker for income, expenses, wallets, loans, and savings goals.">
-<meta name="theme-color" content="#f0f0ed">
+<meta name="theme-color" content="#f6f2ea">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="FINUITY">
@@ -29,7 +29,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,400..700,0..100&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -735,24 +735,29 @@ body.light .bottom-nav{box-shadow:0 -4px 24px rgba(0,0,0,.08) !important}
 /* Two-col gap */
 .two-col{gap:18px !important;margin-bottom:18px !important}
 
-/* metal chip + contactless on wallet cards */
-.wc>.wc-chip,.hwm>.hwm-chip{position:absolute;display:block;border-radius:6px;pointer-events:none;
+/* metal chip / type emblem: always vertically centred on the card, on the right (full + mini) */
+.wc>.wc-chip,.wc>.wc-emb{position:absolute;top:50%;transform:translateY(-50%);pointer-events:none;z-index:1}
+.wc>.wc-chip{display:block;border-radius:5px;
   background:linear-gradient(135deg,#f6f6f4 0%,#bcc0c8 38%,#eceef1 55%,#a7acb6 100%);
   box-shadow:inset 0 0 0 1px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.7),0 2px 5px rgba(0,0,0,.25)}
-.wc>.wc-chip{right:18px;top:58px;width:42px;height:32px;z-index:1}
-.wc>.wc-chip.is-credit{top:55px;width:36px;height:27px}
-.hwm>.hwm-chip{right:12px;bottom:11px;width:25px;height:19px;border-radius:4px;z-index:1}
-.wc-chip svg,.hwm-chip svg{display:block;width:100%;height:100%;fill:none;stroke:rgba(40,44,52,.55);stroke-width:.9;stroke-linejoin:round}
-.wc>.wc-nfc{position:absolute;right:20px;top:96px;width:26px;height:26px;z-index:1;opacity:.92;pointer-events:none;transform:rotate(-90deg)}
+.wc>.wc-chip{right:22px;width:34px;height:26px}
+.wc>.wc-chip.is-credit{top:56px;transform:none;width:30px;height:23px}
+.wc-chip svg{display:block;width:100%;height:100%;fill:none;stroke:rgba(40,44,52,.55);stroke-width:.9;stroke-linejoin:round}
+/* contactless waves sit under the chip and radiate downward, away from it */
+.wc>.wc-nfc{position:absolute;left:auto;right:30px;top:calc(50% + 19px);width:18px;height:18px;z-index:1;opacity:.92;pointer-events:none;transform:rotate(90deg)}
 .wc-nfc svg{display:block;width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
-.wc>.wc-emb,.hwm>.hwm-emb{position:absolute;display:flex;align-items:center;justify-content:center;pointer-events:none;background:rgba(255,255,255,.2);box-shadow:inset 0 0 0 1px rgba(255,255,255,.28);z-index:1}
-.wc.dark>.wc-emb,.hwm.dark>.hwm-emb{background:rgba(0,0,0,.1);box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
-.wc>.wc-emb{right:18px;top:58px;width:42px;height:32px;border-radius:10px}
-.hwm>.hwm-emb{right:12px;bottom:11px;width:26px;height:20px;border-radius:7px}
-.wc-emb svg,.hwm-emb svg{fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
-.wc-emb svg{width:20px;height:20px}.hwm-emb svg{width:13px;height:13px}
-.hwm.dark .hwm-chip{box-shadow:inset 0 0 0 1px rgba(0,0,0,.3),0 2px 5px rgba(0,0,0,.2)}
-.hwm:has(.hwm-chip,.hwm-emb) .hwm-bal{font-size:clamp(13px,9.5cqw,18px);padding-right:32px}
+.wc>.wc-emb{display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.2);box-shadow:inset 0 0 0 1px rgba(255,255,255,.28)}
+.wc.dark>.wc-emb{background:rgba(0,0,0,.1);box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
+.wc>.wc-emb{right:22px;width:34px;height:26px;border-radius:8px}
+.wc-emb svg{fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.wc-emb svg{width:16px;height:16px}
+/* the wallet illustration (e-wallet) is full colour, so no plate behind it */
+.wc>.wc-emb.is-wallet,.wc.dark>.wc-emb.is-wallet{background:none;box-shadow:none;border-radius:0}
+.wc>.wc-emb.is-wallet{width:38px;height:34px;right:20px;filter:drop-shadow(0 3px 4px rgba(0,0,0,.28))}
+.wc-emb.is-wallet svg{width:100%;height:100%;stroke:none}
+/* cash on hand: the hand-and-money illustration on a soft white badge so it reads on the green card */
+.wc>.wc-emb.is-cash,.wc.dark>.wc-emb.is-cash{width:40px;height:40px;right:22px;border-radius:50%;background:rgba(255,255,255,.92);box-shadow:0 3px 9px rgba(0,0,0,.22),inset 0 0 0 1px rgba(255,255,255,.6)}
+.wc-emb.is-cash svg{width:72%;height:72%;stroke:none;fill:initial}
 /* Hero wallet chips: mini versions of the wallet cards on the Balances page */
 .hwm{position:relative;overflow:hidden;container-type:inline-size;display:flex;flex-direction:column;justify-content:space-between;gap:14px;min-height:82px;padding:11px 13px 12px;border:0;border-radius:16px;text-align:left;color:#fff;font-family:var(--font-b);cursor:pointer;
   background:linear-gradient(135deg,var(--c1),var(--c2));box-shadow:0 10px 20px -12px var(--c2),0 1px 3px rgba(0,0,0,.2);transition:transform .2s cubic-bezier(.2,.7,.2,1),box-shadow .2s}
@@ -766,7 +771,7 @@ body.light .bottom-nav{box-shadow:0 -4px 24px rgba(0,0,0,.08) !important}
 .hwm-top{display:flex;align-items:center;gap:8px;min-width:0}
 .hwm-logo{flex:none;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.95);display:flex;align-items:center;justify-content:center;overflow:hidden;font-family:var(--font-d);font-weight:800;letter-spacing:-.04em;line-height:1;box-shadow:0 2px 6px rgba(0,0,0,.2)}
 .hwm-logo img{width:100%;height:100%;object-fit:cover;display:block}
-.hwm-name{min-width:0;font-family:var(--font-d);font-weight:700;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hwm-name{min-width:0;font-family:var(--font-d);font-weight:700;font-size:12.5px;line-height:1.15;white-space:normal;overflow-wrap:break-word;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .hwm-bal{font-family:var(--font-d);font-weight:800;letter-spacing:-.02em;line-height:1.1;font-size:clamp(14px,11cqw,19px);overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
 /* expense pie */
 .ep-range{margin-bottom:14px}
@@ -1182,6 +1187,8 @@ label.fa-row{cursor:pointer}
 <link rel="stylesheet" href="life.css">
 <link rel="stylesheet" href="vip.css">
 <link rel="stylesheet" href="scan.css">
+<link rel="stylesheet" href="bills.css">
+<link rel="stylesheet" href="polish.css">
 <link rel="stylesheet" href="virtual-pet/tour.css">
 <script>
 /* Instant lock: if this device has a PIN and the session isn't unlocked yet, hide the app
@@ -1340,7 +1347,9 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
 .wc-top{display:flex;align-items:center;gap:10px}
 .wc-logo{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.95);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-weight:800;overflow:hidden;flex:none;box-shadow:0 2px 8px rgba(0,0,0,.2);letter-spacing:-.04em;line-height:1}
 .wc-logo img{width:100%;height:100%;object-fit:cover;display:block}
-.wc-name{flex:1;min-width:0;font-family:var(--font-d);font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wc-name{flex:1;min-width:0;font-family:var(--font-d);font-weight:700;font-size:15px;line-height:1.15;white-space:normal;overflow-wrap:break-word;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.wc-top{flex-wrap:wrap;row-gap:8px}
+@container (max-width:230px){.wc-long .wc-name{order:3;flex:0 0 100%;font-size:14px;-webkit-line-clamp:3}.wc-long .wc-more{margin-left:auto}.wc-long>.wc-chip:not(.is-credit),.wc-long>.wc-emb{top:calc(50% + 14px)}.wc-long>.wc-nfc{top:calc(50% + 33px)}}
 .wc-more{flex:none;width:30px;height:30px;border-radius:50%;border:none;background:rgba(255,255,255,.2);color:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
 .wc-more:hover{background:rgba(255,255,255,.36)}
 .wc.dark .wc-more{background:rgba(0,0,0,.1)}
@@ -1881,13 +1890,16 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
       <!-- 1. THE ANSWER: how am I doing this month (Fin lives here) -->
       <div class="snapshot-card" id="month-snapshot"></div>
 
+      <!-- 1b. Pay bills first; the rest is yours -->
+      <div id="dash-bills"></div>
+
       <!-- 2. Balance: one quiet row, wallets on tap -->
       <div class="hero-card slim" data-tour="hero-balance">
         <div class="hero-topline">
           <div class="hero-label">Total Balance</div>
           <button type="button" class="eye-btn" id="eye-hero" onclick="toggleHideBalances()" title="Show/hide balances" aria-label="Show or hide balances"></button>
         </div>
-        <div class="hero-amount"><span class="hero-peso cur-sym">₱</span><span id="hero-bal">0.00</span></div>
+        <div class="hero-amount"><span class="hero-peso cur-sym">₱</span><span id="hero-bal" class="mv">0.00</span></div>
         <div class="hero-sub">Across all wallets · updated today</div>
         <button type="button" class="hero-toggle" id="hero-toggle" aria-expanded="false" onclick="toggleHeroPanel()">Wallets <i aria-hidden="true">▾</i></button>
         <div class="hero-wallets" id="hero-wallets-inner"></div>
@@ -2259,9 +2271,14 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
           <div class="theme-toggle" id="theme-toggle-settings" onclick="toggleTheme()" title="Toggle light/dark mode"><div class="theme-thumb"></div></div>
         </div>
       </div>
-      <div class="row" style="flex-direction:column;align-items:stretch;gap:10px">
-        <div style="display:flex;justify-content:space-between;align-items:center"><span class="lbl">Accent color</span><span style="font-size:12px;color:var(--muted)" id="accent-label">Lime</span></div>
+      <div class="row ap-color" style="flex-direction:column;align-items:stretch;gap:12px;border-bottom:none">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><div><span class="lbl">Color</span><div class="ap-sub">Pick one. Finuity adds the two that go with it, evenly spaced on the colour wheel.</div></div><span style="font-size:12px;color:var(--muted);flex:none" id="accent-label">Lime</span></div>
         <div class="swatches" id="accent-swatches"></div>
+        <div class="ap-triad" id="triad-preview">
+          <div class="ap-tri"><i style="background:var(--accent)"></i><b>Main</b><span>Income, progress, buttons</span></div>
+          <div class="ap-tri"><i style="background:var(--tri-b)"></i><b>Calm</b><span>Bills, money owed to you</span></div>
+          <div class="ap-tri"><i style="background:var(--tri-c)"></i><b>Careful</b><span>Spending, overdue, over budget</span></div>
+        </div>
       </div>
     </div>
       </div>
@@ -3079,14 +3096,17 @@ window.autoRepeat=function(id){const t=state.expenses.find(e=>e.id===id);if(t)lo
 
 /* hook into render so chips, datalist and settings card stay fresh */
 const _render=window.render;
-window.render=function(){_render.apply(this,arguments);
+function _post(){
   try{chipBar();card();wireForm();
     let dl=document.getElementById('fa-descs');if(!dl){dl=document.createElement('datalist');dl.id='fa-descs';document.body.appendChild(dl);}
     dl.innerHTML=[...new Set(state.expenses.slice(-200).map(e=>e.desc.trim()).filter(x=>x&&!/→/.test(x)))].slice(-60).map(x=>'<option value="'+escAttr(x)+'">').join('');
     const f=document.getElementById('fa-fab');if(f)f.style.display=blocked()?'none':'block';
-  }catch(e){console.error('automation render',e);}};
+  }catch(e){console.error('automation render',e);}
+}
+window.render=function(){_render.apply(this,arguments);_post();};
+window.finAutoPost=_post;   // partial renders call this for the pages that show the chips / automation card
 const fab=document.createElement('button');fab.id='fa-fab';fab.title='Quick Log Expense';fab.setAttribute('aria-label','Quick Log Expense');fab.setAttribute('data-tour','quick-log');fab.textContent='+';fab.onclick=openQuick;fab.style.display='none';document.body.appendChild(fab);
-setTimeout(()=>{window.render();tick();},3500);
+setTimeout(()=>{_post();tick();},3500);   // attach the add-ons once; no full re-render mid-use
 setInterval(()=>{const f=document.getElementById('fa-fab');if(f)f.style.display=blocked()?'none':'block';tick();},60000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(tick,800);});
 window.openQuick=openQuick;
@@ -3102,6 +3122,7 @@ window.finGuessCat=guessCat;   // lets the receipt scanner reuse the keyword cat
 <script defer src="a11y.js"></script>
 <script defer src="virtual-pet/pet-coach.js"></script>
 <script defer src="life.js"></script>
+<script defer src="bills.js"></script>
 <script defer src="scan.js"></script>
 <script defer src="vip.js"></script>
 <script>

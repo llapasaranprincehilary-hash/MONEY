@@ -114,13 +114,3 @@ Demo mode (pretend VIP) is now localhost-only; on a real website it cannot be sw
 
 ## Legal text (legal-data.js, terms.html, privacy.html, refund-policy.html)
 One source for the in-app screens and the public pages; plan numbers are filled in from vip.js. Version 3.0 forces re-acceptance. See LEGAL-CHECKLIST.md. Service worker cache is finuity-shell-v33.
-
-Plan length fix: purchases are credited in calendar months (12 months = a full year), not 30-day blocks. See backend/functions/index.js addMonths.
-
-## Final round
-- Admin VIP manager (admin.html) + `adminVip` function with audit log; `deleteMyData` function; payment history; VIP-ending warnings; Maya with safe fallback;
-  all verses replaced with exact public-domain KJV text. Service worker cache is finuity-shell-v34. See LAUNCH-CHECKLIST.md.
-
-Server runtime moved to Node.js 24 (Node 20 decommissioned by Google 2026-10-30). backend/firebase.json added. Verified the code loads with real firebase-functions 6.6 / firebase-admin 13.10.
-
-Scan fix: the Add Expense card is folded by default (class fx-c), so a scan used to fill a hidden form and look like nothing happened. The review panel now has 'Paid from' + an 'Add expense' button that saves through addExpense(), and 'Edit in the form' opens and highlights the form.
