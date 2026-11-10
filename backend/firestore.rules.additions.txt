@@ -16,8 +16,3 @@
     match /usage/{uid} {
       allow read, write: if false;
     }
-
-    // Admin audit log (who changed whose VIP, when). Server only.
-    match /adminLog/{id} {
-      allow read, write: if false;
-    }

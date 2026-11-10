@@ -131,25 +131,3 @@ The free on-device reader (3 free tries) is unchanged and still works without an
 
 Rule of thumb: anything that costs you money or must be exclusive has to run on the server. Anything that runs in the browser
 can be copied by someone who knows how, so treat it as a nudge, not a lock.
-
-
-## I. Admin VIP manager
-
-The backend now includes an `adminVip` endpoint for looking up, granting, adjusting, or revoking VIP
-from `admin.html` without touching the Firebase console directly.
-
-1. Add your admin Firebase UID(s) to `ADMIN_UIDS` in `backend/functions/index.js`, or put them in a `.env` file:
-   `ADMIN_UIDS=uid1,uid2` (and/or `ADMIN_EMAILS=you@example.com` for verified email matching).
-2. After `firebase deploy --only functions`, the deploy prints the `adminVip` address.
-3. Paste it into `admin.html` at the `VIP_ADMIN_URL = ''` line near the bottom.
-4. Open `admin.html` in your browser, sign in with your admin account, click **VIP manager**.
-   You can look up any user by email or UID, see their status and history, grant months, set an exact end date, or revoke VIP.
-   Every change is written to `adminLog` in Firestore.
-
-## J. Account deletion cleanup
-
-The backend also exports `deleteMyData`. When a user deletes their account from inside the app,
-the app calls this endpoint first (before deleting the Firebase Auth account) to remove their
-`entitlements` and `usage` documents. Payment history is kept for accounting purposes.
-
-After deploying, paste the `deleteMyData` URL into `vip.js` at `api: { ..., deleteData: '...' }`.
