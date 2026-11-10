@@ -1,10 +1,10 @@
 {
   "name": "finuity-payments",
-  "description": "FINUITY VIP payments, Smart receipt scan and admin tools (Cloud Functions for Firebase, 2nd gen).",
+  "description": "FINUITY VIP payments: creates PayMongo checkout sessions and activates VIP when PayMongo confirms payment.",
   "main": "index.js",
-  "engines": { "node": "24" },
+  "engines": { "node": "20" },
   "dependencies": {
-    "firebase-admin": "^13.0.0",
+    "firebase-admin": "^12.0.0",
     "firebase-functions": "^6.0.0"
   },
   "private": true
