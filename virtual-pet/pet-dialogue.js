@@ -53,7 +53,11 @@
     return weights.length-1;
   }
 
+  // While numbers are hidden (Home > eye button) Fin keeps amounts private too.
+  function hiddenNow(){ try{ return !!(typeof state!=='undefined' && state && state.hideBalances); }catch(e){ return false; } }
+  function maskSym(){ try{ return global.FinX ? global.FinX.sym() : '₱'; }catch(e){ return '₱'; } }
   function fmtSafe(n){
+    if(hiddenNow()) return maskSym()+' •••••';
     return safe(()=>global.fmt(n), '₱'+Number(n||0).toFixed(2));
   }
 

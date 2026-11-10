@@ -14,7 +14,7 @@
 var W=window;
 function S(){try{return state}catch(e){return{}}}
 function td(){try{return today()}catch(e){return new Date().toISOString().slice(0,10)}}
-function money(n){try{return fmt(n)}catch(e){return '₱'+Math.round(n).toLocaleString()}}
+function money(n){try{if(state&&state.hideBalances)return (window.FinX?FinX.sym():'₱')+' •••••'}catch(e){}try{return fmt(n)}catch(e){return '₱'+Math.round(n).toLocaleString()}}
 function first(){var n=String(S().username||'').trim().split(/\s+/)[0];return n}
 function sum(a){return a.reduce(function(x,y){return x+(+y.amount||0)},0)}
 function mk(){return td().slice(0,7)}
