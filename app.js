@@ -256,10 +256,23 @@ function normalizeState(raw){
     out[k]=Array.isArray(out[k])?out[k].filter(x=>x&&typeof x==='object'):[];
   });
   if(!out.wallets.length)out.wallets=def.wallets;
-  out.wallets.forEach(w=>{w.balance=Number(w.balance)||0;});
+  out.wallets.forEach(w=>{
+    w.balance=Number(w.balance)||0;
+    if(!w.interestRate)w.interestRate=0;
+    if(!w.interestFreq)w.interestFreq='none';
+    if(!w.interestStart)w.interestStart=w.created||today();
+    if(!w.lastAccrual)w.lastAccrual=w.interestStart;
+  });
   out.income.forEach(e=>{e.amount=Number(e.amount)||0;});
   out.expenses.forEach(e=>{e.amount=Number(e.amount)||0;});
-  out.loans.forEach(l=>{l.amount=Number(l.amount)||0;});
+  out.loans.forEach(l=>{
+    l.amount=Number(l.amount)||0;
+    if(!l.interestRate)l.interestRate=0;
+    if(!l.interestFreq)l.interestFreq='none';
+    if(!l.interestStart)l.interestStart=l.dateAdded||today();
+    if(!l.lastAccrual)l.lastAccrual=l.interestStart;
+    if(!l.rateHistory)l.rateHistory=[];
+  });
   out.goals.forEach(g=>{g.target=Number(g.target)||0;g.saved=Number(g.saved)||0;});
   out.expenses.forEach(e=>{if(typeof e.desc!=='string')e.desc=String(e.desc==null?'':e.desc);});
   out.loans.forEach(l=>{if(typeof l.name!=='string')l.name=String(l.name==null?'':l.name);});
@@ -1507,7 +1520,7 @@ function walCardHTML(w,o){
     +'<div><div class="wc-top">'+walLogoHTML(w,st)+'<div class="wc-name">'+esc(w.label||'Account name')+'</div>'
     +(o.preview?'':'<button type="button" class="wc-more" aria-label="Card options" onclick="event.stopPropagation();walMenu(event,\''+w.id+'\')">'+dots+'</button>')
     +'</div><div class="wc-sub">'+(t?WAL_TYPES[t]:'Wallet')+' • '+cur+'</div></div>'
-    +'<div>'+body+(o.preview?'':'<div class="wc-upd">Updated '+(fmtDate(w.updated)||'-')+'</div>')+'</div>'+walChipHTML(w,false)+'</div>';
+    +'<div>'+body+(o.preview?'':'<div class="wc-upd">Updated '+(fmtDate(w.updated)||'-')+(w.interestRate>0&&w.interestFreq&&w.interestFreq!=='none'?' · <span class="wc-int">'+w.interestRate+'% '+w.interestFreq+'</span>':'')+'</div>')+'</div>'+walChipHTML(w,false)+'</div>';
 }
 // mini version of the wallet card, used in the dashboard hero
 function walMiniHTML(w){
@@ -1596,7 +1609,7 @@ function openWalModal(mode,id){
   walBuildPickers();
   if(w){
     const st=walStyle(w),t=walType(w)||'ewallet',b=st.b;
-    WD={mode:mode,id:w.id,brand:b?b.k:(w.brand||''),label:w.label,type:t,c1:st.c1,c2:st.c2,dark:st.dark,logo:w.logo||'',manual:!!w.c1&&!b,typeTouched:true,nameTouched:true,auto:false,last:''};
+    WD={mode:mode,id:w.id,brand:b?b.k:(w.brand||''),label:w.label,type:t,c1:st.c1,c2:st.c2,dark:st.dark,logo:w.logo||'',manual:!!w.c1&&!b,typeTouched:true,nameTouched:true,auto:false,interestRate:w.interestRate||0,interestFreq:w.interestFreq||'none',last:''};
     const shown=t==='credit'?Math.max(0,-(+w.balance||0)):(+w.balance||0);
     WD.orig=shown;WD.origShown=shown;WD.origCredit=(t==='credit');
     document.getElementById('wal-bal').value=shown||'';
@@ -1606,6 +1619,8 @@ function openWalModal(mode,id){
     document.getElementById('wal-bal').value='';document.getElementById('wal-limit').value='';
   }
   document.getElementById('wal-name').value=WD.label;
+  if(document.getElementById('wal-rate'))document.getElementById('wal-rate').value=WD.interestRate||0;
+  if(document.getElementById('wal-freq'))document.getElementById('wal-freq').value=WD.interestFreq||'none';
   document.getElementById('wal-err').textContent='';
   const bal=WD.mode==='bal';
   ['wal-sec-brand','wal-sec-name','wal-sec-type','wal-sec-color','wal-sec-logo'].forEach(function(i){document.getElementById(i).style.display=bal?'none':'';});
@@ -1701,13 +1716,26 @@ function walSave(){
   if(!state.wallets)state.wallets=[];
   if(WD.mode==='add'){
     const id='w'+Date.now();
-    state.wallets.push({id:id,label:name,balance:newBal,updated:today(),brand:WD.brand,type:WD.type,limit:limit,c1:WD.c1,c2:WD.c2,dark:WD.dark,logo:WD.logo});
+    const wRate=Math.max(0,Math.min(1000,parseFloat(document.getElementById('wal-rate').value)||0));
+    const wFreq=wRate>0?(document.getElementById('wal-freq').value||'none'):'none';
+    state.wallets.push({id:id,label:name,balance:newBal,updated:today(),brand:WD.brand,type:WD.type,limit:limit,c1:WD.c1,c2:WD.c2,dark:WD.dark,logo:WD.logo,
+      interestRate:wRate,interestFreq:wFreq,
+      interestStart:today(),lastAccrual:today(),created:today()
+    });
     save();closeWalModal();renderAfterWallet();toast(name+' added ✓');
     window.dispatchEvent(new CustomEvent('fin:wallet-added',{detail:{id:id,name:name}}));
     return;
   }
   const w=state.wallets.find(x=>x.id===WD.id);if(!w){closeWalModal();return;}
-  if(WD.mode==='edit'){w.label=name;w.brand=WD.brand;w.type=WD.type;w.c1=WD.c1;w.c2=WD.c2;w.dark=WD.dark;w.logo=WD.logo;}
+  if(WD.mode==='edit'){w.label=name;w.brand=WD.brand;w.type=WD.type;w.c1=WD.c1;w.c2=WD.c2;w.dark=WD.dark;w.logo=WD.logo;
+    const eRate=Math.max(0,Math.min(1000,parseFloat(document.getElementById('wal-rate').value)||0));
+    const eFreq=eRate>0?(document.getElementById('wal-freq').value||'none'):'none';
+    if(eRate!==w.interestRate||eFreq!==w.interestFreq){
+      w.interestRate=eRate;w.interestFreq=eFreq;
+      // Reset lastAccrual on rate change so no back-charge at new rate
+      w.lastAccrual=today();
+    }
+  }
   w.limit=limit;
   if(changed){w.balance=newBal;w.updated=today();}
   const balChanged=changed;
@@ -1918,6 +1946,8 @@ function renderLoans(){
         }
       }
       const srcWallet=l.sourceWallet?(state.wallets||[]).find(w=>w.id===l.sourceWallet):null;
+      const interestBadge=(!l.settled&&l.interestRate>0)
+        ?'<span class="badge badge-interest" title="'+l.interestRate+'% '+l.interestFreq+'">'+l.interestRate+'% '+l.interestFreq+'</span>':'';
       const walletLine=srcWallet?`<span style="font-size:11px;color:var(--muted)">${l.type==='payable'?'→ ':'from '}${esc(srcWallet.label)}</span>`:'';
       // collapsed: description, due, price. Everything else (type, wallet, settle, adjust) opens on tap.
       const open=!!(window._loanOpen&&window._loanOpen[l.id]);
@@ -1938,18 +1968,17 @@ function renderLoans(){
       </button>
       <div class="loan-more" id="loan-more-${l.id}">
         <div class="loan-acts">
-          <div class="meta"><span class="badge ${l.settled?'badge-settled':l.type==='payable'?'badge-payable':'badge-receivable'}">${l.settled?'Settled':l.type==='payable'?'I owe':'Owes me'}</span>${walletLine}</div>
+          <div class="meta"><span class="badge ${l.settled?'badge-settled':l.type==='payable'?'badge-payable':'badge-receivable'}">${l.settled?'Settled':l.type==='payable'?'I owe':'Owes me'}</span>${interestBadge}${walletLine}</div>
           <div class="loan-btns">
             <button class="btn btn-settle btn-sm" onclick="settle(${l.id})">${l.settled?'Undo':'Settle'}</button>
             <button type="button" class="row-more" aria-label="More actions" aria-haspopup="menu" onclick="rowMenu(event,'loan',${l.id})">${FinIcons.ic('more')}</button>
           </div>
         </div>
         ${!l.settled?`<div class="adj-row">
-          <span style="font-size:11px;color:var(--muted);flex-shrink:0">Adjust:</span>
-          <input type="number" id="adj-${l.id}" placeholder="Amount" min="0" style="flex:1;padding:5px 9px;font-size:12.5px">
-          <button class="btn btn-ghost btn-sm" onclick="adjustLoan(${l.id},'add')" title="Add to balance" style="padding:5px 10px;color:var(--accent)">${FinIcons.ic('plus')} Add</button>
-          <button class="btn btn-ghost btn-sm" onclick="adjustLoan(${l.id},'deduct')" title="Deduct from balance" style="padding:5px 10px;color:var(--red)">${FinIcons.ic('minus')} Deduct</button>
+          <button class="btn btn-primary btn-sm" onclick="openLoanPayModal(${l.id})" style="flex:1">${FinIcons.ic('plus')} ${l.type==='receivable'?'Record payment received':'Make a payment'}</button>
+          <button class="btn btn-ghost btn-sm" onclick="openLoanAdjModal(${l.id})" title="Adjust balance without logging" style="padding:5px 10px;color:var(--muted)">Adjust</button>
         </div>`:''}
+        ${renderLoanPayHistory(l.id)}
       </div>
     </div>`;
     }).join('')
@@ -2382,7 +2411,15 @@ async function addLoan(){
   if(!name){toast('Enter a name','error');return;}
   if(!amount||amount<=0){toast('Enter a valid amount','error');return;}
 
-  const loan={id:uid(),name,amount,type,note,due,settled:false};
+  const rawRate=parseFloat(document.getElementById('loan-rate').value)||0;
+  const freq=document.getElementById('loan-freq').value||'none';
+  const interestRate=Math.max(0,Math.min(1000,rawRate));
+  const interestFreq=interestRate>0?freq:'none';
+  const loan={id:uid(),name,amount,type,note,due,settled:false,
+    interestRate,interestFreq,
+    interestStart:today(),lastAccrual:today(),
+    rateHistory:interestRate>0?[{rate:interestRate,freq:interestFreq,from:today()}]:[]
+  };
   let walletMsg='';
   if(walletId){
     const wallet=(state.wallets||[]).find(w=>w.id===walletId);
@@ -2411,6 +2448,8 @@ function openEditLoan(id){
   document.getElementById('edit-loan-type').value=l.type;
   document.getElementById('edit-loan-due').value=l.due||'';
   document.getElementById('edit-loan-note').value=l.note||'';
+  document.getElementById('edit-loan-rate').value=l.interestRate||0;
+  document.getElementById('edit-loan-freq').value=l.interestFreq||'none';
   document.getElementById('edit-loan-wallet').innerHTML='<option value=""> - Not tracked in a wallet - </option>'+walletOptionsHTML(l.sourceWallet||'');
   onEditLoanTypeChange();
   document.getElementById('edit-loan-modal').style.display='flex';
@@ -2468,6 +2507,15 @@ async function saveEditLoan(){
   }
   l.name=name;l.amount=amount;l.type=type;l.due=due;l.note=note;
   if(newWalletId)l.sourceWallet=newWalletId;else delete l.sourceWallet;
+  // Interest rate change
+  const newRate=Math.max(0,Math.min(1000,parseFloat(document.getElementById('edit-loan-rate').value)||0));
+  const newFreq=newRate>0?(document.getElementById('edit-loan-freq').value||'none'):'none';
+  if(newRate!==l.interestRate||newFreq!==l.interestFreq){
+    if(!l.rateHistory)l.rateHistory=[];
+    l.rateHistory.push({rate:newRate,freq:newFreq,from:today(),prev:l.interestRate});
+    l.interestRate=newRate;l.interestFreq=newFreq;
+    l.lastAccrual=today(); // reset so we don't back-charge at new rate
+  }
   closeEditLoan();
   save();renderAfterLoan();toast('Loan updated'+walletMsg+' ✓');
 }
@@ -2571,6 +2619,191 @@ async function undoSettle(id){
   save();renderAfterLoan();
   toast('Marked as outstanding');
 }
+
+function renderLoanPayHistory(loanId){
+  const l=(state.loans||[]).find(x=>x.id===loanId);
+  const wname=id=>{const w=(state.wallets||[]).find(x=>x.id===id);return w?' · '+esc(w.label):'';};
+  const rows=[]
+    .concat((state.expenses||[]).filter(e=>e.loanId===loanId&&e.loanApplied>0).map(e=>({date:e.date||'',label:esc(e.desc)+wname(e.source),amt:e.loanApplied,k:'out'})))
+    .concat((state.income||[]).filter(e=>e.loanId===loanId&&e.loanApplied>0).map(e=>({date:e.dateAdded||'',label:'Payment received'+wname(e.wallet),amt:e.loanApplied,k:'in'})))
+    .concat(((l&&l.interestLog)||[]).map(x=>({date:x.date||'',label:'Interest · '+esc(x.note||''),amt:x.amount,k:'int'})))
+    .sort((a,b)=>b.date>a.date?1:b.date<a.date?-1:0);
+  if(!rows.length)return '';
+  const html=rows.slice(0,5).map(r=>`<div class="lph-row"><span class="lph-date">${fmtDate(r.date)}</span><span class="lph-name">${r.label}</span><span class="lph-amt ${r.k}">${r.k==='int'?'+':'-'}${fmt(r.amt)}</span></div>`).join('');
+  const tot=(l&&l.interestTotal>0)?`<div class="lph-more">Interest added so far: ${fmt(l.interestTotal)}</div>`:'';
+  return `<div class="lph"><div class="lph-head">Recent activity</div>${html}${rows.length>5?'<div class="lph-more">+ '+(rows.length-5)+' older</div>':''}${tot}</div>`;
+}
+
+async function openLoanPayModal(id){
+  const l=state.loans.find(x=>x.id===id);if(!l)return;
+  const isRec=l.type==='receivable';           // money someone owes ME: a payment is money coming IN
+  const wallets=(state.wallets||[]).filter(w=>!w.archived);
+  const walOpts=wallets.length
+    ?wallets.map(w=>`<option value="${w.id}">${esc(w.label)} (${fmt(w.balance)})</option>`).join('')
+    :'<option value="">No wallets set up</option>';
+  const html=`<div class="lpm-wrap">
+    <div class="lpm-title">${isRec?'Payment from '+esc(l.name):'Pay '+esc(l.name)}</div>
+    <div class="lpm-bal">Remaining balance: <b>${fmt(l.amount)}</b></div>
+    <label class="lpm-label" for="lpm-amount">Amount</label>
+    <input id="lpm-amount" type="number" min="0.01" step="0.01" placeholder="0.00" class="lpm-input" inputmode="decimal">
+    <label class="lpm-label" for="lpm-wallet">${isRec?'Deposit to wallet':'Pay from wallet'}</label>
+    <select id="lpm-wallet" class="lpm-select">${walOpts}</select>
+    <label class="lpm-label" for="lpm-note">Note <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
+    <input id="lpm-note" type="text" placeholder="e.g. monthly installment" class="lpm-input">
+  </div>`;
+  const ok=await mtConfirm(html,'💳','Record Payment','var(--accent)',{wide:true,rawHtml:true,confirmLabel:'Record Payment',cancelLabel:'Cancel'});
+  if(!ok)return;
+  let amount=cents(parseFloat(document.getElementById('lpm-amount')?.value)||0);
+  const walletId=document.getElementById('lpm-wallet')?.value||'';
+  const note=document.getElementById('lpm-note')?.value.trim()||'';
+  if(!amount||amount<=0){toast('Enter a valid amount','error');return;}
+  if(amount>l.amount){amount=l.amount;toast('Capped at the remaining balance');}   // an overpayment would not match the loan
+  const wallet=wallets.find(w=>w.id===walletId);
+  if(!isRec&&wallet&&walShort(wallet,amount)){
+    const goNeg=await mtConfirm(walShortMsg(wallet),'⚠️','Continue anyway','var(--amber)');
+    if(!goNeg)return;
+  }
+  const before=l.amount;
+  l.amount=Math.max(0,Math.round((l.amount-amount)*100)/100);
+  const applied=Math.round((before-l.amount)*100)/100;
+  if(l.amount===0){l.settled=true;}
+  if(isRec){
+    if(wallet){wallet.balance=Math.round((wallet.balance+amount)*100)/100;wallet.updated=today();}
+    const d=new Date();
+    state.income.push({id:uid(),month:d.toLocaleString('en-US',{month:'long'}),year:d.getFullYear(),type:'Loan Repayment',amount,
+      note:'From '+l.name+(note?' · '+note:''),wallet:walletId,dateAdded:today(),loanId:l.id,loanApplied:applied});
+  }else{
+    if(wallet){wallet.balance=Math.round((wallet.balance-amount)*100)/100;wallet.updated=today();}
+    pushExpense({desc:'Loan payment'+(l.name?' – '+l.name:''),amount,cat:'loan-payment',source:walletId,date:today(),note,recurring:false,loanId:l.id,loanApplied:applied});
+  }
+  save();renderAfterLoan();
+  toast(l.settled?'Loan fully settled ✓':(isRec?'Received '+fmt(amount):'Payment of '+fmt(amount)+' recorded')+(wallet?' – '+wallet.label+' updated':'')+' ✓');
+  if(l.settled)window.dispatchEvent(new CustomEvent('fin:loan-settled',{detail:{loan:l,wallet:wallet}}));
+  window.dispatchEvent(new CustomEvent('fin:loan-adjusted',{detail:{loan:l}}));
+}
+
+async function openLoanAdjModal(id){
+  const l=state.loans.find(x=>x.id===id);if(!l)return;
+  const html=`<div class="lpm-wrap">
+    <div class="lpm-title">Adjust ${esc(l.name)}</div>
+    <div class="lpm-bal">Current balance: <b>${fmt(l.amount)}</b></div>
+    <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">This adjusts the balance only — no expense is logged and no wallet is changed. Use this to fix a typo or record an off-app payment.</div>
+    <label class="lpm-label">Amount</label>
+    <input id="ladj-amount" type="number" min="0.01" step="0.01" placeholder="₱ 0.00" class="lpm-input" inputmode="decimal">
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <label style="flex:1;display:flex;align-items:center;gap:6px;font-size:13px;padding:9px 12px;border:1px solid var(--border2);border-radius:9px;cursor:pointer">
+        <input type="radio" name="ladj-mode" value="deduct" checked> Deduct (payment)
+      </label>
+      <label style="flex:1;display:flex;align-items:center;gap:6px;font-size:13px;padding:9px 12px;border:1px solid var(--border2);border-radius:9px;cursor:pointer">
+        <input type="radio" name="ladj-mode" value="add"> Add (more owed)
+      </label>
+    </div>
+  </div>`;
+  const ok=await mtConfirm(html,'⚙️','Adjust Balance','var(--muted)',{wide:true,rawHtml:true,confirmLabel:'Adjust',cancelLabel:'Cancel'});
+  if(!ok)return;
+  const amount=cents(parseFloat(document.getElementById('ladj-amount')?.value)||0);
+  const mode=document.querySelector('input[name="ladj-mode"]:checked')?.value||'deduct';
+  if(!amount||amount<=0){toast('Enter a valid amount','error');return;}
+  adjustLoan(id,mode,amount);
+}
+
+// ── Interest Engine ──────────────────────────────────────────────────────────
+// Called on every app load, after state is loaded and synced.
+// Computes elapsed periods since last accrual, applies compound interest,
+// logs transactions, and saves. Never double-charges: uses lastAccrual date.
+
+const FREQ_PERIODS = {daily:365,weekly:52,monthly:12,quarterly:4,'semi-annual':2,annual:1};
+
+function daysBetween(a,b){
+  // a,b are 'YYYY-MM-DD' strings
+  return Math.round((ldate(b)-ldate(a))/(1000*60*60*24));
+}
+
+function periodsElapsed(lastAccrual,freq){
+  if(!lastAccrual||freq==='none')return 0;
+  const days=daysBetween(lastAccrual,today());
+  if(days<=0)return 0;
+  const daysPerPeriod={daily:1,weekly:7,monthly:30.4375,quarterly:91.3125,'semi-annual':182.625,annual:365.25};
+  return Math.floor(days/(daysPerPeriod[freq]||365.25));
+}
+
+function applyLoanInterest(){
+  if(!state.loans)return;
+  let changed=false;
+  state.loans.forEach(function(l){
+    if(l.settled||!l.interestRate||l.interestRate<=0||!l.interestFreq||l.interestFreq==='none')return;
+    const periods=periodsElapsed(l.lastAccrual||l.interestStart,l.interestFreq);
+    if(periods<=0)return;
+    const ratePerPeriod=l.interestRate/100/FREQ_PERIODS[l.interestFreq];
+    // Compound interest: balance grows by (1+r)^n
+    const before=l.amount;
+    const after=Math.round(before*Math.pow(1+ratePerPeriod,periods)*100)/100;
+    const charged=Math.round((after-before)*100)/100;
+    if(charged<=0)return;
+    l.amount=after;
+    // Advance lastAccrual by exactly the periods we charged
+    const daysPerPeriod={daily:1,weekly:7,monthly:30.4375,quarterly:91.3125,'semi-annual':182.625,annual:365.25};
+    const daysAdvanced=Math.round(periods*(daysPerPeriod[l.interestFreq]||30.4375));
+    const newAccrual=new Date(ldate(l.lastAccrual||l.interestStart));
+    newAccrual.setDate(newAccrual.getDate()+daysAdvanced);
+    l.lastAccrual=newAccrual.toISOString().slice(0,10);
+    // Interest only grows the balance. It is NOT spending (nothing left a wallet yet), and the payoff is logged
+    // as a payment later, so logging it as an expense would count the same money twice. Keep a history on the loan.
+    if(!l.interestLog)l.interestLog=[];
+    l.interestLog.push({date:today(),amount:charged,note:l.interestFreq+' @ '+l.interestRate+'%'});
+    if(l.interestLog.length>60)l.interestLog=l.interestLog.slice(-60);
+    l.interestTotal=Math.round(((l.interestTotal||0)+charged)*100)/100;
+    changed=true;
+    try{toast(fmt(charged)+' interest added to '+l.name,'info',4000);}catch(e){}
+  });
+  if(changed){save();scheduleRender();}
+}
+
+function applyWalletInterest(){
+  if(!state.wallets)return;
+  let changed=false;
+  state.wallets.forEach(function(w){
+    if(w.type==='credit'||!w.interestRate||w.interestRate<=0||!w.interestFreq||w.interestFreq==='none')return;
+    const periods=periodsElapsed(w.lastAccrual||w.interestStart,w.interestFreq);
+    if(periods<=0)return;
+    const ratePerPeriod=w.interestRate/100/FREQ_PERIODS[w.interestFreq];
+    const before=w.balance;
+    const after=Math.round(before*Math.pow(1+ratePerPeriod,periods)*100)/100;
+    const earned=Math.round((after-before)*100)/100;
+    if(earned<=0)return;
+    w.balance=after;
+    w.updated=today();
+    // Advance lastAccrual
+    const daysPerPeriod={daily:1,weekly:7,monthly:30.4375,quarterly:91.3125,'semi-annual':182.625,annual:365.25};
+    const daysAdvanced=Math.round(periods*(daysPerPeriod[w.interestFreq]||365.25));
+    const newAccrual=new Date(ldate(w.lastAccrual||w.interestStart));
+    newAccrual.setDate(newAccrual.getDate()+daysAdvanced);
+    w.lastAccrual=newAccrual.toISOString().slice(0,10);
+    // Log as income
+    const yr=new Date().getFullYear();
+    const mo=new Date().toLocaleString('en-US',{month:'long'});
+    state.income.push({
+      id:uid(),
+      month:mo,
+      year:yr,
+      type:'Interest income',
+      amount:earned,
+      note:w.interestFreq+' interest @ '+w.interestRate+'% — '+w.label,
+      wallet:w.id,
+      dateAdded:today(),
+      isInterest:true
+    });
+    changed=true;
+    try{toast(fmt(earned)+' interest credited to '+w.label,'info',4000);}catch(e){}
+  });
+  if(changed){save();scheduleRender();}
+}
+
+function runInterestEngine(){
+  try{applyLoanInterest();}catch(e){console.error('Loan interest error',e);}
+  try{applyWalletInterest();}catch(e){console.error('Wallet interest error',e);}
+}
+
 function adjustLoan(id,mode,amountOverride){
   const inp=document.getElementById('adj-'+id);
   const val=cents(amountOverride!==undefined?(parseFloat(amountOverride)||0):(parseFloat(inp&&inp.value)||0));
@@ -4299,8 +4532,7 @@ function applyTriad(accentHex){
 function applyAccent(hex){
   const st=document.body.style;
   ['--accent','--accent-dim','--accent-hover','--accent-rgb','--accent-glow','--accent-bg','--on-accent'].forEach(k=>st.removeProperty(k));
-  const meta=document.querySelector('meta[name="theme-color"]');
-  if(!hex){ applyTriad(null); if(meta)meta.setAttribute('content',document.body.classList.contains('light')?'#f6f2ea':'#0e0d0b'); return; }
+  if(!hex){ applyTriad(null); syncThemeColor(); return; }
   const light=document.body.classList.contains('light');
   let [h,s,l]=_hex2hsl(hex);
   s=Math.max(s,.45);
@@ -4315,6 +4547,15 @@ function applyAccent(hex){
   st.setProperty('--accent-bg','rgba('+main.join(',')+',.07)');
   st.setProperty('--on-accent',lum>.45?'#050605':'#ffffff');
   applyTriad(_rgb2hex(main));
+  syncThemeColor();
+}
+/* The status bar colour must be exactly the page background (--bg) of the current theme, whatever accent is chosen. */
+function syncThemeColor(){
+  try{
+    const meta=document.querySelector('meta[name="theme-color"]');if(!meta)return;
+    const bg=getComputedStyle(document.body).getPropertyValue('--bg').trim();
+    meta.setAttribute('content',bg||(document.body.classList.contains('light')?'#f6f2ea':'#0e0d0b'));
+  }catch(e){}
 }
 function setAccent(hex){
   try{ if(hex)localStorage.setItem('mtAccent',hex); else localStorage.removeItem('mtAccent'); }catch(e){}
@@ -4538,15 +4779,22 @@ let _confirmResolve=null;
 // dialog icons: callers still pass an emoji string; show it as a matching icon on a tinted plate
 function confirmIcon(e){const n=(window.FinIcons&&FinIcons.map[String(e).replace(/\uFE0F/g,'')])||(window.FinIcons&&FinIcons.map[e])||'alert';
   const tone=/^(alert|trash|logout|unlock)$/.test(n)?(n==='alert'?' warn':' bad'):'';return '<div class="ic-plate'+tone+'" style="margin-bottom:0">'+FinIcons.ic(n)+'</div>';}
-function mtConfirm(msg,icon='⚠️',okLabel='Confirm',okColor='var(--red)'){
+function mtConfirm(msg,icon='⚠️',okLabel='Confirm',okColor='var(--red)',opts){
+  opts=opts||{};
   return new Promise(resolve=>{
     if(_confirmResolve){_confirmResolve(false);_confirmResolve=null;}
     _confirmResolve=resolve;
     document.getElementById('confirm-modal').style.display='flex';
     document.getElementById('confirm-icon').innerHTML=confirmIcon(icon);
-    document.getElementById('confirm-msg').textContent=msg;
-    document.getElementById('confirm-ok-btn').textContent=okLabel;
+    // opts.rawHtml: the caller passes trusted markup (a small form) instead of plain text.
+    // Every call resets these, so ordinary confirms are unchanged.
+    const m=document.getElementById('confirm-msg');
+    if(opts.rawHtml){m.innerHTML=msg;m.style.textAlign='left';}else{m.textContent=msg;m.style.textAlign='';}
+    const card=document.getElementById('confirm-card');if(card)card.style.maxWidth=opts.wide?'420px':'';
+    document.getElementById('confirm-ok-btn').textContent=opts.confirmLabel||okLabel;
     document.getElementById('confirm-ok-btn').style.background=okColor;
+    const cb=document.getElementById('confirm-cancel-btn');if(cb)cb.textContent=opts.cancelLabel||'Cancel';
+    if(opts.rawHtml){setTimeout(()=>{const i=m.querySelector('input,select');if(i)try{i.focus({preventScroll:true})}catch(e){}},60);}
   });
 }
 function confirmResolve(val){
@@ -4681,6 +4929,7 @@ scheduleRender();
 updateSidebarUsername();
 // Auth entry point is now driven entirely by fbAuth.onAuthStateChanged → handleAuthState()
 // Recurring reminder: check if any recurring expenses haven't been logged this month
+setTimeout(()=>whenAppReady(()=>{runInterestEngine();}),3000);
 setTimeout(()=>whenAppReady(()=>{
   const now=new Date();
   const curMo=now.getMonth(),curYr=now.getFullYear();

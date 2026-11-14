@@ -191,3 +191,51 @@ After the quiz it turns into the smaller "For you today" lesson card. Side-by-si
 
 ### Merge v6 (smaller card icons)
 - On the full wallet cards the metal chip, contactless waves, wallet illustration, cash badge and the other type symbols are about 30% smaller. Cache is now `v66`.
+
+### Merge v7 (interest on wallets and loans)
+- Wallets can have an annual interest / yield rate (daily, monthly, quarterly or annual). Interest is credited to the balance and logged as income.
+  The rate shows next to "Updated" on the card. Credit cards are skipped.
+- Loans can have an interest rate and how often it is applied (daily to annual). It compounds, shows as a badge on the loan, and the loan
+  keeps its own interest history. "Make a payment" (or "Record payment received" for money owed to you) and "Adjust" replace Add/Deduct.
+- The engine runs on app start after sync. It uses the last-accrual date, so it never double-charges, and changing a rate does not back-charge.
+- Fixes made while merging the interest update:
+  - `mtConfirm` now accepts `{rawHtml, wide, confirmLabel, cancelLabel}`. Without it the payment and adjust forms showed raw HTML and failed
+    with "Enter a valid amount". Plain confirms are unchanged.
+  - A payment on a loan someone owes YOU now adds money to the wallet and is logged as income (it used to deduct from the wallet and log an expense).
+  - Loan interest is no longer logged as an expense. It only grows the balance; logging it too made the payoff count twice. It is kept in the loan's history.
+  - A payment larger than the balance is capped at the balance.
+- Cache is now `v67`.
+
+### Merge v8 (top bar / status bar colour)
+- From MONEY-FINAL (6): the top bar is now almost solid (97%) and a same-colour strip covers the notch area, so the phone's status bar and the
+  top bar read as one piece and page content no longer shows through. The patch hard-coded the old cool-black/white colours, so it was
+  adapted to this build's warm palette: everything now follows the real page background (`--bg`).
+- `syncThemeColor()` sets the status-bar colour (meta theme-color) from `--bg` for every theme and accent. Before, switching light/dark while a
+  custom accent was set left the old colour in place.
+- `manifest.json` theme_color / background_color were still the old light grey (#f0f0ed); now #f6f2ea, matching the real default background.
+- A tiny script in the head sets the dark status bar before first paint, so dark-theme users no longer get a light flash at launch.
+- Cache is now `v68`.
+
+### Merge v9 (Learn page redesign)
+- From MONEY-FINAL (7): the Learn page home is a calmer layout: a level strip with progress, one pinned "from your numbers" insight, the quiz banner,
+  topic filter chips and a lesson shelf (icon, title, one-line intro, minutes or done score). Lessons now carry a `topic`.
+- Kept the notice that quiz scores are saved to the account and may be used, without your name, in school research. The update had dropped that
+  sentence, and it is not stated anywhere else in the app or the legal pages.
+- Selected filter chip text uses `--on-accent` (it was dark on the dark-green accent in the light theme).
+- Heads-up (design, not changed): each topic has exactly one lesson, so a filter chip shows a single lesson. Chips only become useful with more lessons per topic.
+- The insight list was cut from three to one pinned insight; the "Try it in FINUITY" shortcut still appears when a lesson ends.
+- Cache is now `v69`.
+
+### Merge v10 (Learn pictures)
+- From MONEY-FINAL (8): `learn-images.js` holds 10 embedded JPEGs (one per lesson, 400x220, and 3 hero backgrounds, 1200x360). Lessons show their picture
+  instead of an icon, and the Learn page has a picture banner with 3 dots to switch it (remembered in `finLearnBg`). Images are decorative (empty alt).
+- Fixes made while merging:
+  - `learn-images.js` was missing from the service worker's precache list, so Learn pictures would not have worked offline. Added.
+  - Reading `localStorage` at the top of learn.js was unguarded: where storage is blocked (some private modes) the whole Learn module failed to load.
+    Now wrapped; the picture falls back to the first one.
+  - The 7px switcher dots were too small to tap; they now have a ~26px tap target, are real buttons with `aria-pressed`, and switching swaps the image in
+    place instead of re-rendering the page.
+- Heads-up on the pictures themselves: they look like stock/web images, so make sure you have the right to use them. `bg3` has a caption baked into the
+  image that is already cut off at the bottom of the file, and text inside a picture cannot be translated or recoloured. To drop it, remove `'bg3'` from
+  `LEARN_BG_KEYS` at the bottom of learn-images.js.
+- Cache is now `v70`.

@@ -1,4 +1,4 @@
-# Merge v5 (v4 + bamboo alkansya): redesign + learn hero + Learning polish + design-chat changes
+# Merge v10 (v9 + Learn pictures): redesign + learn hero + Learning polish + design-chat changes
 
 Base = MONEY-finuity-FINAL-v2-redesign (Bills first, triad colours, hide-numbers crossfade, new Fin card, Learn banner).
 On top of it:
@@ -27,3 +27,16 @@ Files touched on top of the redesign: app.js, index.html, ux.css, life.js, life.
 ## Added in v5
 - Bamboo alkansya hero art from MONEY-finuity-FINAL-v4-alkansya (only learn.js/learn.css hero art changed there; it was built on the learn-hero build, not on v4, so it was merged in rather than replacing v4).
 - Hand-and-money icon kept for Cash on Hand. sw.js cache v65.
+
+## Added in v7
+- Interest update from MONEY-FINAL (5) (built on the FINAL (3) build) merged into app.js, index.html and ux.css, with the loan UI ported
+  into our collapsible loan rows. See BUGFIXES.md "Merge v7" for the fixes made on top of it.
+
+## Added in v8
+- Top bar / status bar colour update from MONEY-FINAL (6), adapted to the redesign palette. See BUGFIXES.md "Merge v8".
+
+## Added in v9
+- Learn page redesign from MONEY-FINAL (7) (learn.js, learn.css), merged cleanly onto v8. See BUGFIXES.md "Merge v9".
+
+## Added in v10
+- Learn pictures from MONEY-FINAL (8): learn-images.js (new), learn.js, learn.css, index.html (script tag), sw.js (precache). See BUGFIXES.md "Merge v10".

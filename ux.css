@@ -319,3 +319,33 @@ body.light [class*="badge-f"]{color:#b45309 !important}
 @media (prefers-reduced-motion:reduce){.loan-e.open .loan-more{animation:none}.loan-chev{transition:none}}
 
 .hwm .mv{--mv-c:#fff}.hwm.dark .mv{--mv-c:#15200d}
+
+/* ── Loan payment modal ─────────────────────────────────────── */
+.lpm-wrap{display:flex;flex-direction:column;gap:4px}
+.lpm-title{font:700 16px var(--font-d,sans-serif);color:var(--text);margin-bottom:2px}
+.lpm-bal{font-size:12.5px;color:var(--muted);margin-bottom:12px}
+.lpm-bal b{color:var(--text)}
+.lpm-label{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:10px;margin-bottom:4px;display:block}
+.lpm-input{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-size:15px}
+.lpm-input:focus{outline:none;border-color:var(--accent)}
+.lpm-select{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-size:14px}
+.lpm-warn{margin-top:8px;font-size:12.5px;color:var(--red);padding:8px 10px;background:rgba(239,68,68,.08);border-radius:8px}
+
+/* ── Loan payment history ───────────────────────────────────── */
+.lph{margin-top:8px;border-top:1px solid var(--border);padding-top:8px}
+.lph-head{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
+.lph-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)}
+.lph-row:last-child{border-bottom:none}
+.lph-date{font-size:11px;color:var(--muted);flex:none;min-width:72px}
+.lph-name{font-size:12.5px;color:var(--text2);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lph-amt{font-size:12.5px;font-weight:600;color:var(--red);flex:none}
+.lph-more{font-size:11.5px;color:var(--muted);padding-top:4px;text-align:center}
+
+/* ── Updated loan adj-row ───────────────────────────────────── */
+.adj-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.adj-row .btn-primary{flex:1;min-width:0;justify-content:center}
+
+/* ── Interest badges ────────────────────────────────────────── */
+.badge-interest{background:rgba(var(--accent-rgb),.12);color:var(--accent);border:1px solid rgba(var(--accent-rgb),.3);border-radius:5px;font-size:10.5px;font-weight:600;padding:2px 7px;letter-spacing:.01em;white-space:nowrap}
+
+.lph-amt.in{color:var(--accent)}.lph-amt.int{color:var(--muted)}

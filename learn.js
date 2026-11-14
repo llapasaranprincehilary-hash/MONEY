@@ -20,7 +20,7 @@ var TOPICS={budgeting:'Budgeting',saving:'Saving',tracking:'Tracking',spending:'
 /* ───────── lessons ─────────
    In every question the FIRST option is the correct one; options are shuffled when shown. */
 var LESSONS=[
-{id:'budgeting',e:'pie',title:'Budgeting 101',min:2,intro:'A plan for your money, before it disappears.',
+{id:'budgeting',topic:'budgeting',e:'pie',title:'Budgeting 101',min:2,intro:'A plan for your money, before it disappears.',
  cards:[
   {h:'A budget is a plan, not a punishment',p:'A budget just tells your money where to go before you spend it. It is not about cutting everything. It is about choosing what matters to you.'},
   {h:'Try 50/30/20',p:'A popular starting point: about 50% of your money for needs, 30% for wants and 20% for savings or paying debt.',ex:'Allowance of ₱5,000 → ₱2,500 needs, ₱1,500 wants, ₱1,000 savings. Your split can be different. It is only a start.'},
@@ -32,7 +32,7 @@ var LESSONS=[
   {q:'Your budget keeps failing within two weeks. Best first fix?',o:['Check what you really spend and set limits you can follow','Make the limits even smaller','Stop budgeting','Ignore overspending'],e:'Realistic limits based on real spending are the ones people stick to.'}],
  tryIt:{label:'Set your monthly budget',page:'goals'}},
 
-{id:'saving',e:'savings',title:'Save First, Spend Next',min:2,intro:'Build the habit that protects you from surprises.',
+{id:'saving',topic:'saving',e:'savings',title:'Save First, Spend Next',min:2,intro:'Build the habit that protects you from surprises.',
  cards:[
   {h:'Pay yourself first',p:'Move your savings the moment money arrives, before you spend. Saving "whatever is left" usually means saving nothing.'},
   {h:'The emergency fund',p:'Money for surprises: a broken phone, a medical bill, a lost allowance. A common target is 3 to 6 months of essential expenses.',ex:'Starting small is fine. First target ₱1,000, then one month of needs, then build up.'},
@@ -44,7 +44,7 @@ var LESSONS=[
   {q:'Why start saving early, even small amounts?',o:['More time for interest to build on itself','Small amounts do not matter','Banks require it','So you can spend more now'],e:'Time is the biggest ingredient in growth.'}],
  tryIt:{label:'Create a savings goal',page:'goals'}},
 
-{id:'tracking',e:'search',title:'Where Did It Go?',min:2,intro:'See your money clearly, and the rest gets easier.',
+{id:'tracking',topic:'tracking',e:'search',title:'Where Did It Go?',min:2,intro:'See your money clearly, and the rest gets easier.',
  cards:[
   {h:'Small things add up',p:'A ₱60 milk tea, ₱20 load and ₱30 snack every day feels like nothing. It is ₱110 a day.',ex:'₱110 × 30 days = ₱3,300 a month.'},
   {h:'Log it when it happens',p:'By tonight you will have forgotten half of your purchases. Add each expense right after you pay. It takes ten seconds.'},
@@ -56,7 +56,7 @@ var LESSONS=[
   {q:'You own ₱8,000 (cash and savings) and owe ₱3,000. Your net worth is…',o:['₱5,000','₱11,000','₱3,000','₱8,000'],e:'Net worth = what you own − what you owe = ₱5,000.'}],
  tryIt:{label:'Log an expense',page:'expenses'}},
 
-{id:'spending',e:'bag',title:'Smart Spending',min:2,intro:'Enjoy your money without regret.',
+{id:'spending',topic:'spending',e:'bag',title:'Smart Spending',min:2,intro:'Enjoy your money without regret.',
  cards:[
   {h:'The 24-hour rule',p:'For anything you did not plan to buy, wait a day. Many wants fade by tomorrow, and the ones that stay are easier to justify.'},
   {h:'A sale is not savings',p:'A 50% discount on something you did not plan to buy is still money spent. A discount only saves you money on things you already needed.'},
@@ -68,7 +68,7 @@ var LESSONS=[
   {q:'Pay-later installments should be treated as…',o:['Real bills to include in your budget','Free money','Optional','Someone else’s problem'],e:'They are debt that you will have to pay.'}],
  tryIt:{label:'Review your spending',page:'expenses'}},
 
-{id:'debt',e:'card',title:'Debt & Credit, Explained',min:3,intro:'Borrow smart, and know what it costs.',
+{id:'debt',topic:'debt',e:'card',title:'Debt & Credit, Explained',min:3,intro:'Borrow smart, and know what it costs.',
  cards:[
   {h:'Interest is the price of borrowing',p:'When you borrow, you usually pay back more than you took. Rates quoted per month add up fast.',ex:'₱10,000 at 3% per month = ₱300 interest every month.'},
   {h:'Minimum payments are a trap',p:'Paying only the minimum keeps the balance alive longer and costs far more in interest. When you can, pay more than the minimum.'},
@@ -80,7 +80,7 @@ var LESSONS=[
   {q:'A card has a ₱20,000 limit. Which balance is closest to the common 30% guideline?',o:['₱6,000','₱18,000','₱20,000','₱12,000'],e:'30% of ₱20,000 is ₱6,000.'}],
  tryIt:{label:'Track a loan',page:'loans'}},
 
-{id:'safety',e:'shield',title:'Scams & Money Safety',min:2,intro:'Keep what you worked for.',
+{id:'safety',topic:'safety',e:'shield',title:'Scams & Money Safety',min:2,intro:'Keep what you worked for.',
  cards:[
   {h:'Your OTP and PIN are yours alone',p:'Banks and e-wallets do not need your OTP or PIN, ever. If someone asks, it is a scammer, even if they sound official and know your name.'},
   {h:'Too good to be true',p:'"Double your money in a week", "guaranteed returns" and pressure to invite friends are classic red flags for pyramid and Ponzi schemes. Real investments can lose value.'},
@@ -92,7 +92,7 @@ var LESSONS=[
   {q:'Which is a strong way to protect your accounts?',o:['A different password for each app plus a phone lock','One easy password everywhere','Sharing your PIN with a friend','Writing your PIN on your phone case'],e:'Unique passwords and a lock limit the damage of any single leak.'}],
  tryIt:{label:'Check your PIN & security',page:'settings'}},
 
-{id:'investing',e:'trend-up',title:'Investing for Beginners',min:3,intro:'The basics before you ever put in a peso.',
+{id:'investing',topic:'investing',e:'trend-up',title:'Investing for Beginners',min:3,intro:'The basics before you ever put in a peso.',
  cards:[
   {h:'First things first',p:'Build an emergency fund and clear high-interest debt before investing. Only invest money you will not need soon.'},
   {h:'Risk and return travel together',p:'Higher possible returns usually come with a higher chance of losing money. Savings accounts are lower risk and lower return. Stocks are higher risk with higher possible return.'},
@@ -239,37 +239,110 @@ function render(){
   root._h=out;root.innerHTML=out;
 }
 
-/* home */
+/* ── home (redesigned) ──────────────────────────────────────── */
+
+// ── Learn background ──────────────────────────────────────────
+var _lbg='bg1';
+try{_lbg=localStorage.getItem('finLearnBg')||'bg1';}catch(e){}   // storage can be blocked (private mode): fall back to the first picture
+function setLearnBg(k){
+  _lbg=k;
+  try{localStorage.setItem('finLearnBg',k);}catch(e){}
+  var el=document.getElementById('lrn-bg-img');
+  if(el&&window.LEARN_IMAGES&&window.LEARN_IMAGES[k]){
+    // swap in place: no full re-render, so the page does not jump or flash
+    el.src=window.LEARN_IMAGES[k];
+    var dots=document.querySelectorAll('.lrn-bg-dot');
+    for(var i=0;i<dots.length;i++){var on=dots[i].getAttribute('data-k')===k;dots[i].classList.toggle('on',on);dots[i].setAttribute('aria-pressed',on?'true':'false');}
+  }else render();
+}
+var _lf='all';
+function setFilter(f){_lf=f;render();}
+
 function viewHome(){
   var L=LS(),n=doneCount(),lv=level(n),pre=L.pre,post=L.post,h='';
-  h+='<div class="lrn-hero" data-tour="learn-hero"><div class="lrn-lv"><span class="lrn-lv-e">'+ico(lv.e)+'</span><div><div class="lrn-lv-n">'+lv.n+'</div><div class="lrn-lv-s">'+n+' of '+LESSONS.length+' lessons done</div></div></div>'
-    +'<div class="lrn-bar"><i style="width:'+Math.round(n/LESSONS.length*100)+'%"></i></div></div>';
-  // quiz banner
+
+  /* background image + switcher */
+  var bgSrc=(window.LEARN_IMAGES&&window.LEARN_IMAGES[_lbg])||'';
+  h+='<div class="lrn-bghero" id="lrn-bghero">'
+    +(bgSrc?'<img id="lrn-bg-img" src="'+bgSrc+'" alt="" class="lrn-bg-img" aria-hidden="true">':'<div class="lrn-bg-placeholder"></div>')
+    +'<div class="lrn-bg-overlay"></div>'
+    +'<div class="lrn-bg-switcher">'
+    +(window.LEARN_IMAGES&&window.LEARN_BG_KEYS?window.LEARN_BG_KEYS.map(function(k,i){
+      return '<button type="button" class="lrn-bg-dot'+(_lbg===k?' on':'')+'" data-k="'+k+'" aria-pressed="'+(_lbg===k)+'" onclick="FinLearn.setLearnBg(\''+k+'\')" aria-label="Background picture '+(i+1)+'"></button>';
+    }).join(''):'')
+    +'</div>'
+    +'</div>';
+
+  /* level strip */
+  h+='<div class="lrn-lvstrip" data-tour="learn-hero">'
+    +'<div class="lrn-lvstrip-left"><span class="lrn-lvstrip-e">'+ico(lv.e)+'</span>'
+    +'<div><div class="lrn-lvstrip-n">'+lv.n+'</div>'
+    +'<div class="lrn-lvstrip-s">'+n+' of '+LESSONS.length+' done</div></div></div>'
+    +'<div class="lrn-lvstrip-xp">'+Math.round(n/LESSONS.length*100)+'%</div>'
+    +'</div>'
+    +'<div class="lrn-bar" style="margin-bottom:16px"><i style="width:'+Math.round(n/LESSONS.length*100)+'%"></i></div>';
+
+  /* pinned insight from your numbers */
+  var allIns=insights(),ins=allIns[0];
+  if(ins){
+    h+='<div class="lrn-insight" onclick="FinLearn.openLesson(\''+ins.lesson+'\')">'
+      +'<div class="lrn-insight-i">'+ico(ins.icon)+'</div>'
+      +'<div class="lrn-insight-b"><div class="lrn-insight-t">'+esc(ins.title)+'</div>'
+      +'<div class="lrn-insight-x">'+esc(ins.text)+'</div></div>'
+      +'<div class="lrn-insight-arr">→</div></div>';
+  }
+
+  /* quiz banner */
   if(!pre){
-    h+='<div class="lrn-ban" data-tour="learn-quiz"><div class="lrn-ban-t"><b>Quick quiz before you start</b><span>About '+QUIZ_MIN.pre+'. No pressure — it just shows where you\'re at so the lessons fit.</span></div><button class="lrn-btn" onclick="FinLearn.startQuiz(\'pre\')">Start quiz</button></div>';
-  }else if(!post){
+    h+='<div class="lrn-ban" data-tour="learn-quiz">'
+      +'<div class="lrn-ban-t"><b>Quick quiz before you start</b>'
+      +'<span>About '+QUIZ_MIN.pre+'. No right or wrong — it shows where you\'re at so the lessons actually fit.</span></div>'
+      +'<button class="lrn-btn" onclick="FinLearn.startQuiz(\'pre\')">Start →</button></div>';
+  } else if(!post){
     var ready=n>=POST_UNLOCK;
-    h+='<div class="lrn-ban'+(ready?'':' off')+'" data-tour="learn-quiz"><div class="lrn-ban-t"><b>Progress Quiz</b><span>'+(ready?'Same topics, new questions. Let\'s see how much has sunk in.':'Finish '+(POST_UNLOCK-n)+' more lesson'+(POST_UNLOCK-n===1?'':'s')+' to unlock. Starter score: '+pre.pct+'%.')+'</span></div>'+(ready?'<button class="lrn-btn" onclick="FinLearn.startQuiz(\'post\')">Take it</button>':'<span class="lrn-lock"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></span>')+'</div>';
-  }else{
+    h+='<div class="lrn-ban'+(ready?'':' off')+'" data-tour="learn-quiz">'
+      +'<div class="lrn-ban-t"><b>Progress Quiz</b>'
+      +'<span>'+(ready?'Same topics, new questions. See how much has sunk in.':'Finish '+(POST_UNLOCK-n)+' more lesson'+(POST_UNLOCK-n===1?'':'s')+' to unlock. Starter score: '+pre.pct+'%.')+'</span></div>'
+      +(ready?'<button class="lrn-btn" onclick="FinLearn.startQuiz(\'post\')">Take it →</button>':'<span class="lrn-lock"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg></span>')
+      +'</div>';
+  } else {
     var d=post.pct-pre.pct;
-    h+='<div class="lrn-ban done" data-tour="learn-quiz"><div class="lrn-ban-t"><b>Starter '+pre.pct+'%  →  Progress '+post.pct+'%</b><span>'+(d>0?'You gained '+d+' points. That is real learning.':d===0?'Holding steady. Revisit a lesson to push higher.':'Down a bit. Retry a lesson and see what changed.')+'</span></div><button class="lrn-btn ghost" onclick="FinLearn.showResult(\'post\')">View</button></div>';
+    h+='<div class="lrn-ban done" data-tour="learn-quiz">'
+      +'<div class="lrn-ban-t"><b>Starter '+pre.pct+'% → Progress '+post.pct+'%</b>'
+      +'<span>'+(d>0?'Up '+d+' points. That\'s real progress.':d===0?'Holding steady. Revisit a lesson to push higher.':'Down a bit. Retry a lesson and see what changed.')+'</span></div>'
+      +'<button class="lrn-btn ghost" onclick="FinLearn.showResult(\'post\')">View</button></div>';
   }
-  // insights
-  var ins=insights().slice(0,3);
-  if(ins.length){
-    h+='<div class="lrn-sec">From your numbers</div><div class="lrn-ins">'+ins.map(function(i){
-      return '<div class="lrn-in"><div class="lrn-in-i">'+ico(i.icon)+'</div><div class="lrn-in-b"><div class="lrn-in-t">'+esc(i.title)+'</div><div class="lrn-in-x">'+esc(i.text)+'</div><div class="lrn-in-a">'
-        +'<button class="lrn-link" onclick="FinLearn.openLesson(\''+i.lesson+'\')">'+ico('book')+' '+LMAP[i.lesson].title+'</button>'
-        +(i.cta?'<button class="lrn-link alt" onclick="show(\''+i.cta.page+'\')">'+i.cta.label+' →</button>':'')+'</div></div></div>';}).join('')+'</div>';
-  }
-  h+='<div class="lrn-sec">Lessons</div><div class="lrn-grid">'+LESSONS.map(function(l){
-    var d=L.done[l.id];
-    return '<button type="button" class="lrn-card'+(d?' done':'')+'" onclick="FinLearn.openLesson(\''+l.id+'\')"><span class="lrn-card-e">'+ico(l.e)+'</span><span class="lrn-card-t">'+l.title+'</span><span class="lrn-card-i">'+l.intro+'</span>'
-      +'<span class="lrn-card-m">'+(d?'✓ Done · '+d.score+'/'+d.total:l.min+' min · 3 quick questions')+'</span></button>';}).join('')+'</div>';
+
+  /* filter chips */
+  var chips=[{k:'all',l:'All'}].concat(Object.keys(TOPICS).map(function(k){return{k:k,l:TOPICS[k]};}));
+  h+='<div class="lrn-chips">'+chips.map(function(c){
+    return '<button class="lrn-chip'+((_lf===c.k)?' on':'')+'" onclick="FinLearn.setFilter(\''+c.k+'\')" type="button">'+c.l+'</button>';
+  }).join('')+'</div>';
+
+  /* lesson shelf */
+  var visible=_lf==='all'?LESSONS:LESSONS.filter(function(l){return l.topic===_lf||l.id===_lf;});
+  if(!visible.length)visible=LESSONS;
+
+  h+='<div class="lrn-shelf">'+visible.map(function(l){
+    var done=L.done[l.id];
+    var imgSrc=window.LEARN_IMAGES&&window.LEARN_IMAGES[l.id]?window.LEARN_IMAGES[l.id]:'';
+    return '<button type="button" class="lrn-scard'+(done?' done':'')+'" onclick="FinLearn.openLesson(\''+l.id+'\')">'
+      +(imgSrc?'<div class="lrn-scard-img"><img src="'+imgSrc+'" alt="" loading="lazy" aria-hidden="true"></div>'
+              :'<div class="lrn-scard-icon">'+ico(l.e)+'</div>')
+      +'<div class="lrn-scard-body">'
+        +'<div class="lrn-scard-title">'+l.title+'</div>'
+        +'<div class="lrn-scard-sub">'+l.intro+'</div>'
+      +'</div>'
+      +'<div class="lrn-scard-right">'
+        +'<span class="lrn-scard-pill'+(done?' done':'')+'">'+( done?'✓ Done':l.min+' min')+'</span>'
+        +(done?'<span class="lrn-scard-score">'+done.score+'/'+done.total+'</span>':'<span class="lrn-scard-arr">›</span>')
+      +'</div>'
+      +'</button>';
+  }).join('')+'</div>';
+
   h+='<div class="lrn-note">General financial education, not personal advice. Quiz scores are saved to your account and may be used, without your name, in our school research.</div>';
   return h;
 }
-
 /* lesson reader */
 function viewLesson(){
   var l=LMAP[V.id];if(!l)return viewHome();
@@ -472,7 +545,7 @@ function openLesson(id){
   show('learn');render();
 }
 W.FinLearn={render:function(){try{render();renderDash()}catch(e){console.error('learn',e)}},
-  open:openLesson,openLesson:openLesson,home:home,step:step,answer:answer,next:next,startQuiz:startQuiz,qpick:qpick,qnext:qnext,quitQuiz:quitQuiz,showResult:showResult,
+  open:openLesson,openLesson:openLesson,home:home,step:step,answer:answer,next:next,startQuiz:startQuiz,qpick:qpick,qnext:qnext,quitQuiz:quitQuiz,showResult:showResult,setFilter:setFilter,setLearnBg:setLearnBg,
   tipOfDay:tipOfDay,insights:insights,insightMessage:insightMessage,lessons:LESSONS,tips:TIPS,forms:{A:FORM_A,B:FORM_B},
   _state:function(){return LS()}};
 })();

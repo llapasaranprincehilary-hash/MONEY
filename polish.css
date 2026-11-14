@@ -59,8 +59,11 @@ body.nums-hidden .pz-dots{opacity:1}
 @media(prefers-reduced-motion:reduce){.mv,.mv::after,.pz-dots,.pz-amt{transition:none}}
 
 /* ───────── 4. Top bar and shell ───────── */
-.topbar{background:color-mix(in srgb,var(--bg) 88%,transparent)!important;border-bottom:1px solid var(--border)!important}
-body.light .topbar{background:color-mix(in srgb,var(--bg) 90%,transparent)!important}
+.topbar{background:color-mix(in srgb,var(--bg) 97%,transparent)!important;border-bottom:1px solid var(--border)!important}
+body.light .topbar{background:color-mix(in srgb,var(--bg) 97%,transparent)!important}
+/* The phone's status bar is painted with the theme colour (= --bg). This strip is the same colour over the notch area,
+   so the top of the screen reads as one piece with the top bar and nothing scrolls through it. */
+body::before{content:'';position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);background:color-mix(in srgb,var(--bg) 97%,transparent);z-index:41;pointer-events:none}
 .guest-pill{height:30px!important;border-radius:99px!important;border:1px solid rgba(var(--tri-b-rgb),.35)!important;background:rgba(var(--tri-b-rgb),.10)!important;color:var(--tri-b)!important;font-weight:500!important}
 .gp-dot{background:var(--tri-b)!important}
 .tb-streak{height:32px!important;min-width:32px!important;padding:0 11px 0 9px!important;gap:5px!important;border:1px solid var(--border2)!important;background:transparent!important;font-size:13px}

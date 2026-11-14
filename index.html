@@ -6,6 +6,11 @@
 <title>FINUITY</title>
 <meta name="description" content="FINUITY - a private, on-device tracker for income, expenses, wallets, loans, and savings goals.">
 <meta name="theme-color" content="#f6f2ea">
+<script>
+/* Paint the status bar in the saved theme before first paint, so a dark-theme user never sees a light bar flash.
+   (The app's default is light, so the meta above is already right for everyone else.) */
+(function(){try{if(localStorage.getItem('mtTheme')==='dark'){var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content','#0e0d0b');}}catch(e){}})();
+</script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="FINUITY">
@@ -517,13 +522,13 @@ body.light .sb-bottom{border-top:1px solid #e4e4de !important}
   height:58px !important;
   padding:0 clamp(16px,4vw,36px) !important;
   border-bottom:1px solid rgba(255,255,255,.06) !important;
-  background:rgba(8,8,10,.88) !important;
+  background:rgba(8,8,10,.97) !important;
   backdrop-filter:blur(24px) saturate(180%) !important;
   -webkit-backdrop-filter:blur(24px) saturate(180%) !important;
   box-shadow:0 1px 0 rgba(255,255,255,.04), 0 2px 12px rgba(0,0,0,.3) !important;
 }
 body.light .topbar{
-  background:rgba(252,252,250,.92) !important;
+  background:rgba(252,252,250,.97) !important;
   border-bottom:1px solid rgba(0,0,0,.07) !important;
   box-shadow:0 1px 0 rgba(0,0,0,.04), 0 2px 12px rgba(0,0,0,.06) !important;
 }
@@ -755,6 +760,8 @@ body.light .bottom-nav{box-shadow:0 -4px 24px rgba(0,0,0,.08) !important}
 .wc>.wc-emb.is-wallet,.wc.dark>.wc-emb.is-wallet{background:none;box-shadow:none;border-radius:0}
 .wc>.wc-emb.is-wallet{width:38px;height:34px;right:20px;filter:drop-shadow(0 3px 4px rgba(0,0,0,.28))}
 .wc-emb.is-wallet svg{width:100%;height:100%;stroke:none}
+/* interest rate shown next to the Updated date on a wallet card */
+.wc-int{font-weight:700;opacity:.95}
 /* cash on hand: the hand-and-money illustration on a soft white badge so it reads on the green card */
 .wc>.wc-emb.is-cash,.wc.dark>.wc-emb.is-cash{width:40px;height:40px;right:22px;border-radius:50%;background:rgba(255,255,255,.92);box-shadow:0 3px 9px rgba(0,0,0,.22),inset 0 0 0 1px rgba(255,255,255,.6)}
 .wc-emb.is-cash svg{width:72%;height:72%;stroke:none;fill:initial}
@@ -2122,6 +2129,24 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
         <label>Where's the money coming from?</label>
         <select id="loan-wallet"><option value=""> - Not tracked in a wallet - </option></select>
       </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Interest Rate % <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+          <input type="number" id="loan-rate" placeholder="0" min="0" max="1000" step="0.01" inputmode="decimal">
+        </div>
+        <div class="form-group">
+          <label>Applied</label>
+          <select id="loan-freq">
+            <option value="none">No interest</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly" selected>Monthly</option>
+            <option value="quarterly">Quarterly</option>
+            <option value="semi-annual">Semi-annual</option>
+            <option value="annual">Annual</option>
+          </select>
+        </div>
+      </div>
       <div class="form-group"><label>Note (optional)</label><input type="text" id="loan-note" placeholder="What's it for?"></div>
       <button class="btn btn-primary" onclick="addLoan()">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -2589,7 +2614,25 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
       <label>Where's the money coming from?</label>
       <select id="edit-loan-wallet"><option value=""> - Not tracked in a wallet - </option></select>
     </div>
-    <div class="form-group"><label>Note (optional)</label><input type="text" id="edit-loan-note" placeholder="What's it for?"></div>
+    <div class="form-row">
+        <div class="form-group">
+          <label>Interest Rate %</label>
+          <input type="number" id="edit-loan-rate" placeholder="0" min="0" max="1000" step="0.01" inputmode="decimal">
+        </div>
+        <div class="form-group">
+          <label>Applied</label>
+          <select id="edit-loan-freq">
+            <option value="none">No interest</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+            <option value="quarterly">Quarterly</option>
+            <option value="semi-annual">Semi-annual</option>
+            <option value="annual">Annual</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label>Note (optional)</label><input type="text" id="edit-loan-note" placeholder="What's it for?"></div>
     <div style="display:flex;gap:10px;margin-top:6px">
       <button class="btn btn-ghost" style="flex:1" onclick="closeEditLoan()">Cancel</button>
       <button class="btn btn-primary" style="flex:1" onclick="saveEditLoan()">Save Changes</button>
@@ -2752,7 +2795,7 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
 </div>
 
 <div id="confirm-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3000;align-items:safe center;justify-content:safe center;padding:20px;overflow-y:auto">
-  <div style="background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:30px 28px 24px;max-width:340px;width:100%;box-shadow:var(--shadow-lg)">
+  <div id="confirm-card" style="background:var(--surface);border:1px solid var(--border2);border-radius:18px;padding:30px 28px 24px;max-width:340px;width:100%;box-shadow:var(--shadow-lg)">
     <div id="confirm-icon" style="font-size:32px;margin-bottom:12px;text-align:center"></div>
     <div id="confirm-msg" style="font-size:14px;color:var(--text);text-align:center;line-height:1.6;margin-bottom:22px"></div>
     <div style="display:flex;gap:10px">
@@ -3114,6 +3157,7 @@ window.finGuessCat=guessCat;   // lets the receipt scanner reuse the keyword cat
 })();
 </script>
 <script defer src="virtual-pet/pet-dialogue.js"></script>
+<script src="learn-images.js"></script>
 <script src="learn.js"></script>
 <script src="streak.js"></script>
 <script defer src="virtual-pet/pet.js"></script>
@@ -3240,6 +3284,20 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     <div class="wal-sec" id="wal-sec-color"><label>Card color</label><div id="wal-colors" class="wal-swatches"></div></div>
     <div class="wal-sec" id="wal-sec-logo"><label>Logo <span>(optional, shows in the round badge)</span></label>
       <div class="wal-logo-row"><button type="button" class="wal-ghost" onclick="document.getElementById('wal-file').click()">Upload image</button><button type="button" class="wal-ghost" id="wal-logo-rm" onclick="walLogoRemove()" style="display:none">Remove image</button><input type="file" id="wal-file" accept="image/*" style="display:none" onchange="walLogoPick(this)"></div>
+    </div>
+    <div class="wal-sec" id="wal-sec-interest">
+      <label for="wal-rate">Interest / Yield Rate % <span style="font-weight:400;color:var(--muted);font-size:11px">(annual, e.g. Maya = 3.5%)</span></label>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input type="number" id="wal-rate" min="0" max="1000" step="0.01" inputmode="decimal" placeholder="0.00" style="flex:1" oninput="walSync()">
+        <select id="wal-freq" style="flex:1" onchange="walSync()">
+          <option value="none">No interest</option>
+          <option value="daily">Daily accrual</option>
+          <option value="monthly">Monthly</option>
+          <option value="quarterly">Quarterly</option>
+          <option value="annual">Annual</option>
+        </select>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px">Interest is credited to your balance automatically and logged as income.</div>
     </div>
     <div class="wal-err" id="wal-err" role="alert"></div>
     <div class="wal-foot"><button type="button" class="wal-btn sec" onclick="closeWalModal()">Cancel</button><button type="button" class="wal-btn pri" id="wal-save" onclick="walSave()">Save</button></div>
