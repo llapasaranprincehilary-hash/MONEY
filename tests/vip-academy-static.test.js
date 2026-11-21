@@ -1,0 +1,15 @@
+const fs=require('fs'),path=require('path'),assert=require('assert');
+const root=path.resolve(__dirname,'..');
+const js=fs.readFileSync(path.join(root,'vip-academy.js'),'utf8');
+const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const sw=fs.readFileSync(path.join(root,'sw.js'),'utf8');
+assert.strictEqual((js.match(/id:'m1l[1-5]'/g)||[]).length,5,'Module 1 should have five lessons');
+assert.strictEqual((js.match(/id:'m2l[1-5]'/g)||[]).length,5,'Module 2 should have five lessons');
+assert.strictEqual((js.match(/quiz:\{q:/g)||[]).length,10,'Every lesson should have a quiz');
+assert(js.includes("KEY+':'+uid()"),'Progress should be keyed per account');
+assert(js.includes('function unlocked(mIdx,lIdx)'),'Sequential lesson unlock function exists');
+assert(js.includes("mIdx===0&&lIdx===0"),'Non-VIP preview should be the first lesson only');
+assert(js.includes('data-va-complete'),'Lesson completion action exists');
+assert(html.includes('vip-academy.css')&&html.includes('vip-academy.js'),'Academy assets referenced in page');
+assert(sw.includes("'./vip-academy.js'")&&sw.includes("'./vip-academy.css'"),'Academy assets precached');
+console.log('VIP Academy static checks: PASS (10 lessons, 10 quizzes, access/progress hooks, asset wiring)');
