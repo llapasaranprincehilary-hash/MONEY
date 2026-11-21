@@ -210,7 +210,7 @@
         '<div class="fin-sparkle" id="fin-sparkle"></div>' +
         buildSprite() +
       '</div>' +
-      '<div class="fin-min-tab" id="fin-min-tab"><span class="fin-peek-window"><span class="fin-peek-sprite">'+buildSprite()+'</span></span><span class="fin-min-dot"></span><span id="fin-min-name">Fin</span></div>';
+      '<div class="fin-min-tab" id="fin-min-tab"><span class="fin-min-dot"></span><span id="fin-min-name">Fin</span></div>';
     document.body.appendChild(root);
 
     els.root = root;
