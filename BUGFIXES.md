@@ -298,3 +298,17 @@ After the quiz it turns into the smaller "For you today" lesson card. Side-by-si
 - Added device-local progress tracking per signed-in UID (or guest), 50 XP per completed lesson, and module/overall completion indicators.
 - Added responsive layouts and reduced reliance on external resources; service-worker shell cache bumped to v80.
 - Static syntax, content, reference, and package checks performed. Real-browser runtime testing remains outstanding.
+
+## Fin dashboard reference + minimized peek (Nov 21, 2026)
+- Added `fin-dashboard-reference.css` to reproduce the approved dashboard layout: green wave behind the snapshot row, pixel Fin partially tucked behind the card, and a warm outlined speech bubble.
+- Kept the existing dashboard message data-driven; the approved layout does not replace financial messaging with a static phrase.
+- Restored the minimized Fin sprite peek above the `Fin` tab instead of leaving a plain green-dot pill; clone SVG uses a distinct ID to avoid duplicate `#fin-sprite` IDs.
+- Added the CSS to the app shell precache and bumped the service-worker cache to v81.
+- Static checks passed; local Chromium visual screenshot attempt was blocked by the environment and timed out, so visual runtime verification remains unconfirmed.
+
+
+## 2026-11-21 — Allowance mode and VIP Academy visibility
+- Allowance mode copy now describes an allowance period (received date / period end), not a salary-style payout.
+- Dashboard Learn card remains visible in Allowance mode.
+- Fin Academy entry and section are VIP-gated; free accounts do not see them. Academy initialization retries briefly while VIP entitlement loads.
+- Service worker cache version bumped to v83.

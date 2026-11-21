@@ -1,0 +1,16 @@
+/* Approved dashboard Fin reference: pixel Fin peeks over the snapshot card's green wave. */
+#dashboard .snap-row{position:relative;grid-template-columns:minmax(96px,122px) minmax(0,1fr);grid-template-areas:"fin say" "fin main";column-gap:18px;row-gap:12px;align-items:center;padding-top:8px;isolation:isolate}
+#dashboard .snap-row::before{content:"";position:absolute;z-index:0;left:-10px;right:-10px;top:-8px;height:122px;pointer-events:none;background:color-mix(in srgb,var(--accent) 36%,transparent);border-radius:42% 58% 12% 8% / 48% 40% 12% 8%;}
+#dashboard .snap-fin-slot{position:relative;z-index:1;grid-area:fin;width:112px;height:104px;overflow:visible;align-self:stretch}
+#fin-pet-root.fin-docked .fin-avatar-wrap{width:112px;height:112px;transform:translateY(14px);}
+#fin-pet-root.fin-docked .fin-avatar-sprite{transform:scale(1.06);transform-origin:50% 100%;}
+#dashboard .snap-say{position:relative;z-index:1;align-self:center;background:color-mix(in srgb,var(--surface) 94%,#fff)!important;border:2px solid color-mix(in srgb,var(--accent) 72%,var(--border))!important;border-radius:24px 28px 28px 10px!important;padding:16px 20px!important;box-shadow:0 8px 22px rgba(0,0,0,.13);font-size:15px;line-height:1.45;color:var(--text)}
+#dashboard .snap-say::before{left:-9px!important;top:62%!important;width:14px!important;height:14px!important;margin-top:-7px!important;background:inherit!important;border-left:2px solid color-mix(in srgb,var(--accent) 72%,var(--border))!important;border-bottom:2px solid color-mix(in srgb,var(--accent) 72%,var(--border))!important;transform:rotate(45deg)!important;}
+#dashboard .snap-main{position:relative;z-index:1;grid-area:main;min-width:0}
+@media(max-width:600px){
+ #dashboard .snap-row{grid-template-columns:88px minmax(0,1fr);grid-template-areas:"fin say" "main main";column-gap:10px;padding-top:4px}
+ #dashboard .snap-fin-slot{width:88px;height:94px}
+ #fin-pet-root.fin-docked .fin-avatar-wrap{width:94px;height:94px;transform:translateY(10px)}
+ #dashboard .snap-say{font-size:13px;padding:11px 13px!important;border-radius:18px 22px 22px 8px!important}
+ #dashboard .snap-row::before{height:108px;left:-8px;right:-8px}
+}

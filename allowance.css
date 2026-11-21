@@ -4,6 +4,7 @@
 .mode-switch{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--border);background:var(--surface2);color:var(--text);padding:7px 10px;border-radius:999px;font:inherit;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .18s,border-color .18s,transform .18s}
 .mode-switch:hover{border-color:var(--accent);transform:translateY(-1px)}.mode-switch[aria-pressed=true]{background:var(--accent-bg);border-color:var(--accent);color:var(--accent)}.mode-switch-icon{font-size:14px;line-height:1}
 .allowance-mode-intro{padding:4px 2px 14px}.ami-title{font-family:var(--font-d);font-size:22px;font-weight:800;letter-spacing:-.025em}.ami-sub{color:var(--muted);font-size:12px;line-height:1.5;margin-top:4px}
-#dashboard.allowance-mode .dash-flow>*:not(#allowance-mode-intro):not(#allowance-card){display:none!important}
+#dashboard.allowance-mode .dash-flow>*:not(#allowance-mode-intro):not(#allowance-card):not(#dash-learn){display:none!important}
+#dashboard.allowance-mode #dash-learn{display:block!important}
 #dashboard.allowance-mode #allowance-card{margin-bottom:0}
 @media(max-width:420px){.mode-switch{padding:7px 9px;font-size:11px}.mode-switch-icon{display:none}}
