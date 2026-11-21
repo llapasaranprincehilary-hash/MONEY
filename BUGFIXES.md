@@ -239,3 +239,22 @@ After the quiz it turns into the smaller "For you today" lesson card. Side-by-si
   image that is already cut off at the bottom of the file, and text inside a picture cannot be translated or recoloured. To drop it, remove `'bg3'` from
   `LEARN_BG_KEYS` at the bottom of learn-images.js.
 - Cache is now `v70`.
+
+### Merge v11 (pizza chart + consistency pass)
+- Pizza chart: the amount in the middle was clipped ("₱2,106.2…") because a fixed 21px number was drawn in a 74-unit hub. The hub is bigger, the centre
+  shows a compact figure (₱2,106 / ₱21.6k / ₱1.2M; the exact amount is still in the equation below), and the font size is estimated from the text then
+  measured and refitted (also after web fonts load). Tested with: -2,106.29, a ₱1.2M deficit, millions, tiny, positive, zero income.
+- Added `consistency.css` (loaded last): one scale for type, radius, spacing, motion, touch size and focus instead of a different value per screen.
+  - Colour: the grey text colours failed WCAG on several surfaces (light tertiary grey as low as 3.7:1). `--muted` / `--muted2` are fixed at the source.
+  - Type floor: nothing below 11px (it was 9 to 10.5px in ~25 places, including inline styles in app.js).
+  - Radius: three levels (22 page cards, 18 tiles, 14 mini parts). Before: 16/18/22/28 mixed, even for the same `.card`.
+  - Spacing: every card on the dashboard is exactly 16px apart (was 12, 14, 16 and two accidental 28s).
+  - Touch targets: pills, chips and buttons at least 36px; small round buttons keep their look but get a 44px hit area.
+  - Motion: 24 different transition durations are now 4 (.12 / .18 / .28 / .5s), press feedback and a single focus ring, and reduced-motion is honoured.
+  - Fit: the Income / Spend / Loans / Wallets / Goals tab row hung 4px off each side on 360px phones; Export buttons no longer clip.
+- Removed a leftover light-theme rule that forced the old amber colour onto Food badges (it clashed with the triad and failed contrast).
+- The restore-backup file input now has an accessible name.
+- Cache is now `v71`.
+- Type scale snapped to one set: fractional sizes (9.5, 10.5, 11.5, 12.5, 13.5, 14.5, 15.5) and the stray 17 / 19 / 21 now use 11, 12, 13, 14, 15, 16, 18, 20
+  (184 declarations across the CSS, index.html and inline styles; the printed-report stylesheet is a separate paper document and was left as is).
+- Bill rows: the bill name wraps to two lines and the due text wraps, instead of ending in "..." (for example "Overdue since the 5...").

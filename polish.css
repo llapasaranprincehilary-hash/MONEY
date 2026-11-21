@@ -46,14 +46,14 @@ button,a,[role=button],input,select,textarea,label{-webkit-tap-highlight-color:t
 /* ───────── 3. Hidden numbers ─────────
    Every amount that can be hidden is <span class="mv">. Hiding is a class on <body>: the real digits fade out while
    bullets fade in at the same spot. Nothing is re-rendered, so nothing jumps. */
-.mv{position:relative;transition:color .24s var(--ease)}
-.mv::after{content:"•••••";position:absolute;left:0;right:0;top:0;bottom:0;display:block;overflow:hidden;white-space:nowrap;text-align:inherit;letter-spacing:.1em;color:var(--mv-c,var(--muted));-webkit-text-fill-color:var(--mv-c,var(--muted));opacity:0;transition:opacity .24s var(--ease);pointer-events:none}
+.mv{position:relative;transition:color .28s var(--ease)}
+.mv::after{content:"•••••";position:absolute;left:0;right:0;top:0;bottom:0;display:block;overflow:hidden;white-space:nowrap;text-align:inherit;letter-spacing:.1em;color:var(--mv-c,var(--muted));-webkit-text-fill-color:var(--mv-c,var(--muted));opacity:0;transition:opacity .28s var(--ease);pointer-events:none}
 body.nums-hidden .mv{color:transparent!important;-webkit-text-fill-color:transparent;user-select:none;-webkit-user-select:none}
 body.nums-hidden .mv::after{opacity:1}
 .wc .mv{--mv-c:#fff}.wc.dark .mv{--mv-c:#15200d}
 /* SVG centre label of the pizza uses two text nodes instead of ::after */
-.pz-dots{opacity:0;transition:opacity .24s var(--ease)}
-.pz-amt{transition:opacity .24s var(--ease)}
+.pz-dots{opacity:0;transition:opacity .28s var(--ease)}
+.pz-amt{transition:opacity .28s var(--ease)}
 body.nums-hidden .pz-amt{opacity:0}
 body.nums-hidden .pz-dots{opacity:1}
 @media(prefers-reduced-motion:reduce){.mv,.mv::after,.pz-dots,.pz-amt{transition:none}}
@@ -101,13 +101,13 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;height:env(safe-area
 #dashboard .snap-big.neg{color:var(--tri-c)}
 #dashboard .snap-big.idle{color:var(--muted)}
 #dashboard .snap-pair{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:18px;padding-top:14px;border-top:1px solid var(--border)}
-#dashboard .snap-mini{display:flex!important;flex-direction:column;align-items:flex-start;gap:2px;background:transparent!important;border:0!important;border-radius:12px!important;padding:6px 8px!important;margin:-6px -8px;box-shadow:none!important;min-height:48px;cursor:pointer;transition:background .15s}
+#dashboard .snap-mini{display:flex!important;flex-direction:column;align-items:flex-start;gap:2px;background:transparent!important;border:0!important;border-radius:12px!important;padding:6px 8px!important;margin:-6px -8px;box-shadow:none!important;min-height:48px;cursor:pointer;transition:background .18s}
 #dashboard .snap-mini:hover{background:var(--surface2)!important}
 #dashboard .snap-mini + .snap-mini{margin-left:8px;border-left:0!important}
-#dashboard .snap-mini > span{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted)}
+#dashboard .snap-mini > span{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--muted)}
 #dashboard .snap-mini > span::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent)}
 #dashboard .snap-mini.out > span::before{background:var(--tri-c)}
-#dashboard .snap-mini b{font-size:17px;font-weight:600;color:var(--text);letter-spacing:-.01em}
+#dashboard .snap-mini b{font-size:16px;font-weight:600;color:var(--text);letter-spacing:-.01em}
 #dashboard .snap-mini i{display:none}
 /* the amount is a nested mask span: it must not pick up the label's size and colour */
 #dashboard .snap-mini b .mv{font-size:inherit;color:inherit;font-weight:inherit}
@@ -121,7 +121,7 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;height:env(safe-area
 #dashboard .hero-label{font-size:13px!important;font-weight:500!important;text-transform:none!important;letter-spacing:0!important;color:var(--muted)!important;opacity:1!important;margin:0!important}
 #dashboard .hero-amount{font-size:28px!important;font-weight:600!important;letter-spacing:-.02em!important;color:var(--text)!important}
 #dashboard .hero-amount .hero-peso{font-size:.62em!important;color:var(--muted)!important;margin-right:2px;font-family:var(--font-d)}
-.eye-btn{width:32px!important;height:32px!important;border-radius:50%!important;border:0!important;background:transparent!important;color:var(--muted)!important;transition:background .15s,color .15s,transform .1s}
+.eye-btn{width:32px!important;height:32px!important;border-radius:50%!important;border:0!important;background:transparent!important;color:var(--muted)!important;transition:background .18s,color .18s,transform .12s}
 .eye-btn:hover,.eye-btn.on{background:var(--surface2)!important;color:var(--text)!important}
 .eye-btn:active{transform:scale(.92)}
 .eye-btn svg{width:18px!important;height:18px!important}
@@ -133,13 +133,13 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;height:env(safe-area
 
 /* 5c. owed: a quiet ledger, not three pills */
 #dashboard .owed-strip{display:flex;flex-wrap:wrap;align-items:stretch;gap:0;margin:0 0 12px;background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:hidden}
-#dashboard .owed-strip button{flex:1 1 140px;display:flex;flex-direction:column;align-items:flex-start;gap:2px;background:transparent;border:0;border-radius:0;padding:12px 16px;font-size:12.5px;color:var(--muted);text-align:left}
+#dashboard .owed-strip button{flex:1 1 140px;display:flex;flex-direction:column;align-items:flex-start;gap:2px;background:transparent;border:0;border-radius:0;padding:12px 16px;font-size:13px;color:var(--muted);text-align:left}
 #dashboard .owed-strip button + button{border-left:1px solid var(--border)}
 #dashboard .owed-strip button:hover{background:var(--surface2)}
 #dashboard .owed-strip button b{margin:0;font-size:16px;font-weight:600;color:var(--text)}
 #dashboard .owed-strip b.n{color:var(--tri-c)}
 #dashboard .owed-strip b.p{color:var(--tri-b)}
-#dashboard .owed-soon{flex:1 1 100%;display:flex;align-items:center;gap:8px;padding:9px 16px;border-top:1px solid var(--border);font-size:12.5px;color:var(--tri-c)}
+#dashboard .owed-soon{flex:1 1 100%;display:flex;align-items:center;gap:8px;padding:9px 16px;border-top:1px solid var(--border);font-size:13px;color:var(--tri-c)}
 #dashboard .owed-soon::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
 
 /* 5d. recent / trend */
@@ -156,12 +156,12 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;height:env(safe-area
 #dashboard #dash-tabs-card .row:last-child{border-bottom:0}
 
 /* ───────── 6. Appearance: one colour, three roles ───────── */
-.ap-sub{margin-top:3px;font-size:12.5px;font-weight:400;color:var(--muted);line-height:1.45;max-width:30em}
+.ap-sub{margin-top:3px;font-size:13px;font-weight:400;color:var(--muted);line-height:1.45;max-width:30em}
 .ap-triad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .ap-tri{display:flex;flex-direction:column;gap:3px;padding:12px;border-radius:14px;background:var(--surface2);min-width:0}
 .ap-tri i{width:22px;height:22px;border-radius:50%;margin-bottom:6px}
 .ap-tri b{font-size:13px;font-weight:600;color:var(--text)}
-.ap-tri span{font-size:11.5px;line-height:1.35;color:var(--muted)}
+.ap-tri span{font-size:12px;line-height:1.35;color:var(--muted)}
 @media(max-width:420px){.ap-triad{grid-template-columns:1fr}.ap-tri{flex-direction:row;align-items:center;gap:10px}.ap-tri i{margin:0;flex:none}.ap-tri span{margin-left:auto;text-align:right}}
 
 /* ───────── 7. Everything else stays inside the triad ───────── */

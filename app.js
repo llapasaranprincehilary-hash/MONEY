@@ -698,11 +698,11 @@ function finDrawStock(el){var D=finBuckets(el._tf),tf=D.tf,W=el._w=el.clientWidt
   if(n<2)return '<circle cx="'+x(0)+'" cy="'+y(bs[0][f])+'" r="5" fill="'+col+'"/>';
   var ax=x(n-1),ay=y(bs[n-1][f]),bx=x(n-2),by=y(bs[n-2][f]),a=Math.atan2(ay-by,ax-bx),tx=ax+7*Math.cos(a),ty=ay+7*Math.sin(a);
   return '<polyline points="'+p.join(' ')+'" fill="none" stroke="'+col+'" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/><polygon points="'+tx.toFixed(1)+','+ty.toFixed(1)+' '+(tx-13*Math.cos(a-.5)).toFixed(1)+','+(ty-13*Math.sin(a-.5)).toFixed(1)+' '+(tx-13*Math.cos(a+.5)).toFixed(1)+','+(ty-13*Math.sin(a+.5)).toFixed(1)+'" fill="'+col+'"/>'};
- var bt=[['D','Day'],['W','Week'],['M','Month']].map(function(b){var on=tf===b[0];return '<button data-t="'+b[0]+'" title="'+b[1]+'s" style="border:1px solid '+(on?'var(--accent)':'var(--border2)')+';background:'+(on?'var(--accent-bg)':'transparent')+';color:'+(on?'var(--accent)':'var(--muted)')+';font:700 10px var(--font-b);padding:3px 9px;border-radius:6px;cursor:pointer">'+b[0]+'</button>'}).join('');
+ var bt=[['D','Day'],['W','Week'],['M','Month']].map(function(b){var on=tf===b[0];return '<button data-t="'+b[0]+'" title="'+b[1]+'s" style="border:1px solid '+(on?'var(--accent)':'var(--border2)')+';background:'+(on?'var(--accent-bg)':'transparent')+';color:'+(on?'var(--accent)':'var(--muted)')+';font:700 11px var(--font-b);padding:3px 9px;border-radius:6px;cursor:pointer">'+b[0]+'</button>'}).join('');
  var sum=function(f){return bs.reduce(function(s,c){return s+c[f]},0)},head=function(c){var I=c?c.i:sum('i'),X=c?c.x:sum('x');return '<span style="font-size:11px;color:var(--muted)">'+(c?lab(c.k,1):'Whole chart')+'</span><div style="display:flex;gap:14px;flex-wrap:wrap"><span style="font:700 15px var(--font-d);color:'+BL+'">&#9650; '+fmt(I)+'</span><span style="font:700 15px var(--font-d);color:'+RD+'">&#9660; '+fmt(X)+'</span></div>'};
  el.innerHTML='<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;flex-wrap:wrap"><div id="fs-head" style="min-height:38px">'+head()+'</div><span style="margin-left:auto;display:flex;gap:4px">'+bt+'</span></div><div style="display:flex;gap:14px;font-size:11px;color:var(--muted);margin-bottom:6px"><span><b style="color:'+BL+'">&#9472;&#9472;</b> Income</span><span><b style="color:'+RD+'">&#9472;&#9472;</b> Expenses</span></div>'
  +'<div style="position:relative;background:var(--surface2);border:1px solid var(--border);border-radius:10px;overflow:hidden"><svg width="'+W+'" height="'+H+'" style="display:block;touch-action:pan-y;user-select:none">'+g+ln('x',RD)+ln('i',BL)
- +'<line id="fs-x" y1="'+T+'" y2="'+(H-B)+'" stroke="var(--muted)" stroke-dasharray="3 3" style="display:none"/><circle id="fs-di" r="5" fill="'+BL+'" stroke="var(--surface2)" stroke-width="2" style="display:none"/><circle id="fs-de" r="5" fill="'+RD+'" stroke="var(--surface2)" stroke-width="2" style="display:none"/><rect id="fs-hit" x="'+L+'" y="0" width="'+pw+'" height="'+H+'" fill="transparent"/></svg><div id="fs-tip" style="display:none;position:absolute;top:6px;pointer-events:none;background:var(--surface3);border:1px solid var(--border2);border-radius:10px;padding:8px 10px;font-size:11.5px;line-height:1.6;box-shadow:var(--shadow);white-space:nowrap;z-index:3"></div></div>';
+ +'<line id="fs-x" y1="'+T+'" y2="'+(H-B)+'" stroke="var(--muted)" stroke-dasharray="3 3" style="display:none"/><circle id="fs-di" r="5" fill="'+BL+'" stroke="var(--surface2)" stroke-width="2" style="display:none"/><circle id="fs-de" r="5" fill="'+RD+'" stroke="var(--surface2)" stroke-width="2" style="display:none"/><rect id="fs-hit" x="'+L+'" y="0" width="'+pw+'" height="'+H+'" fill="transparent"/></svg><div id="fs-tip" style="display:none;position:absolute;top:6px;pointer-events:none;background:var(--surface3);border:1px solid var(--border2);border-radius:10px;padding:8px 10px;font-size:12px;line-height:1.6;box-shadow:var(--shadow);white-space:nowrap;z-index:3"></div></div>';
  el.querySelectorAll('button[data-t]').forEach(function(b){b.onclick=function(){el._tf=b.dataset.t;finDrawStock(el)}});
  var q=function(s){return el.querySelector(s)},hit=q('#fs-hit'),tip=q('#fs-tip'),hd=q('#fs-head');
  var show=function(e){var bx=hit.getBoundingClientRect(),j=n<2?0:Math.max(0,Math.min(n-1,Math.round((e.clientX-bx.left)/bx.width*(n-1)))),c=bs[j],px=x(j),net=c.i-c.x;
@@ -1118,9 +1118,9 @@ function renderDash(){
     if(!l.due)return '';
     const dueMs=ldate(l.due).setHours(0,0,0,0);
     const diff=Math.round((dueMs-nowMs2)/(1000*60*60*24));
-    if(diff<0)return `<span style="font-size:10px;color:var(--red);font-weight:700;margin-left:4px">⚠ overdue ${Math.abs(diff)}d</span>`;
-    if(diff<=7)return `<span style="font-size:10px;color:var(--amber);font-weight:700;margin-left:4px">⏰ due in ${diff===0?'today':diff+'d'}</span>`;
-    return `<span style="font-size:10px;color:var(--muted);margin-left:4px">due ${fmtDate(l.due)}</span>`;
+    if(diff<0)return `<span style="font-size:11px;color:var(--red);font-weight:700;margin-left:4px">⚠ overdue ${Math.abs(diff)}d</span>`;
+    if(diff<=7)return `<span style="font-size:11px;color:var(--amber);font-weight:700;margin-left:4px">⏰ due in ${diff===0?'today':diff+'d'}</span>`;
+    return `<span style="font-size:11px;color:var(--muted);margin-left:4px">due ${fmtDate(l.due)}</span>`;
   }
   payable.forEach(l=>lh+=`<div class="row"><span class="lbl">${esc(l.name)}${l.note?' · '+esc(l.note):''}${dashLoanStatus(l)}</span><span class="val an">${fmt(l.amount)}</span></div>`);
   rec.forEach(l=>lh+=`<div class="row"><span class="lbl">${esc(l.name)}${l.note?' · '+esc(l.note):''}${dashLoanStatus(l)}</span><span class="val ap">${fmt(l.amount)}</span></div>`);
@@ -1263,8 +1263,8 @@ function renderExpenseStatsModal(){
       <div style="display:flex;align-items:center;gap:10px;min-width:0">
         <div class="sbm-top-rank">${i+1}</div>
         <div style="min-width:0">
-          <div style="font-size:12.5px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(e.desc)}</div>
-          <div style="font-size:10.5px;color:var(--muted)">${catHTML(e.cat||'other-exp')} · ${fmtDate(e.date)}</div>
+          <div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(e.desc)}</div>
+          <div style="font-size:11px;color:var(--muted)">${catHTML(e.cat||'other-exp')} · ${fmtDate(e.date)}</div>
         </div>
       </div>
       <div style="font-family:var(--font-d);font-weight:700;color:var(--red);white-space:nowrap;margin-left:8px">${fmt(e.amount)}</div>
@@ -1283,7 +1283,7 @@ function renderExpenseStatsModal(){
         <div class="sbm-highlight-name">${esc(biggest.desc)}</div>
         <div class="sbm-highlight-meta">${catHTML(biggest.cat||'other-exp')} · ${fmtDate(biggest.date)}</div>
       </div>
-      <div style="font-family:var(--font-d);font-size:17px;font-weight:700;color:var(--red);white-space:nowrap">${fmt(biggest.amount)}</div>
+      <div style="font-family:var(--font-d);font-size:16px;font-weight:700;color:var(--red);white-space:nowrap">${fmt(biggest.amount)}</div>
     </div>
     <div class="sbm-section-title">Where it went</div>
     ${catRows}
@@ -1334,8 +1334,8 @@ function renderIncomeStatsModal(){
       <div style="display:flex;align-items:center;gap:10px;min-width:0">
         <div class="sbm-top-rank">${i+1}</div>
         <div style="min-width:0">
-          <div style="font-size:12.5px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(e.type||'Other')}${e.note?' · '+esc(e.note):''}</div>
-          <div style="font-size:10.5px;color:var(--muted)">${e.month} ${e.year||curYear}</div>
+          <div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(e.type||'Other')}${e.note?' · '+esc(e.note):''}</div>
+          <div style="font-size:11px;color:var(--muted)">${e.month} ${e.year||curYear}</div>
         </div>
       </div>
       <div style="font-family:var(--font-d);font-weight:700;color:var(--accent);white-space:nowrap;margin-left:8px">${fmt(e.amount)}</div>
@@ -1354,7 +1354,7 @@ function renderIncomeStatsModal(){
         <div class="sbm-highlight-name">${esc(biggest.type||'Other')}${biggest.note?' · '+esc(biggest.note):''}</div>
         <div class="sbm-highlight-meta">${biggest.month} ${biggest.year||curYear}</div>
       </div>
-      <div style="font-family:var(--font-d);font-size:17px;font-weight:700;color:var(--accent);white-space:nowrap">${fmt(biggest.amount)}</div>
+      <div style="font-family:var(--font-d);font-size:16px;font-weight:700;color:var(--accent);white-space:nowrap">${fmt(biggest.amount)}</div>
     </div>
     <div class="sbm-section-title">Where it came from</div>
     ${typeRows}
@@ -1389,7 +1389,7 @@ function renderIncome(){
       const cnt=_tEntries.length;
       if(!cnt)return '';
       return `<div style="flex:1;min-width:120px;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:12px 14px">
-        <div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:${t.color};font-weight:600;margin-bottom:4px">${esc(t.key)}</div>
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:${t.color};font-weight:600;margin-bottom:4px">${esc(t.key)}</div>
         <div style="font-family:var(--font-d);font-size:18px;font-weight:700;color:${t.color}">${fmt(tot)}</div>
         <div style="font-size:11px;color:var(--muted);margin-top:2px">${cnt} entr${cnt===1?'y':'ies'}</div>
       </div>`;
@@ -1418,7 +1418,7 @@ function renderIncome(){
   years.forEach(yr=>{
     const entries=sorted.filter(e=>(e.year||new Date().getFullYear())===yr);
     const yrTotal=entries.reduce((a,b)=>a+b.amount,0);
-    html+=`<div style="margin-bottom:6px"><div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0 6px;border-bottom:1px solid var(--border);margin-bottom:2px"><span style="font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted2);font-weight:600">${yr}</span><span style="font-size:13px;font-weight:700;color:var(--accent)">${fmt(yrTotal)}</span></div>`;
+    html+=`<div style="margin-bottom:6px"><div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0 6px;border-bottom:1px solid var(--border);margin-bottom:2px"><span style="font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted2);font-weight:600">${yr}</span><span style="font-size:13px;font-weight:700;color:var(--accent)">${fmt(yrTotal)}</span></div>`;
     entries.forEach(e=>{
       const _iw=(state.wallets||[]).find(w=>w.id===e.wallet);
       const _isLatest=e.id===latestId,_ti=incTypeInfo(e.type);
@@ -1819,7 +1819,7 @@ function renderExpenses(){
           +btn+'</div>';
       }).join('');
       panel.innerHTML='<div style="background:var(--surface);border:1px solid rgba(167,139,250,.35);border-radius:14px;padding:18px 20px;margin-bottom:14px">'
-        +'<div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--purple);font-weight:700;margin-bottom:12px">↺ Recurring This Month</div>'
+        +'<div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--purple);font-weight:700;margin-bottom:12px">↺ Recurring This Month</div>'
         +rows+'</div>';
       panel.style.display='';
     } else {
@@ -1840,7 +1840,7 @@ function renderExpenses(){
     ?list.map(function(e){
         var wl=(state.wallets||[]).find(function(w){return w.id===e.source;});
         var srcLabel=wl?wl.label:e.source;
-        return '<div class="entry"><div class="info"><div class="name">'+esc(e.desc)+(e.recurring?'<span class="badge badge-recurring" style="margin-left:6px;font-size:9px">↺ recurring</span>':'')+'</div>'
+        return '<div class="entry"><div class="info"><div class="name">'+esc(e.desc)+(e.recurring?'<span class="badge badge-recurring" style="margin-left:6px;font-size:11px">↺ recurring</span>':'')+'</div>'
           +'<div class="meta">'+fmtDate(e.date)+' · '+esc(srcLabel)+(e.note?' · <em style="color:var(--muted)">'+esc(e.note)+'</em>':'')+'<span class="badge badge-'+(e.cat||'other-exp')+'">'+catHTML(e.cat||'other-exp')+'</span></div></div>'
           +'<div class="right"><span class="amt an">'+fmt(e.amount)+'</span>'
           +'<button type="button" class="row-more" aria-label="More actions" aria-haspopup="menu" onclick="rowMenu(event,\'expense\','+e.id+')">'+FinIcons.ic('more')+'</button></div></div>';
@@ -2687,7 +2687,7 @@ async function openLoanAdjModal(id){
   const html=`<div class="lpm-wrap">
     <div class="lpm-title">Adjust ${esc(l.name)}</div>
     <div class="lpm-bal">Current balance: <b>${fmt(l.amount)}</b></div>
-    <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">This adjusts the balance only — no expense is logged and no wallet is changed. Use this to fix a typo or record an off-app payment.</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:10px">This adjusts the balance only — no expense is logged and no wallet is changed. Use this to fix a typo or record an off-app payment.</div>
     <label class="lpm-label">Amount</label>
     <input id="ladj-amount" type="number" min="0.01" step="0.01" placeholder="₱ 0.00" class="lpm-input" inputmode="decimal">
     <div style="display:flex;gap:8px;margin-top:8px">
@@ -3024,7 +3024,7 @@ function buildReportHTML(){
 <title>Financial Report - ${reportLabel}</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Helvetica Neue',Arial,sans-serif;font-size:12.5px;color:#1a1a1a;background:#fff;padding:48px 56px;max-width:860px;margin:0 auto;line-height:1.5}
+  body{font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:#1a1a1a;background:#fff;padding:48px 56px;max-width:860px;margin:0 auto;line-height:1.5}
   /* HEADER */
   .report-header{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:20px;border-bottom:2.5px solid #1a1a1a;margin-bottom:28px}
   .report-brand{font-size:22px;font-weight:800;letter-spacing:-0.5px;color:#1a1a1a}
@@ -3334,7 +3334,7 @@ function showInstallInstructions(){
         <li>Scroll down and tap <strong>Add to Home Screen</strong>.</li>
         <li>Tap <strong>Add</strong>.</li>
       </ol>
-      <div style="margin-top:12px;padding:10px 12px;border-radius:10px;background:var(--surface2);color:var(--muted);font-size:11.5px">
+      <div style="margin-top:12px;padding:10px 12px;border-radius:10px;background:var(--surface2);color:var(--muted);font-size:12px">
         <strong>Important:</strong> iPhone/iPad installation must be done through Safari. FINUITY cannot open Apple’s Add to Home Screen menu automatically.
       </div>`;
   }else if(isAndroidDevice()){
@@ -3348,7 +3348,7 @@ function showInstallInstructions(){
         <li>Choose <strong>Install app</strong> or <strong>Add to Home screen</strong>.</li>
         <li>Confirm the installation.</li>
       </ol>
-      <div style="margin-top:12px;padding:10px 12px;border-radius:10px;background:var(--surface2);color:var(--muted);font-size:11.5px">
+      <div style="margin-top:12px;padding:10px 12px;border-radius:10px;background:var(--surface2);color:var(--muted);font-size:12px">
         If FINUITY is installable, the <strong>Install FINUITY</strong> button can also open Chrome’s installation prompt directly.
       </div>`;
   }else{
@@ -4334,7 +4334,7 @@ function renderSettings(){
         const done=loggedThisMo.has(e.desc);
         return `<div class="row" style="align-items:center">
           <div style="flex:1;min-width:0">
-            <div style="font-size:13px;font-weight:500;display:flex;align-items:center;gap:6px">${esc(e.desc)}<span class="badge badge-recurring" style="font-size:9px">↺</span></div>
+            <div style="font-size:13px;font-weight:500;display:flex;align-items:center;gap:6px">${esc(e.desc)}<span class="badge badge-recurring" style="font-size:11px">↺</span></div>
             <div style="font-size:11px;color:var(--muted)">${fmt(e.amount)} · ${CAT_LABELS[e.cat||'other-exp']}</div>
           </div>
           ${done
@@ -4436,7 +4436,7 @@ function safeToSpendHTML(curExp){
   const clr=over?'var(--red)':left<allowance*0.25?'var(--amber)':'var(--accent)';
   const big=fmtBal(Math.abs(left));
   return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;margin-bottom:12px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r-sm)">
-    <div><div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600">${over?'Over today\'s limit by':'Safe to spend today'}</div>
+    <div><div style="font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600">${over?'Over today\'s limit by':'Safe to spend today'}</div>
     <div style="font-family:var(--font-d);font-size:22px;font-weight:700;color:${clr}">${big}</div></div>
     <div style="text-align:right;font-size:11px;color:var(--muted);line-height:1.5">${fmtBal(allowance)} / day<br>${daysLeft} day${daysLeft===1?'':'s'} left</div>
   </div>`;
@@ -4769,7 +4769,7 @@ function renderTutSlide(){
       <div class="ic-plate lg">${FinIcons.fromEmoji(s.icon)}</div>
       <div style="font-family:var(--font-d);font-size:20px;font-weight:700;margin-bottom:12px;line-height:1.3">${s.title}</div>
       <div style="font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:${s.tip?'16px':'0'}">${s.desc}</div>
-      ${s.tip?`<div style="background:var(--accent-bg);border:1px solid var(--accent-dim);border-radius:9px;padding:10px 14px;font-size:12.5px;color:var(--accent);text-align:left">${FinIcons.html(s.tip)}</div>`:''}
+      ${s.tip?`<div style="background:var(--accent-bg);border:1px solid var(--accent-dim);border-radius:9px;padding:10px 14px;font-size:13px;color:var(--accent);text-align:left">${FinIcons.html(s.tip)}</div>`:''}
     </div>`;
 }
 
@@ -4829,7 +4829,7 @@ function resolveMergeChoice(useRemote){
 function legalHTML(tab){
   const title=tab==='terms'?'Terms of Use':'Privacy Policy';
   const head=`<p style="color:var(--muted);margin-bottom:14px"><b style="color:var(--text)">${title}</b><br>Version ${LEGAL_VERSION} · Last updated ${LEGAL_UPDATED}</p>`;
-  return head+LEGAL_DOCS[tab].map((sec,i)=>`<p style="font-weight:700;margin-bottom:4px">${i+1}. ${sec[0]}</p><p style="margin-bottom:12px">${legalFill(sec[1])}</p>`).join('')+`<p style="margin:16px 0 0;padding-top:12px;border-top:1px dashed var(--border2);color:var(--muted);font-size:11.5px;text-align:center"> - End of ${title} - </p>`;
+  return head+LEGAL_DOCS[tab].map((sec,i)=>`<p style="font-weight:700;margin-bottom:4px">${i+1}. ${sec[0]}</p><p style="margin-bottom:12px">${legalFill(sec[1])}</p>`).join('')+`<p style="margin:16px 0 0;padding-top:12px;border-top:1px dashed var(--border2);color:var(--muted);font-size:12px;text-align:center"> - End of ${title} - </p>`;
 }
 function legalTabStyle(btn,on,read){
   if(!btn)return;

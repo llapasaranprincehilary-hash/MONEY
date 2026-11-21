@@ -1,5 +1,5 @@
 /* FINUITY VIP: upgrade sheet, settings card, balances strip */
-.vp-card{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:14px 16px;margin:0 0 16px;border-radius:18px;border:1px solid var(--border2);background:var(--surface);color:var(--text);font-family:var(--font-b);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:border-color .15s,transform .12s}
+.vp-card{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:14px 16px;margin:0 0 16px;border-radius:18px;border:1px solid var(--border2);background:var(--surface);color:var(--text);font-family:var(--font-b);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:border-color .18s,transform .12s}
 .vp-card:hover{border-color:rgba(240,185,44,.55)}
 .vp-card:active{transform:scale(.99)}
 .vp-card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -45,9 +45,9 @@
 .vp-bubble{flex:1;min-width:0;--vpb:#5a4410;padding:11px 13px 12px}
 .vp-bubble::before{content:"";position:absolute;left:-12px;top:50%;margin-top:-6px;width:9px;height:12px;background:var(--vpb);clip-path:polygon(100% 0,100% 100%,0 50%)}
 .vp-bubble::after{content:"";position:absolute;left:-7px;top:50%;margin-top:-4px;width:7px;height:8px;background:var(--surface2);clip-path:polygon(100% 0,100% 100%,0 50%)}
-.vp-t{margin:0 0 3px;font:800 19px/1.1 var(--font-d,sans-serif);letter-spacing:-.02em;color:#f0b92c}
+.vp-t{margin:0 0 3px;font:800 18px/1.1 var(--font-d,sans-serif);letter-spacing:-.02em;color:#f0b92c}
 .vp-say{margin:0;font-size:13px;line-height:1.45;color:var(--text)}
-.vp-status{margin:0 0 14px;font-size:12.5px;line-height:1.45;color:var(--muted)}
+.vp-status{margin:0 0 14px;font-size:13px;line-height:1.45;color:var(--muted)}
 .vp-status b{color:#f0b92c;font-weight:700}
 
 /* how full the free plan is, as coin pips */
@@ -68,7 +68,7 @@
 .vp-plan{--vpb:var(--border2);position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;padding:12px 6px 12px;border:0;color:var(--text);font-family:var(--font-b);text-align:center;cursor:pointer;-webkit-tap-highlight-color:transparent;background:var(--surface2)}
 .vp-plan:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
 .vp-plan.sel{--vpb:#f0b92c;background:rgba(240,185,44,.15)}
-.vp-stack{display:flex;flex-direction:column-reverse;align-items:center;height:78px;justify-content:flex-start;margin-bottom:6px;filter:saturate(.35) brightness(.8);transition:filter .15s}
+.vp-stack{display:flex;flex-direction:column-reverse;align-items:center;height:78px;justify-content:flex-start;margin-bottom:6px;filter:saturate(.35) brightness(.8);transition:filter .18s}
 .vp-plan.sel .vp-stack{filter:none}
 .vp-coin{display:block;width:44px;height:13px;margin-top:-7px;border-radius:50%;background:radial-gradient(ellipse at 40% 35%,#ffe9a0,#f0b92c 62%);border:2px solid #4a2c05;box-shadow:0 3px 0 #a8700a}
 .vp-coin:first-child{margin-top:0}
@@ -76,9 +76,9 @@
 .vp-pn{font:700 13px var(--font-d,sans-serif)}
 .vp-pp{display:flex;flex-direction:column;align-items:center;line-height:1.15}
 .vp-pp s{font-size:11px;color:var(--muted)}
-.vp-pp b{font:800 21px var(--font-d,sans-serif);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.vp-pp b{font:800 20px var(--font-d,sans-serif);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
 .vp-pd{font-size:11px;color:var(--muted)}
-.vp-tag{margin-top:4px;padding:2px 7px;font:700 10.5px var(--font-b);color:#2a1c02;background:#f0b92c;box-shadow:0 -2px 0 0 #f0b92c,0 2px 0 0 #f0b92c,-2px 0 0 0 #f0b92c,2px 0 0 0 #f0b92c;margin-left:2px;margin-right:2px}
+.vp-tag{margin-top:4px;padding:2px 7px;font:700 11px var(--font-b);color:#2a1c02;background:#f0b92c;box-shadow:0 -2px 0 0 #f0b92c,0 2px 0 0 #f0b92c,-2px 0 0 0 #f0b92c,2px 0 0 0 #f0b92c;margin-left:2px;margin-right:2px}
 .vp-tag.best{background:var(--accent);box-shadow:0 -2px 0 0 var(--accent),0 2px 0 0 var(--accent),-2px 0 0 0 var(--accent),2px 0 0 0 var(--accent)}
 
 /* what you get: small stickers, not a checklist */
@@ -88,14 +88,14 @@
 
 /* the buy button stays put while the sheet scrolls */
 .vp-foot{position:sticky;bottom:0;margin:0 -18px;padding:12px 21px calc(8px + env(safe-area-inset-bottom,0px));background:linear-gradient(180deg,transparent 0,var(--surface) 14px)}
-.vp-cta{--vpb:#8a5a06;display:block;width:calc(100% - 6px);margin:3px;min-height:52px;border:0;background:linear-gradient(180deg,#ffe27a,#f0b92c);color:#2a1c02;font:800 16px var(--font-d,sans-serif);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .1s;box-shadow:0 -3px 0 0 #f0b92c,0 3px 0 0 #8a5a06,-3px 0 0 0 #f0b92c,3px 0 0 0 #f0b92c}
+.vp-cta{--vpb:#8a5a06;display:block;width:calc(100% - 6px);margin:3px;min-height:52px;border:0;background:linear-gradient(180deg,#ffe27a,#f0b92c);color:#2a1c02;font:800 16px var(--font-d,sans-serif);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .12s;box-shadow:0 -3px 0 0 #f0b92c,0 3px 0 0 #8a5a06,-3px 0 0 0 #f0b92c,3px 0 0 0 #f0b92c}
 .vp-cta:active{transform:translateY(2px)}
 .vp-cta:disabled{opacity:.6;cursor:default}
 .vp-cta:focus-visible{outline:2px solid var(--text);outline-offset:5px}
-.vp-msg{margin-top:9px;font-size:12.5px;line-height:1.4;color:var(--red,#f04848)}
+.vp-msg{margin-top:9px;font-size:13px;line-height:1.4;color:var(--red,#f04848)}
 .vp-msg:empty{display:none}
 .vp-msg.ok{color:var(--accent)}
-.vp-fine{margin:4px 0 0;padding:0 0 calc(14px + env(safe-area-inset-bottom,0px));font-size:11.5px;line-height:1.5;color:var(--muted);text-align:center}
+.vp-fine{margin:4px 0 0;padding:0 0 calc(14px + env(safe-area-inset-bottom,0px));font-size:12px;line-height:1.5;color:var(--muted);text-align:center}
 @keyframes vp-fade{from{opacity:0}to{opacity:1}}
 @keyframes vp-up{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
 @keyframes vp-hop{0%{transform:translateY(-14px);opacity:.4}100%{transform:none;opacity:1}}
@@ -106,7 +106,7 @@
 @media (prefers-reduced-motion:reduce){.vp-back,.vp-sheet,.vp-plan.sel .vp-coin{animation:none!important}.vp-stack{transition:none}}
 
 /* while a full sheet is open Fin steps aside so his speech bubble never covers a button */
-body.sheet-open #fa-snack,body.sheet-open #fin-pet-root,body.sheet-open #fin-bubble,body.sheet-open [id^="fin-bubble"]{opacity:0!important;pointer-events:none!important;transition:opacity .15s}
+body.sheet-open #fa-snack,body.sheet-open #fin-pet-root,body.sheet-open #fin-bubble,body.sheet-open [id^="fin-bubble"]{opacity:0!important;pointer-events:none!important;transition:opacity .18s}
 
 /* the page behind a sheet does not scroll */
 body.sheet-open{overflow:hidden}
@@ -126,7 +126,7 @@ body.light .vp-foot{background:linear-gradient(180deg,transparent 0,var(--surfac
 body.light .vp-fine{color:var(--muted)}
 
 /* "3 free" / "VIP" badge on the Scan Receipt button */
-.vp-pill{display:inline-block;margin-left:7px;padding:1px 8px;border-radius:99px;background:linear-gradient(135deg,#ffe27a,#f0b92c);color:#2a1c02;font:800 10.5px/1.7 var(--font-d,sans-serif);vertical-align:middle;white-space:nowrap}
+.vp-pill{display:inline-block;margin-left:7px;padding:1px 8px;border-radius:99px;background:linear-gradient(135deg,#ffe27a,#f0b92c);color:#2a1c02;font:800 11px/1.7 var(--font-d,sans-serif);vertical-align:middle;white-space:nowrap}
 .vp-pill.lock{background:rgba(240,185,44,.16);color:#f0b92c;box-shadow:inset 0 0 0 1px rgba(240,185,44,.55)}
 body.light .vp-pill.lock{color:#946200}
 

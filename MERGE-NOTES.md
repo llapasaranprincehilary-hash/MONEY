@@ -1,4 +1,4 @@
-# Merge v10 (v9 + Learn pictures): redesign + learn hero + Learning polish + design-chat changes
+# Merge v11 (v10 + pizza chart fix + consistency pass): redesign + learn hero + Learning polish + design-chat changes
 
 Base = MONEY-finuity-FINAL-v2-redesign (Bills first, triad colours, hide-numbers crossfade, new Fin card, Learn banner).
 On top of it:
@@ -40,3 +40,6 @@ Files touched on top of the redesign: app.js, index.html, ux.css, life.js, life.
 
 ## Added in v10
 - Learn pictures from MONEY-FINAL (8): learn-images.js (new), learn.js, learn.css, index.html (script tag), sw.js (precache). See BUGFIXES.md "Merge v10".
+
+## Added in v11
+- bills.js (chart centre), new consistency.css, ux.css/polish.css/etc. (transition durations normalised), app.js (inline type sizes), index.html (link, aria-label), sw.js (precache v71). See BUGFIXES.md "Merge v11".

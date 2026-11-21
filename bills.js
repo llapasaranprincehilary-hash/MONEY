@@ -16,6 +16,28 @@ function esc(s){return W.esc?W.esc(s):String(s).replace(/[&<>"']/g,function(c){r
 function money(n){return W.fmt?W.fmt(n):String(n)}
 function mv(n){return '<span class="mv">'+money(n)+'</span>'}
 function short(n){return money(n).replace(/\.00$/,'')}
+/* The amount in the middle of the pizza must always fit the hub, whatever the currency or size of the number.
+   Compact form here (the exact figure is shown right below the chart); font size is estimated from the text, then measured (fitHubs). */
+function hubText(n){
+  var a=Math.abs(n),sample=money(1),sym=sample.replace(/[\d.,\s\u00a0]/g,''),first=!sym||sample.trim().indexOf(sym)===0,num;
+  if(a>=1e6)num=(a/1e6).toFixed(1).replace(/\.0$/,'')+'M';
+  else if(a>=1e4)num=(a/1e3).toFixed(1).replace(/\.0$/,'')+'k';
+  else num=Math.round(a).toLocaleString('en-US');
+  return first?sym+num:num+'\u00a0'+sym;
+}
+function hubSize(txt){return Math.max(12,Math.min(22,Math.floor(70/(txt.length*0.56))))}
+function fitHubs(root){
+  try{(root||document).querySelectorAll('.pz-amt').forEach(function(t){
+    var svg=t.ownerSVGElement,hub=svg&&svg.querySelector('.pz-hub');if(!hub)return;
+    var r=+hub.getAttribute('r'),cy=+hub.getAttribute('cy'),fs=parseFloat(t.style.fontSize)||22;
+    for(var i=0;i<6;i++){
+      var bb=t.getBBox();if(!bb.width)return;
+      var dy=Math.max(Math.abs(bb.y-cy),Math.abs(bb.y+bb.height-cy)),chord=2*Math.sqrt(Math.max(0,r*r-dy*dy))-12;
+      if(bb.width<=chord||fs<=11)break;
+      fs=Math.max(11,fs*chord/bb.width*0.97);t.style.fontSize=fs.toFixed(1)+'px';
+    }
+  })}catch(e){}
+}
 
 /* ───────── month maths (same month rules as the dashboard) ───────── */
 function nowD(){return new Date()}
@@ -64,6 +86,9 @@ function unpaidTotal(){
 }
 function walletName(id){var w=((S()||{}).wallets||[]).filter(function(x){return x.id===id})[0];return w?w.label:''}
 
+/* web fonts change text widths when they arrive: measure again then */
+try{if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){fitHubs()})}catch(e){}
+
 /* ───────── the pizza ───────── */
 function polar(a,R){return [100+R*Math.cos(a),100+R*Math.sin(a)]}
 function slicePath(a0,a1,R){
@@ -93,11 +118,12 @@ function pizza(v){
     });
   }
   var neg=v.yours<0;
-  svg+='<circle class="pz-hub" cx="100" cy="100" r="37"/>';
+  svg+='<circle class="pz-hub" cx="100" cy="100" r="44"/>';
   if(hasInc){
-    svg+='<text class="pz-lbl" x="100" y="93" text-anchor="middle">'+(neg?'Over by':'Yours')+'</text>'
-       +'<text class="pz-amt'+(neg?' neg':'')+'" x="100" y="117" text-anchor="middle">'+esc(short(Math.abs(v.yours)))+'</text>'
-       +'<text class="pz-dots" x="100" y="117" text-anchor="middle">•••</text>';
+    var ht=hubText(v.yours);
+    svg+='<text class="pz-lbl" x="100" y="92" text-anchor="middle">'+(neg?'Over by':'Yours')+'</text>'
+       +'<text class="pz-amt'+(neg?' neg':'')+'" x="100" y="116" text-anchor="middle" style="font-size:'+hubSize(ht)+'px">'+esc(ht)+'</text>'
+       +'<text class="pz-dots" x="100" y="116" text-anchor="middle">•••</text>';
   }else{
     svg+='<text class="pz-lbl" x="100" y="97" text-anchor="middle">Add this</text><text class="pz-lbl" x="100" y="112" text-anchor="middle">month\'s income</text>';
   }
@@ -157,7 +183,7 @@ function tick(){
   var s=S();
   if(!s||!s.username){el.innerHTML='';el._h='';return}
   var h=cardHTML();
-  if(el._h!==h){el._h=h;el.innerHTML=h}
+  if(el._h!==h){el._h=h;el.innerHTML=h;fitHubs(el)}
 }
 
 /* ───────── actions ───────── */

@@ -1,0 +1,54 @@
+/* FINUITY consistency layer. Loaded last, so it wins ties.
+   One scale for colour contrast, type floor, radius, spacing, motion, touch size and focus, instead of a different value per screen. */
+:root{
+  --r-surface:22px;   /* page-level cards: dashboard cards, Learn shelf, hero, wallet list cards */
+  --r-tile:18px;      /* tiles inside a card or grid: wallet cards, owed cards, level strip */
+  --r-inner:14px;     /* small parts: mini wallets, insight rows */
+  --sp-card:16px;     /* gap between cards on a page */
+  --t-fast:.12s;      /* press / hover feedback */
+  --t-base:.18s;      /* colour, border, small movement */
+  --t-slow:.28s;      /* sheets, expanding rows */
+  --ease:cubic-bezier(.2,.7,.2,1);
+}
+
+/* ── 1. Colour: text greys must reach 4.5:1 on every surface they sit on ── */
+html body.light{--muted:#665f52;--muted2:#6f685a}   /* same selector as the palette, so this wins by order */
+html body:not(.light){--muted2:#9a9487}
+
+/* ── 2. Type floor: nothing below 11px (was 9px to 10.5px in places) ── */
+.badge,.wc-upd,.wc-bal-l,.inc-new,.vp-pill,.cat-ic,.st-d b,.inc-row .meta>span:not([class]){font-size:11px !important}
+.od-av{width:24px;height:24px;font-size:11px}
+
+/* ── 3. Touch targets: at least 36px to tap, small round buttons get an invisible 44px hit area ── */
+.pill,.lrn-chip,.bl-chip{min-height:36px;display:inline-flex;align-items:center;justify-content:center}
+.btn{min-height:40px}
+.btn.btn-sm{min-height:36px}
+.lf-btn,.life-empty-fin .lf-btn{min-height:40px}
+.dash-tabs-link,#dashboard .dash-tabs-link{display:inline-flex;align-items:center;min-height:36px}
+.eye-btn,.row-more,.wc-more,.lf-fold{position:relative}
+.eye-btn::after,.row-more::after,.wc-more::after,.lf-fold::after{content:'';position:absolute;inset:-6px}
+
+/* ── 4. Radius scale ── */
+.card,.bl-card,.lf-card,.hero-card,.dl-hero,.lrn-shelf,.snapshot-card,.goal-card,#dashboard .hero-card.slim{border-radius:var(--r-surface) !important}
+.wc,.od-card,.lrn-lvstrip,.lrn-insight{border-radius:var(--r-tile) !important}
+.hwm{border-radius:var(--r-inner) !important}
+
+/* ── 5. Spacing: one gap between dashboard cards (was a mix of 12px, 14px and 16px) ── */
+#dashboard .dash-flow{gap:var(--sp-card)}
+#dashboard .dash-flow>*,#dashboard .dash-flow>.hero-card,#dashboard .dash-flow>.hero-card.slim,#dashboard .dash-flow>#month-snapshot{margin-top:0 !important;margin-bottom:0 !important}
+#dashboard .dash-flow>:empty{display:none}
+#dash-owed .owed-grid{margin:0}
+
+/* ── 6. Motion: shared timing, press feedback, focus ring ── */
+:where(button,.btn,.pill,.lrn-chip,a){transition:background-color var(--t-base) var(--ease),border-color var(--t-base) var(--ease),color var(--t-base) var(--ease),box-shadow var(--t-base) var(--ease),opacity var(--t-base) var(--ease),transform var(--t-fast) var(--ease)}
+.btn:active,.pill:active,.lrn-chip:active,.bl-chip:active{transform:scale(.97)}
+:where(button,a,input,select,textarea,summary,[tabindex]):focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;scroll-behavior:auto !important}
+}
+
+/* ── 7. Fit: nothing hangs off a small screen ── */
+@media (max-width:380px){
+  .money-tabs{margin-left:-12px !important;margin-right:-12px !important}   /* the bar assumed 16px of page padding; phones this narrow use 12px */
+}
+#export .btn{white-space:normal;line-height:1.25;padding-left:12px;padding-right:12px}
