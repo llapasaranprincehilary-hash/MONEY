@@ -210,7 +210,7 @@
         '<div class="fin-sparkle" id="fin-sparkle"></div>' +
         buildSprite() +
       '</div>' +
-      '<div class="fin-min-tab" id="fin-min-tab"><span class="fin-min-dot"></span><span id="fin-min-name">Fin</span></div>';
+      '<div class="fin-min-tab" id="fin-min-tab"><span class="fin-peek-window"><span class="fin-peek-sprite">'+buildSprite()+'</span></span><span class="fin-min-dot"></span><span id="fin-min-name">Fin</span></div>';
     document.body.appendChild(root);
 
     els.root = root;
@@ -1201,6 +1201,14 @@
     pet.lastModule = moduleId;
     if(pet.tour) return; // the guided tour is navigating; don't burn first-run tips or queue chatter
     var ctx = safeCtx();
+
+    // For a completely new user, the dashboard's Fin card is the onboarding voice.
+    // Avoid a second floating popup competing with that first message.
+    if(moduleId==='dashboard' && !ctx.hasIncome && !ctx.hasExpenses){
+      markOnboardShown(moduleId);
+      markShown(moduleId);
+      return;
+    }
 
     // First-run walkthrough takes priority over the regular per-module
     // message, but only for the modules it actually covers, and only
