@@ -14,7 +14,7 @@
   pointer-events:none;
   font-family:var(--font-b);
   opacity:0;
-  transition:opacity .3s ease;
+  transition:opacity .28s ease;
 }
 .ft-root.ft-on{opacity:1;}
 .ft-root *{box-sizing:border-box;}
@@ -58,7 +58,7 @@
   pointer-events:none;
   z-index:4;
   filter:drop-shadow(0 2px 5px rgba(0,0,0,.55));
-  transition:left .6s var(--ft-ease), top .6s var(--ft-ease), opacity .2s ease;
+  transition:left .5s var(--ft-ease), top .5s var(--ft-ease), opacity .18s ease;
 }
 .ft-pointer.ft-hidden{opacity:0;}
 .ft-pt-in{width:100%;height:100%;animation:ft-bob .9s ease-in-out infinite;}
@@ -79,10 +79,10 @@
   border-radius:16px;
   box-shadow:0 14px 34px rgba(0,0,0,.28);
   padding:13px 15px 12px;
-  font-size:12.5px;
+  font-size:13px;
   line-height:1.55;
   color:var(--text);
-  transition:left .5s var(--ft-ease), top .5s var(--ft-ease), opacity .22s ease;
+  transition:left .5s var(--ft-ease), top .5s var(--ft-ease), opacity .18s ease;
 }
 .ft-card:focus{outline:none;}
 .ft-card.ft-swap{opacity:.0;}
@@ -99,16 +99,16 @@
 }
 .ft-close:hover{color:var(--muted);}
 .ft-stepno{
-  font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
   color:var(--muted);padding-right:18px;
 }
 .ft-bar{height:3px;background:var(--surface3);border-radius:3px;margin:7px 0 10px;overflow:hidden;}
-.ft-bar-fill{height:100%;width:0;background:var(--accent);border-radius:3px;transition:width .4s ease;}
+.ft-bar-fill{height:100%;width:0;background:var(--accent);border-radius:3px;transition:width .5s ease;}
 .ft-title{font-family:var(--font-d);font-size:14px;font-weight:700;line-height:1.35;margin-bottom:4px;}
 .ft-desc{white-space:pre-line;}
 .ft-hint{
   margin-top:8px;padding:6px 9px;
-  font-size:11.5px;color:var(--accent);
+  font-size:12px;color:var(--accent);
   background:var(--accent-bg);
   border:1px solid rgba(var(--accent-rgb),.16);
   border-radius:8px;
@@ -144,7 +144,7 @@ html.ft-instant .ft-spot{transition:none !important;}
 /* ---------- Fin while touring ---------- */
 #fin-pet-root.fin-touring{
   z-index:9002;
-  transition:left .65s cubic-bezier(.2,.8,.2,1), top .65s cubic-bezier(.2,.8,.2,1);
+  transition:left .5s cubic-bezier(.2,.8,.2,1), top .5s cubic-bezier(.2,.8,.2,1);
 }
 #fin-pet-root.fin-touring .fin-bubble,
 #fin-pet-root.fin-touring .fin-min-btn{display:none !important;}
@@ -155,7 +155,7 @@ html.ft-snap .ft-pointer{transition:none !important;}
 /* ---------- small screens ---------- */
 @media(max-width:900px){
   .ft-card{font-size:12px;padding:12px 13px 11px;}
-  .ft-title{font-size:13.5px;}
+  .ft-title{font-size:14px;}
 }
 
 /* ---------- reduced motion ---------- */
