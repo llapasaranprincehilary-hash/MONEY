@@ -16,6 +16,7 @@ Those live on Firebase (`backend/`). So you can launch on GitHub today and switc
 - Google Cloud console -> **APIs & Services -> Credentials** -> your browser API key -> **Website restrictions** -> add `https://YOUR-NAME.github.io/*`
   (the Firebase web key is meant to be public; the restriction plus your Firestore rules are what protect you).
 - Check your Firestore rules: users may only read/write their own data. Add the blocks in `backend/firestore.rules.additions.txt`.
+- In `backend/functions/index.js`, replace `https://YOUR-SITE.example` in `ALLOWED_ORIGINS` with the exact deployed HTTPS origin before deploying the backend. Keep the local development origins only if you need them.
 
 ## 3. What works the moment you publish
 
@@ -40,8 +41,8 @@ To remove VIP, delete the document or set `until` to 0.
 
 ## 6. Updating the site later
 
-Upload the changed files. The app caches itself for offline use: when you change files, also change the version name at the top of
-`sw.js` (`finuity-shell-v32` -> `v33`) so people's phones pick up the update.
+Upload the changed files. The app caches itself for offline use: when you change files, also bump the cache version at the top of
+`sw.js` (increment the current `finuity-shell-vNN` value) so people's phones pick up the update.
 
 ## 7. Legal pages
 

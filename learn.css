@@ -297,3 +297,21 @@ body.light .dl-frame .bb-leaf2{fill:var(--accent)}
 /* ── Lesson card image ─────────────────────────────────────────── */
 .lrn-scard-img{flex:none;width:68px;height:52px;border-radius:10px;overflow:hidden;border:1px solid var(--border2);background:var(--surface2)}
 .lrn-scard-img img{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
+/* Personalized learning cards */
+.lrn-personal-list{display:grid;gap:10px;margin:14px 0 18px}
+.lrn-personal-head{display:grid;gap:4px;padding:2px 2px 6px}
+.lrn-personal-head b{font-size:16px;color:var(--text,#222)}
+.lrn-personal-head span{font-size:12px;color:var(--muted,#777)}
+.lrn-personal-card{display:grid;gap:7px;text-align:left;width:100%;border:1px solid var(--line,rgba(0,0,0,.09));border-radius:16px;padding:14px;background:var(--card,#fff);color:var(--text,#222);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.035)}
+.lrn-personal-card b{font-size:15px;line-height:1.3}
+.lrn-personal-card>span:not(.lrn-personal-badge){font-size:13px;line-height:1.45;color:var(--muted,#777)}
+.lrn-personal-card small{font-size:12px;font-weight:700;color:var(--accent,#387b66)}
+.lrn-personal-badge{justify-self:start;border-radius:999px;padding:4px 8px;background:rgba(50,125,100,.10);color:var(--accent,#387b66);font-size:10px;font-weight:800;letter-spacing:.03em;text-transform:uppercase}
+.lrn-personal{display:grid;gap:12px;padding-bottom:16px}
+.lrn-personal-k{font-size:11px;font-weight:800;letter-spacing:.1em;color:var(--accent,#387b66)}
+.lrn-personal h2{margin:0;font-size:24px;line-height:1.2;color:var(--text,#222)}
+.lrn-personal-box{border:1px solid var(--line,rgba(0,0,0,.09));border-radius:16px;padding:14px;background:var(--card,#fff)}
+.lrn-personal-box b{font-size:14px}
+.lrn-personal-box p{margin:7px 0 0;font-size:14px;line-height:1.5;color:var(--muted,#777)}
+.lrn-personal-box.challenge{background:rgba(50,125,100,.07);border-color:rgba(50,125,100,.18)}
+.lrn-personal-note{font-size:11px;line-height:1.5;color:var(--muted,#777);margin:0}

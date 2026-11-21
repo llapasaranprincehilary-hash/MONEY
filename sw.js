@@ -11,7 +11,7 @@
    CACHE_NAME — so an unchanged cache name means old, stale assets (icons
    included) can keep being served indefinitely even after you replace the
    underlying files. */
-const CACHE_NAME = 'finuity-shell-v71';
+const CACHE_NAME = 'finuity-shell-v80';
 
 // Small JSON the page writes (reminder time, last logged day) so a background reminder can run with the app closed.
 const LIFE_CACHE = 'finuity-life-data';
@@ -19,6 +19,9 @@ const LIFE_CACHE = 'finuity-life-data';
 const APP_SHELL = [
   './',
   './index.html',
+  './tutorial-1.jpg',
+  './tutorial-2.jpg',
+  './tutorial-3.jpg',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
@@ -26,6 +29,8 @@ const APP_SHELL = [
   './icons.css',
   './icons.js',
   './app.js',
+  './allowance.js',
+  './allowance.css',
   './learn.css',
   './learn.js',
   './learn-images.js',
@@ -46,6 +51,8 @@ const APP_SHELL = [
   './privacy.html',
   './refund-policy.html',
   './vip.js',
+  './vip-academy.js',
+  './vip-academy.css',
   './virtual-pet/pet.css',
   './virtual-pet/pet.js',
   './virtual-pet/fin-dock.js',

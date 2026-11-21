@@ -205,7 +205,7 @@ function showSplash(){
 }
 
 const MONTH_ORDER=['January','February','March','April','May','June','July','August','September','October','November','December'];
-const PAGE_TITLES={dashboard:'Dashboard',income:'Income',balances:'Balances',expenses:'Expenses',loans:'Loans',goals:'Goals & Budget',learn:'Learn',settings:'Profile',export:'Export'};
+const PAGE_TITLES={dashboard:'Dashboard',income:'Income',balances:'Balances',expenses:'Expenses',loans:'Loans',goals:'Goals & Budget',learn:'Learn',settings:'Profile',export:'Export',vipacademy:'Fin Academy'};
 const CAT_LABELS={food:'Food',transport:'Transport',shopping:'Shopping',utilities:'Utilities',health:'Health',entertainment:'Entertainment','loan-payment':'Loan Payment','other-exp':'Other'};
 const CAT_ICON={food:'utensils',transport:'bus',shopping:'bag',utilities:'bolt',health:'heart',entertainment:'gamepad','loan-payment':'swap','other-exp':'box'};
 // icon + name, coloured per category (plain names stay in CAT_LABELS for CSV, reports and charts)
@@ -278,6 +278,12 @@ function normalizeState(raw){
   out.loans.forEach(l=>{if(typeof l.name!=='string')l.name=String(l.name==null?'':l.name);});
   out.goals.forEach(g=>{if(typeof g.name!=='string')g.name=String(g.name==null?'':g.name);});
   out.budgetLimit=Math.max(0,Number(out.budgetLimit)||0);
+  if(!out.allowance||typeof out.allowance!=='object')out.allowance={amount:0,startDate:today(),payoutDate:'',label:'Allowance'};
+  out.dashboardMode=(out.dashboardMode==='allowance')?'allowance':'normal';
+  out.allowance.amount=Math.max(0,Number(out.allowance.amount)||0);
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(out.allowance.startDate||''))out.allowance.startDate=today();
+  if(typeof out.allowance.payoutDate!=='string')out.allowance.payoutDate='';
+  if(typeof out.allowance.label!=='string')out.allowance.label='Allowance';
   // ids must be unique NUMBERS: the UI compares them with === and prints them inside onclick="..."
   let maxId=0;
   const lists=['income','expenses','loans','goals'];
@@ -351,6 +357,7 @@ function defaultState(){
     loans:[],
     goals:[],
     budgetLimit:0,
+    allowance:{amount:0,startDate:today(),payoutDate:'',label:'Allowance'},
     pin:'', // legacy plaintext field - kept only so old backups load; migrated to pinHash on read
     pinHash:'',
     pinSalt:'',
@@ -644,6 +651,7 @@ async function handleAuthState(user){
   }
   sessionStorage.setItem('mtUnlocked','1');
   document.getElementById('auth-overlay').style.display='none';
+  finAuthBootReveal();
   scheduleRender();
   updateSidebarUsername();
   if(!localStorage.getItem('mtTutDone')){showTutorial();}else{showSplash();}
@@ -661,6 +669,7 @@ if(window.firebaseInitFailed || typeof fbAuth==='undefined' || !fbAuth){
   });
 }
 function showConnectionErrorScreen(){
+  finAuthBootReveal();
   const overlay=document.getElementById('auth-overlay');
   if(!overlay)return;
   overlay.style.display='flex';
@@ -1002,7 +1011,7 @@ function renderDash(){
   const _elapsed=now.getDate()/new Date(curYear,now.getMonth()+1,0).getDate();
   const _tl=(function(){try{return (localStorage.getItem('finLang')||'')==='tl';}catch(e){return false;}})();
   let _say,_tone;
-  if(curInc<=0){_tone='idle';_say=_tl?'I-add mo muna ang kita mo para makita natin kung ano ang natitira.':"Add your income and I'll show what's left this month.";}
+  if(curInc<=0){_tone='idle';_say=(state.income.length===0&&state.expenses.length===0)?(_tl?'Uy, tara! Simulan natin sa unang kita o gastos mo. Tutulungan kitang gumawa ng mas malinaw na plan—walang judgment.':"Hey, let's start small. Log your first income or expense, and I'll help you make sense of your money—no judgment.") : (_tl?'I-add mo muna ang kita mo para makita natin kung ano ang natitira.':"Add your income so we can work out what is available to you this month.");}
   else if(curRem<0){_tone='over';_say=_tl?`${_m(Math.abs(curRem))} na ang lampas mo ngayong buwan. Tingnan natin kung ano ang puwedeng bawasan.`:`You're ${_m(Math.abs(curRem))} over this month. Let's look at what to trim first.`;}
   else if(curRem<curInc*0.1){_tone='tight';_say=_tl?`${_m(curRem)} na lang at ${_daysLeft} araw pa. Mga kailangan lang muna.`:`Only ${_m(curRem)} left with ${_daysLeft} day${_daysLeft===1?'':'s'} to go. Essentials only for now.`;}
   else if(curExp/curInc>_elapsed+0.15){_tone='watch';_say=_tl?'Mas mabilis ang gastos mo kaysa sa takbo ng buwan. Dahan-dahan muna.':"You're spending faster than the month is moving. Ease off a little.";}
@@ -1027,7 +1036,7 @@ function renderDash(){
   const _barCls=curRem<0?'over':_spentPct>=90?'warn':'';
   document.getElementById('month-snapshot').innerHTML=`
     <div class="snap-row"><div class="snap-fin-slot" id="fin-slot" aria-hidden="true"></div>
-    <div class="snap-say tone-${_tone}" role="status"><span>${_say}</span>${_ins?`<span class="snap-say-2">${_ins}</span>`:''}</div>
+    <div class="snap-say tone-${_tone}" role="status"><span>${_say}</span>${(state.income.length===0&&state.expenses.length===0)?`<div class="snap-first-actions"><button type="button" onclick="show('income');setTimeout(()=>document.getElementById('inc-amount')?.focus(),100)">${_tl?'Add first income':'Add first income'}</button><button type="button" class="secondary" onclick="show('expenses');setTimeout(()=>document.getElementById('exp-desc')?.focus(),100)">${_tl?'Log a first expense':'Log a first expense'}</button></div>`:''}${_ins?`<span class="snap-say-2">${_ins}</span>`:''}</div>
     <div class="snap-main">
     <div class="snap-top">
       <div>
@@ -1158,6 +1167,7 @@ function renderDash(){
     ?recent.map(e=>`<div class="row"><span class="lbl">${esc(e.desc)}${e.note?' <span style="color:var(--muted2);font-size:11px">· '+esc(e.note)+'</span>':''}</span><span class="val an">${fmtBal(e.amount)}</span></div>`).join('')
     :'<div class="empty"><div class="empty-icon"><svg class="ic" aria-hidden="true"><use href="#i-receipt"/></svg></div><div class="empty-title">No expenses logged yet</div></div>';
 
+  try{if(window.FinAllowance)FinAllowance.render();}catch(e){}
   // Monthly spend progress
   if(curInc>0||curExp>0){
     const pct=curInc>0?clamp(Math.round((curExp/curInc)*100),0,100):100;
@@ -3254,6 +3264,9 @@ function saveEditGoal(){
    AUTH & ACCOUNT SYSTEM
 ═══════════════════════════════════════ */
 
+/* Clear the first-paint auth gate only after a real auth destination is ready. */
+function finAuthBootReveal(){document.documentElement.classList.remove('fin-auth-pending');}
+
 /* ── AUTH SCREEN SWITCHER ── */
 function hideAllAuthScreens(){
   ['auth-login','auth-terms','auth-onboard','auth-register','auth-secsetup','auth-forgot','auth-pin','auth-pinsetup','auth-clearconfirm'].forEach(id=>{
@@ -3268,6 +3281,7 @@ let pendingRegNameFromLogin='';
 
 function showLoginScreen(){
   document.getElementById('auth-overlay').style.display='flex';
+  finAuthBootReveal();
   hideAllAuthScreens();
   document.getElementById('auth-login').style.display='block';
   ['login-email','login-password','signup-email','signup-password','signup-confirm'].forEach(id=>{const e=document.getElementById(id);if(e){e.value='';e.type=id.includes('password')||id==='signup-confirm'?'password':'email';}});
@@ -3624,6 +3638,7 @@ function showOnboarding(){
   ov.style.display='flex';
   hideAllAuthScreens();
   box.style.display='block';
+  finAuthBootReveal();
   if(window.FinX&&FinX.setLang)FinX.setLang(OB.lang);
   obRender();
 }
@@ -3718,6 +3733,7 @@ let regPinBuf='', regPinFirst='', regPinPhase='set'; // 'set' or 'confirm'
 
 function showRegisterScreen(){
   document.getElementById('auth-overlay').style.display='flex';
+  finAuthBootReveal();
   hideAllAuthScreens();
   document.getElementById('auth-register').style.display='block';
   regPinBuf=''; regPinPhase='set';
@@ -3884,6 +3900,7 @@ let pinBuffer='';
 function showPinScreen(){
   pinBuffer='';
   document.getElementById('auth-overlay').style.display='flex';
+  finAuthBootReveal();
   hideAllAuthScreens();
   document.getElementById('auth-pin').style.display='block';
   document.getElementById('pin-welcome-name').textContent=state.username?'Hi, '+state.username:'';
@@ -4070,6 +4087,7 @@ let pinRecoveryActive=false;
 function showPinSetup(){
   setupPinBuf=''; setupPinFirst=''; setupPinPhase='set1';
   document.getElementById('auth-overlay').style.display='flex';
+  finAuthBootReveal();
   hideAllAuthScreens();
   document.getElementById('auth-pinsetup').style.display='block';
   document.getElementById('pinsetup-sub').textContent=pinRecoveryActive?'Create a new 4-digit PIN':(state.pinHash?'Enter a new 4-digit PIN':'Set a 4-digit PIN to protect your app');
@@ -4764,12 +4782,18 @@ function renderTutSlide(){
     `<div onclick="tutDotJump(${i})" style="width:${i===tutIdx?'18px':'6px'};height:6px;border-radius:99px;background:${i===tutIdx?'var(--accent)':'var(--muted2)'};cursor:pointer;transition:width .2s,background .2s"></div>`
   ).join('');
   // slide content
+  const artIndex=(tutIdx===0||tutIdx===1||tutIdx===2)?1:(tutIdx===3||tutIdx===4)?2:3;
+  const artTitle=['Manage your finances','Track your transactions','Save toward your goals'][artIndex-1];
   document.getElementById('tut-slides').innerHTML=`
-    <div style="text-align:center">
-      <div class="ic-plate lg">${FinIcons.fromEmoji(s.icon)}</div>
-      <div style="font-family:var(--font-d);font-size:20px;font-weight:700;margin-bottom:12px;line-height:1.3">${s.title}</div>
-      <div style="font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:${s.tip?'16px':'0'}">${s.desc}</div>
-      ${s.tip?`<div style="background:var(--accent-bg);border:1px solid var(--accent-dim);border-radius:9px;padding:10px 14px;font-size:13px;color:var(--accent);text-align:left">${FinIcons.html(s.tip)}</div>`:''}
+    <div style="text-align:center;margin:-32px -32px 0;overflow:hidden">
+      <div style="height:220px;background:#5faaa3;position:relative;overflow:hidden">
+        <img src="./tutorial-${artIndex}.jpg" alt="${artTitle}" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block" onerror="this.style.display='none'">
+      </div>
+      <div style="padding:24px 32px 8px">
+        <div style="font-family:var(--font-d);font-size:21px;font-weight:700;margin-bottom:10px;line-height:1.3">${s.title}</div>
+        <div style="font-size:14px;color:var(--muted);line-height:1.65;margin-bottom:${s.tip?'16px':'0'}">${s.desc}</div>
+        ${s.tip?`<div style="background:var(--accent-bg);border:1px solid var(--accent-dim);border-radius:9px;padding:10px 14px;font-size:13px;color:var(--accent);text-align:left">${FinIcons.html(s.tip)}</div>`:''}
+      </div>
     </div>`;
 }
 
@@ -4871,6 +4895,7 @@ function checkTermsScroll(){
 }
 function showTermsScreen(){
   document.getElementById('auth-overlay').style.display='flex';
+  finAuthBootReveal();
   hideAllAuthScreens();
   document.getElementById('auth-terms').style.display='block';
   termsRead={terms:false,privacy:false};

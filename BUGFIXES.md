@@ -258,3 +258,43 @@ After the quiz it turns into the smaller "For you today" lesson card. Side-by-si
 - Type scale snapped to one set: fractional sizes (9.5, 10.5, 11.5, 12.5, 13.5, 14.5, 15.5) and the stray 17 / 19 / 21 now use 11, 12, 13, 14, 15, 16, 18, 20
   (184 declarations across the CSS, index.html and inline styles; the printed-report stylesheet is a separate paper document and was left as is).
 - Bill rows: the bill name wraps to two lines and the due text wraps, instead of ending in "..." (for example "Overdue since the 5...").
+
+## v72 — Prevent unauthenticated dashboard flash
+- Added a first-paint auth-pending gate and branded loading screen.
+- The app shell remains hidden until Firebase auth resolves and a login, terms, onboarding, PIN, or authenticated destination is ready.
+- Removed the gate from auth destination handlers and authenticated app entry.
+- Bumped service-worker cache to v72.
+
+## v13 tutorial visual refresh
+- Replaced emoji-only tutorial slide art with three cohesive teal/cream/coral finance illustrations.
+- Tutorial slides now display a large illustrated hero panel above the copy, with responsive cropping.
+- Service-worker cache bumped to v73 and new illustration assets precached.
+
+
+## v14 — Allowance Mode (student lump-sum pacing)
+- Added a dashboard Allowance Mode card for lump-sum students.
+- Users can set allowance amount, received date, next payout date, and a label.
+- Calculates remaining allowance after expenses logged during the allowance period and a safe daily pace through payout day.
+- Added a shareable survival-card text flow using native Share when supported, with clipboard fallback.
+- New allowance state is normalized for older accounts/backups; service-worker cache bumped to v74.
+- Static syntax and archive checks completed; browser runtime not tested.
+
+## v16 release audit refinements (v77 shell cache)
+- Personalized savings lesson now appears only when actual savings-related signals (savings rate or cash coverage) are present; a missing savings goal alone no longer makes an empty account appear to have a savings problem.
+- Personalized category lessons now use the app's category display labels where available instead of raw internal keys.
+- Static audit and scenario harness added during final release review; browser runtime could not be exercised in this environment because Chromium navigation was blocked by administrator policy.
+
+## v16 first-run Fin companion refinement (v79 shell cache)
+- New-account dashboard copy is more friend/coach-like and invites the user to begin with either income or an expense, with direct action buttons in Fin's primary dashboard speech bubble.
+- Suppressed the separate floating dashboard onboarding bubble for accounts with no income and no expenses, avoiding duplicate/overlapping Fin messages.
+- Refined the dashboard bubble shape and shadow and styled the first-step buttons for keyboard focus and mobile wrapping.
+- Existing dock peek animation remains the minimized companion behavior; reduced-motion remains respected.
+- Added a focused first-run static audit. Syntax and static checks passed; live browser interaction was not verified.
+
+## v16 VIP Academy foundation (v80 shell cache)
+- Added Fin Academy as a discoverable feature in the existing Learn page.
+- Added two course modules based on the uploaded IS313 Financial Management PDFs: Module 1 Financial Management Foundations and Module 2 Financial Markets & Institutions (10 lessons total).
+- Implemented lesson reading sections, one-question knowledge checks with feedback, sequential lesson unlocks for VIP, and one free preview lesson for non-VIP users.
+- Added device-local progress tracking per signed-in UID (or guest), 50 XP per completed lesson, and module/overall completion indicators.
+- Added responsive layouts and reduced reliance on external resources; service-worker shell cache bumped to v80.
+- Static syntax, content, reference, and package checks performed. Real-browser runtime testing remains outstanding.

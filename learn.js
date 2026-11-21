@@ -229,6 +229,7 @@ function render(){
   var root=$('learn-root');if(!root)return;
   var h='';
   if(V.t==='lesson')h=viewLesson();
+  else if(V.t==='personal')h=viewPersonalLesson();
   else if(V.t==='check')h=viewCheck();
   else if(V.t==='done')h=viewDone();
   else if(V.t==='quiz')h=viewQuiz();
@@ -257,6 +258,29 @@ function setLearnBg(k){
 }
 var _lf='all';
 function setFilter(f){_lf=f;render();}
+
+/* ── Personalized micro-lessons (local, data-derived, no AI/network calls) ── */
+function personalLessons(){
+ var a=insights(),s=S(),ex=s.expenses||[],todayStr=td(),month=todayStr.slice(0,7),recent=ex.filter(function(e){return String(e.date||'').slice(0,7)===month}),by={},total=0;
+ recent.forEach(function(e){var k=e.cat||'other';by[k]=(by[k]||0)+(+e.amount||0);total+=(+e.amount||0)});
+ var lessons=[],top=Object.keys(by).sort(function(x,y){return by[y]-by[x]})[0],pct=top&&total?Math.round(by[top]/total*100):0,label=top||'your spending';
+ function add(id,title,observation,why,challenge,days,confidence){lessons.push({id:id,title:title,observation:observation,why:why,challenge:challenge,days:days,confidence:confidence})}
+ if(!ex.length)add('starter','Start with one small money habit','FINUITY has no expense records yet, so it cannot spot a spending pattern.', 'A few accurate entries help turn guesses into useful observations.', 'Log every expense for the next 3 days. Include small snacks, fare, and e-wallet purchases.',3,'Starter');
+ else {
+  var last=ex.map(function(e){return String(e.date||'')}).sort().pop(),age=last?Math.floor((new Date(todayStr)-new Date(last))/864e5):0;
+  if(age>=2)add('logging','Build a consistent tracking habit','Your last recorded expense was '+age+' days ago.', 'Tracking is most useful when entries are recorded close to the time you spend.', 'For 3 days, log expenses immediately after paying. At night, check for anything you missed.',3,'Early signal');
+  if(recent.length>=3&&top&&pct>=30){var safeLabel=String(label).replace(/^[^\p{L}\p{N}]+/u,'');try{safeLabel=CAT_LABELS[top]||safeLabel}catch(e){}add('category','Understand your biggest category',safeLabel+' represents '+pct+'% of expenses recorded this month.', 'A large category is not automatically a problem—it may be an essential expense. The useful step is understanding what makes it up.', 'For 7 days, split this category into needs and optional purchases. Review the totals at the end without judging yourself.',7,'Pattern');}
+  if(total>0)add('review','Try a weekly money review','You recorded '+recent.length+' expense entries this month, totaling '+money(total)+'.', 'A short review can reveal patterns that are hard to notice transaction by transaction.', 'Set aside 5 minutes this week: review the three largest expenses and decide whether any need a plan next week.',7,recent.length>=7?'Pattern':'Early signal');
+ }
+ if(a.some(function(i){return i.id==='bud'||i.id==='over'}))add('budget','Check your spending plan','FINUITY detected a budget-related signal from your current entries.', 'Budget limits work best when based on actual needs and realistic spending—not punishment.', 'Review your budget once. Adjust one limit if it does not reflect your real school or living expenses.',7,'Pattern');
+ if(a.some(function(i){return i.id==='rate'||i.id==='fund'}))add('saving','Make saving feel achievable','Your current data suggests savings may deserve attention.', 'Small, repeatable savings goals can be more realistic than aiming for a large amount immediately.', 'Choose a starter target you can comfortably keep. Track it for one week and reassess.',7,'Early signal');
+ return lessons;
+}
+function personalDone(id){var l=LS();return !!(l.personalDone&&l.personalDone[id]);}
+function finishPersonal(id){var l=LS();if(!l.personalDone)l.personalDone={};l.personalDone[id]=Date.now();persist();V={t:'home'};render();}
+function viewPersonalLesson(){var item=personalLessons().filter(function(x){return x.id===V.id})[0];if(!item)return viewHome();
+ return '<button class="lrn-back" onclick="FinLearn.home()">← Learn</button><div class="lrn-personal"><div class="lrn-personal-k">PERSONAL LESSON · '+esc(item.confidence)+'</div><h2>'+esc(item.title)+'</h2><div class="lrn-personal-box"><b>What Finuity noticed</b><p>'+esc(item.observation)+'</p></div><div class="lrn-personal-box"><b>Why it matters</b><p>'+esc(item.why)+'</p></div><div class="lrn-personal-box challenge"><b>Your '+item.days+'-day challenge</b><p>'+esc(item.challenge)+'</p></div><p class="lrn-personal-note">This is an educational observation based on the data you entered. It may be incomplete; it is not financial advice.</p><button class="lrn-btn" onclick="FinLearn.finishPersonal(\''+item.id+'\')">I completed this challenge ✓</button></div>';
+}
 
 function viewHome(){
   var L=LS(),n=doneCount(),lv=level(n),pre=L.pre,post=L.post,h='';
@@ -291,6 +315,12 @@ function viewHome(){
       +'<div class="lrn-insight-x">'+esc(ins.text)+'</div></div>'
       +'<div class="lrn-insight-arr">→</div></div>';
   }
+
+  /* personalized micro-lessons */
+  var pLessons=personalLessons();
+  if(pLessons.length){h+='<div class="lrn-personal-list"><div class="lrn-personal-head"><b>Lessons shaped by your habits</b><span>Based on your entries · updates as your data changes</span></div>';
+   h+=pLessons.map(function(p){var done=personalDone(p.id);return '<button class="lrn-personal-card" type="button" onclick="FinLearn.openPersonal(\''+p.id+'\')"><span class="lrn-personal-badge">'+esc(p.confidence)+'</span><b>'+esc(p.title)+'</b><span>'+esc(p.observation)+'</span><small>'+p.days+'-day challenge'+(done?' · ✓ Completed':' · Explore lesson →')+'</small></button>';}).join('');
+   h+='</div>';}
 
   /* quiz banner */
   if(!pre){
@@ -545,7 +575,7 @@ function openLesson(id){
   show('learn');render();
 }
 W.FinLearn={render:function(){try{render();renderDash()}catch(e){console.error('learn',e)}},
-  open:openLesson,openLesson:openLesson,home:home,step:step,answer:answer,next:next,startQuiz:startQuiz,qpick:qpick,qnext:qnext,quitQuiz:quitQuiz,showResult:showResult,setFilter:setFilter,setLearnBg:setLearnBg,
+  open:openLesson,openLesson:openLesson,home:home,step:step,answer:answer,next:next,startQuiz:startQuiz,qpick:qpick,qnext:qnext,quitQuiz:quitQuiz,showResult:showResult,setFilter:setFilter,setLearnBg:setLearnBg,openPersonal:function(id){V={t:'personal',id:id};show('learn');render();},finishPersonal:finishPersonal,personalLessons:personalLessons,
   tipOfDay:tipOfDay,insights:insights,insightMessage:insightMessage,lessons:LESSONS,tips:TIPS,forms:{A:FORM_A,B:FORM_B},
   _state:function(){return LS()}};
 })();

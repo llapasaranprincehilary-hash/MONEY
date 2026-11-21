@@ -1,0 +1,21 @@
+# Local secrets and Firebase credentials
+.env
+.env.*
+!.env.example
+firebase-debug.log
+firebase-debug.*.log
+.firebase/
+.firebaserc.local
+service-account*.json
+*-firebase-adminsdk-*.json
+
+# Dependencies and build artifacts
+node_modules/
+backend/functions/node_modules/
+.DS_Store
+Thumbs.db
+
+# Local user/test data
+*.local.json
+*.backup
+*.bak

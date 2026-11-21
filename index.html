@@ -1193,6 +1193,7 @@ label.fa-row{cursor:pointer}
 <link rel="stylesheet" href="ux.css">
 <link rel="stylesheet" href="life.css">
 <link rel="stylesheet" href="vip.css">
+<link rel="stylesheet" href="vip-academy.css">
 <link rel="stylesheet" href="scan.css">
 <link rel="stylesheet" href="bills.css">
 <link rel="stylesheet" href="polish.css">
@@ -1479,8 +1480,22 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
 }
 @media(min-width:901px){.bnav-plus-wrap{display:none}}
 </style>
+<script>
+// Keep the app shell hidden until Firebase authentication has resolved.
+// This prevents the active Dashboard from flashing on first-time visits.
+document.documentElement.classList.add('fin-auth-pending');
+</script>
+<style>
+html.fin-auth-pending body .shell{visibility:hidden!important}
+html.fin-auth-pending #fin-auth-boot{display:flex!important}
+#fin-auth-boot{display:none;position:fixed;inset:0;z-index:20000;align-items:center;justify-content:center;flex-direction:column;gap:12px;background:var(--bg,#f7f5f0);color:var(--text,#222);font-family:var(--font-b,system-ui);text-align:center;padding:24px}
+#fin-auth-boot .fin-auth-mark{font-weight:900;letter-spacing:.08em;font-size:24px}
+#fin-auth-boot .fin-auth-dot{width:22px;height:22px;border:2px solid rgba(120,120,120,.25);border-top-color:var(--accent,#7b9c67);border-radius:50%;animation:finAuthSpin .8s linear infinite}
+@keyframes finAuthSpin{to{transform:rotate(360deg)}}
+</style>
 </head>
 <body>
+<div id="fin-auth-boot" role="status" aria-live="polite"><div class="fin-auth-mark">FINUITY</div><div class="fin-auth-dot" aria-hidden="true"></div><div>Preparing your experience…</div></div>
 <script>try{if(localStorage.getItem('mtTheme')!=='dark')document.body.classList.add('light')}catch(e){document.body.classList.add('light')}</script>
 <div class="shell">
 
@@ -1879,6 +1894,7 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
       <span class="tb-sep"></span><span class="tb-date" id="topbar-date"></span>
     </div>
     <div class="tb-right">
+      <button type="button" id="mode-switch" class="mode-switch" onclick="FinAllowance.toggleMode()" aria-label="Switch dashboard mode"><span class="mode-switch-icon">◉</span><span id="mode-switch-label">Normal mode</span></button>
       <button type="button" id="guest-pill" class="guest-pill" onclick="openGuestSheet()" aria-label="Guest account is not backed up. Tap for details." style="display:none"><span class="gp-dot"></span>Not backed up</button>
       <button type="button" id="tb-streak" class="tb-streak" onclick="FinStreak&&FinStreak.openFromAnywhere()" data-tour="top-streak" title="Your streak and badges" aria-label="Your streak and badges"><span class="tb-streak-i"><svg class="ic" aria-hidden="true"><use href="#i-flame"/></svg></span><b>0</b></button>
     </div>
@@ -1897,6 +1913,7 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
     <div class="dash-flow">
       <!-- 1. THE ANSWER: how am I doing this month (Fin lives here) -->
       <div class="snapshot-card" id="month-snapshot"></div>
+      <div id="allowance-card"></div>
 
       <!-- 1b. Pay bills first; the rest is yours -->
       <div id="dash-bills"></div>
@@ -2583,6 +2600,7 @@ body[data-page="settings"] #fa-fab,body[data-page="export"] #fa-fab{display:none
 
 <script src="legal-data.js"></script>
 <script src="app.js"></script>
+<script src="allowance.js"></script>
 
 <!-- LEGAL VIEWER MODAL -->
 <div id="legal-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:3500;align-items:safe center;justify-content:safe center;padding:20px;overflow-y:auto">
@@ -3166,10 +3184,12 @@ window.finGuessCat=guessCat;   // lets the receipt scanner reuse the keyword cat
 <script defer src="virtual-pet/fin-ambient.js"></script>
 <script defer src="a11y.js"></script>
 <script defer src="virtual-pet/pet-coach.js"></script>
+<link rel="stylesheet" href="allowance.css">
 <script defer src="life.js"></script>
 <script defer src="bills.js"></script>
 <script defer src="scan.js"></script>
 <script defer src="vip.js"></script>
+<script defer src="vip-academy.js"></script>
 <script>
 (function(){
 var W=window,L=function(k,v){try{return v===undefined?localStorage.getItem(k):localStorage.setItem(k,v)}catch(e){}};

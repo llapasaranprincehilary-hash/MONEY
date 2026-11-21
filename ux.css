@@ -348,3 +348,13 @@ body.light .snap-mini b{color:#111}
 .badge-interest{background:rgba(var(--accent-rgb),.12);color:var(--accent);border:1px solid rgba(var(--accent-rgb),.3);border-radius:5px;font-size:11px;font-weight:600;padding:2px 7px;letter-spacing:.01em;white-space:nowrap}
 
 .lph-amt.in{color:var(--accent)}.lph-amt.int{color:var(--muted)}
+
+/* Fin's first-run coach: one message, useful choices, no competing popup */
+.snap-say{border-radius:20px 20px 20px 8px;padding:13px 16px;box-shadow:0 5px 14px rgba(0,0,0,.08);border-color:rgba(var(--tri-b-rgb),.24);}
+.snap-say::before{left:-7px;top:28px;width:12px;height:12px;margin-top:0;border-radius:0 0 0 3px;transform:rotate(45deg);background:inherit;}
+.snap-first-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px;position:relative;z-index:1}
+.snap-first-actions button{min-height:36px;padding:7px 12px;border:1px solid var(--accent);border-radius:999px;background:var(--accent);color:var(--accent-contrast,#10200d);font:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:transform .12s,filter .12s}
+.snap-first-actions button:hover{filter:brightness(1.04);transform:translateY(-1px)}
+.snap-first-actions button.secondary{background:transparent;color:var(--text);border-color:var(--border2)}
+.snap-first-actions button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media(max-width:600px){.snap-first-actions{gap:6px}.snap-first-actions button{font-size:11px;padding:7px 10px}}
